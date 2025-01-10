@@ -1,52 +1,52 @@
+// src/components/RegisterForm.tsx
+
 import React, { useState } from 'react';
-import axios, { AxiosError } from 'axios'; 
-import { useRegisterMutation } from '../hooks/useRegister';
-import { RegisterRequest } from '../types/registerTypes';
-import { registerValidation } from '../validation/registerValidation';
+import { useRegisterMutation } from '../hooks/useRegister'; // Import the custom hook
+import { RegisterRequest } from '../types/registerTypes'; // Import your types
+import { registerValidation } from '../validation/registerValidation'; // Zod validation for registration
 import { z } from 'zod';
 
 const RegisterForm: React.FC = () => {
-  const { mutate, error, isSuccess } = useRegisterMutation();
+  // Form data state
   const [formData, setFormData] = useState<RegisterRequest>({
     username: '',
     email: '',
     password: '',
     terms: false,
   });
+
+  // Error state to capture validation errors
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
 
+  // Use the custom register hook
+  const { mutate, isPending, isError, isSuccess, error, data } = useRegisterMutation();
+
+  // Handle input change for form fields
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
     setFormData({
       ...formData,
       [name]: type === 'checkbox' ? checked : value,
     });
+    setFormErrors({}); 
   };
 
-  
+  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Clear previous errors
+    setFormErrors({});
+
     // Validate form using Zod
     try {
-      registerValidation.parse(formData);   // This will throw an error if validation fails
-      mutate(formData);     // If validation passes, send data to the backend
-      setFormErrors({}); 
+      registerValidation.parse(formData); // This will throw an error if validation fails
 
-      
-      // Make a POST request to the backend using axios
-      try {
-        const response = await axios.post('http://localhost:5000/api/register', formData);
-        console.log(response.data); 
-        setFormErrors({});  // Clear previous errors if registration is successful
-      } 
-      catch (error: unknown) {
-        if (axios.isAxiosError(error)) {
-          console.error('Error during registration:', error.response?.data || error.message);
-        }
-      }
+      // Call the mutate function from the custom hook to submit the registration
+      mutate(formData);
+
     } catch (err) {
-      // If validation fails, display the validation errors
+      // If validation fails, set the errors
       if (err instanceof z.ZodError) {
         const errors: { [key: string]: string } = {};
         err.errors.forEach((error) => {
@@ -83,7 +83,6 @@ const RegisterForm: React.FC = () => {
             name="email"
             value={formData.email}
             onChange={handleChange}
-           
             className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
           {formErrors.email && <p className="text-red-500 text-sm">{formErrors.email}</p>}
@@ -97,7 +96,6 @@ const RegisterForm: React.FC = () => {
             name="password"
             value={formData.password}
             onChange={handleChange}
-          
             className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
           {formErrors.password && <p className="text-red-500 text-sm">{formErrors.password}</p>}
@@ -120,17 +118,16 @@ const RegisterForm: React.FC = () => {
         <div className="text-center mt-4">
           <button
             type="submit"
-            className="w-full py-3 bg-indigo-500 text-white font-semibold rounded-md
-              hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            disabled={!formData.terms}
+            className="w-full py-3 bg-indigo-500 text-white font-semibold rounded-md hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            disabled={isPending || !formData.terms} // Disable button while submitting or if terms aren't accepted
           >
-           Register
+            {isPending ? 'Registering...' : 'Register'}
           </button>
         </div>
       </form>
 
-      {isSuccess && <p className="success-message">Registration successful!</p>}
-      {error && <p className="error-message">Something went wrong, please try again.</p>}
+      {isSuccess && <p className="text-green-500 text-center mt-4">Registration successful!</p>}
+      {isError && <p className="text-red-500 text-center mt-4">Something went wrong, please try again.</p>}
     </div>
   );
 };
