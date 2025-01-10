@@ -1,11 +1,18 @@
 import './App.css';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import RegisterForm from './components/RegisterForm';
 
-function App() {
+
+const App: React.FC = () => {
   return (
-    <>
-      <h1 className="flex justify-center">Dev Frontend</h1>
-    </>
+    <Router>
+      <div>
+        <Routes>
+        <Route path="/" element={<h1 className="flex-justify-center">DEV1 frontend</h1>} />
+          <Route path="/register" element={<RegisterForm />} />
+        </Routes>
+      </div>
+    </Router>
   );
-}
-
+};
 export default App;
