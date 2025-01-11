@@ -4,8 +4,7 @@ import { registerUser } from '../apis/registerAPI';
 import axios, { AxiosError } from 'axios';
 
 
-
-// Define the custom hook for register mutation
+// Define the hook for register mutation
 export const useRegisterMutation = () => {
   const { mutate, isPending, isError, isSuccess, error, data } = useMutation({
     mutationFn: (user: RegisterRequest) => registerUser(user), 
@@ -15,7 +14,6 @@ export const useRegisterMutation = () => {
       localStorage.setItem("token", data.message);  
     },
     onError: (error: AxiosError<ErrorResponse>) => {
-      // Handle error logic
       if (axios.isAxiosError(error)) {
         console.error(error.response?.data.message || "An unexpected error occurred");
       } else {

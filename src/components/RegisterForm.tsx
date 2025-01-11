@@ -1,13 +1,11 @@
-// src/components/RegisterForm.tsx
-
 import React, { useState } from 'react';
-import { useRegisterMutation } from '../hooks/useRegister'; // Import the custom hook
-import { RegisterRequest } from '../types/registerTypes'; // Import your types
-import { registerValidation } from '../validation/registerValidation'; // Zod validation for registration
+import { useRegisterMutation } from '../hooks/useRegister'; 
+import { RegisterRequest } from '../types/registerTypes';
+import { registerValidation } from '../validation/registerValidation';
 import { z } from 'zod';
 
 const RegisterForm: React.FC = () => {
-  // Form data state
+
   const [formData, setFormData] = useState<RegisterRequest>({
     username: '',
     email: '',
@@ -15,13 +13,11 @@ const RegisterForm: React.FC = () => {
     terms: false,
   });
 
-  // Error state to capture validation errors
+ 
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
+  const { mutate, isError, isSuccess, error } = useRegisterMutation();
 
-  // Use the custom register hook
-  const { mutate, isPending, isError, isSuccess, error, data } = useRegisterMutation();
-
-  // Handle input change for form fields
+  // Handle input change 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
     setFormData({
@@ -34,19 +30,23 @@ const RegisterForm: React.FC = () => {
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Clear previous errors
-    setFormErrors({});
+    setFormErrors({});   // Clear previous errors
 
     // Validate form using Zod
     try {
-      registerValidation.parse(formData); // This will throw an error if validation fails
-
-      // Call the mutate function from the custom hook to submit the registration
-      mutate(formData);
-
+      registerValidation.parse(formData); 
+      mutate(formData, {
+        onSuccess: () => {
+          // Reset form data on sucess
+          setFormData({
+            username: '',
+            email: '',
+            password: '',
+            terms: false,
+          });
+        },
+      });
     } catch (err) {
-      // If validation fails, set the errors
       if (err instanceof z.ZodError) {
         const errors: { [key: string]: string } = {};
         err.errors.forEach((error) => {
@@ -119,9 +119,9 @@ const RegisterForm: React.FC = () => {
           <button
             type="submit"
             className="w-full py-3 bg-indigo-500 text-white font-semibold rounded-md hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            disabled={isPending || !formData.terms} // Disable button while submitting or if terms aren't accepted
+            disabled={!formData.terms}
           >
-            {isPending ? 'Registering...' : 'Register'}
+            Register
           </button>
         </div>
       </form>
