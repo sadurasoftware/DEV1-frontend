@@ -4,6 +4,7 @@ import { RegisterRequest } from '../types/registerTypes';
 import { registerValidation } from '../validation/registerValidation';
 import { z } from 'zod';
 
+
 const RegisterForm: React.FC = () => {
 
   const [formData, setFormData] = useState<RegisterRequest>({
@@ -56,6 +57,7 @@ const RegisterForm: React.FC = () => {
       }
     }
   };
+
 
   return (
     <div className="max-w-lg mx-auto bg-white p-6 rounded-lg shadow-md flex flex-col">
@@ -119,7 +121,7 @@ const RegisterForm: React.FC = () => {
           <button
             type="submit"
             className="w-full py-3 bg-indigo-500 text-white font-semibold rounded-md hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            disabled={!formData.terms}
+            // disabled={!formData.terms}
           >
             Register
           </button>
@@ -128,7 +130,10 @@ const RegisterForm: React.FC = () => {
 
       {isSuccess && <p className="text-green-500 text-center mt-4">Registration successful!</p>}
       {isError && <p className="text-red-500 text-center mt-4">Something went wrong, please try again.</p>}
+
     </div>
+
+    
   );
 };
 
