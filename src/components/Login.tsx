@@ -29,10 +29,13 @@ export const Login = () => {
     useEffect(() => {
         if (isSuccess && data) {
             setSuccess(data.message);
+            setError("")
+            setUser({ email: "", password: "" })
         }
 
         if (isError && mutationError) {
             setError(mutationError.response?.data.message || "An unexpected error occurred.");
+            setSuccess("")
         }
     }, [isSuccess, isError, data, mutationError]);
 
@@ -44,6 +47,7 @@ export const Login = () => {
             loginschema.parse(user);
 
             mutate(user);
+           
         } catch (err) {
             if (err instanceof z.ZodError) {
                 // If validation fails, show the first error message
