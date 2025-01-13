@@ -1,22 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRegisterMutation } from '../hooks/useRegister'; 
 import { RegisterRequest } from '../types/registerTypes';
 import { registerValidation } from '../validation/registerValidation';
 import { z } from 'zod';
+import useThemeStore from '../store/themeStore';
+
 
 
 const RegisterForm: React.FC = () => {
-
+  const { theme } = useThemeStore(); 
   const [formData, setFormData] = useState<RegisterRequest>({
     username: '',
     email: '',
     password: '',
     terms: false,
+    theme: theme,
   });
 
  
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
   const { mutate, isError, isSuccess, error } = useRegisterMutation();
+
+
+    // to update theme in formData when it changes in Zustand store
+    useEffect(() => {
+      setFormData((prevData) => ({
+        ...prevData,
+        theme: theme, 
+      }));
+    }, [theme]);
+
+
 
   // Handle input change 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -32,6 +46,8 @@ const RegisterForm: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormErrors({});   // Clear previous errors
+    console.log(formData);
+
 
     // Validate form using Zod
     try {
@@ -44,6 +60,7 @@ const RegisterForm: React.FC = () => {
             email: '',
             password: '',
             terms: false,
+            theme: theme,
           });
         },
       });
@@ -57,6 +74,10 @@ const RegisterForm: React.FC = () => {
       }
     }
   };
+
+
+  const formStyles =
+  theme === 'light' ? 'bg-white text-black' : 'bg-gray-800 text-white'; 
 
 
   return (
@@ -121,7 +142,6 @@ const RegisterForm: React.FC = () => {
           <button
             type="submit"
             className="w-full py-3 bg-indigo-500 text-white font-semibold rounded-md hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            // disabled={!formData.terms}
           >
             Register
           </button>
