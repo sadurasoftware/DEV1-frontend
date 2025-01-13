@@ -3,12 +3,17 @@ export type LoginUser = {
     password: string;
 }
 
+
+
 export type LoggedInUser = {
-    data: string;  // The token a string
-    user: LoginUser;    // The user object
-    message: string; // Success message
+    token: string;  // The token a string
+    username: string;    // The user object
 }
 
 export type ErrorResponse = {
     message:string;
   }
+
+export type loggedout = {
+    message:string;
+}

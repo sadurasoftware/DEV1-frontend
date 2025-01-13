@@ -10,7 +10,7 @@ export const useLoginMutation = () => {
     mutationFn: (user: LoginUser) => loginUser(user), 
     onSuccess: (data) => {
       console.log("User Logged in:", data);
-    //   localStorage.setItem("token", data.data); 
+      // localStorage.setItem("token", data.token); 
     },
     onError: (error: AxiosError<ErrorResponse>) => {
       if (axios.isAxiosError(error)) {
