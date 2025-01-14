@@ -11,7 +11,7 @@ export const useRegisterMutation = () => {
     onSuccess: (data: RegisterResponse) => {
     
       console.log("User Registered:", data);
-      localStorage.setItem("token", data.message);  
+      // localStorage.setItem("token", data.message);  
     },
     onError: (error: AxiosError<ErrorResponse>) => {
       if (axios.isAxiosError(error)) {
