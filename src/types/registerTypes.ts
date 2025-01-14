@@ -3,6 +3,7 @@ export type RegisterRequest = {
     email: string;
     password: string;
     terms: boolean;
+    theme: string;
   };
   
   export type RegisterResponse = {
