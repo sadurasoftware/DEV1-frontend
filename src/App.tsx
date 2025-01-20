@@ -1,5 +1,5 @@
 import './App.css';
-// import RegisterForm from './components/RegisterForm';
+import RegisterForm from './components/RegisterForm';
 import { Dashboard } from './pages/Dashboard';
 import { Login } from './pages/Login';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
