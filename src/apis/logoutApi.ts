@@ -2,12 +2,12 @@ import axios, { AxiosResponse } from "axios";
 import { loggedout } from "@/types/loginType";
 
 
-export const logout = async (token: string, username: string): Promise<loggedout> => {
+export const logout = async (): Promise<loggedout> => {
   try {
     const res: AxiosResponse = await axios.post("http://localhost:5000/api/auth/logout", {
-      token: token,
-      username: username,
-    });
+      // token: token,
+      // username: username,
+    }, { withCredentials: true });
 
     if (!res) {
       throw new Error("Error fetching API");
