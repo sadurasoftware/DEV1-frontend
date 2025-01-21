@@ -1,15 +1,22 @@
 import { useEffect, useState } from "react";
 import { LoginUser } from "@/types/loginType";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useLoginMutation } from "@/hooks/useLoginMutation";
 import { loginschema } from "@/validation/validator";
 import { z } from "zod";
+import {useLoginInfoStore} from "../store/useLoginInfoStore"
 
 export const Login = () => {
+
+
+    // Get from store
+  const setLoginInfo = useLoginInfoStore((state) => state.setLoginInfo)
 
     const [user, setUser] = useState<LoginUser>({ email: "", password: "" });
     const [error, setError] = useState<string>("");
     const [success, setSuccess] = useState<string>("");
+
+    const navigate = useNavigate()
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
         const { name, value } = e.target;
@@ -28,9 +35,12 @@ export const Login = () => {
 
     useEffect(() => {
         if (isSuccess && data) {
-            setSuccess(data.message);
+            setSuccess(data.username);
+            //sending store data
+            setLoginInfo(data?.token, data?.username)
             setError("")
             setUser({ email: "", password: "" })
+            navigate("/dashboard")
         }
 
         if (isError && mutationError) {
@@ -47,7 +57,7 @@ export const Login = () => {
             loginschema.parse(user);
 
             mutate(user);
-           
+          
         } catch (err) {
             if (err instanceof z.ZodError) {
                 // If validation fails, show the first error message
@@ -106,7 +116,7 @@ export const Login = () => {
                 >
                     Sign up? Register here
                 </Link>
-                {data?.user && <h3>Welcome back!!... {data.user.email}</h3>}
+                {/* {data?.username && <h3>Welcome back!!... {data.username}</h3>} */}
 
             </div>
         </div>
