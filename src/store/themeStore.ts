@@ -3,6 +3,7 @@ import {create} from 'zustand';
 type ThemeState = {
     theme: string;
     toggleTheme: () => void;
+    setTheme:(theme: string) => void;
   };
   
   const useThemeStore = create<ThemeState>((set) => ({
@@ -11,6 +12,7 @@ type ThemeState = {
       const newTheme = state.theme === 'light' ? 'dark' : 'light';
       return { theme: newTheme };
     }),
+    setTheme:(theme) => set({theme}),
   }));
 
 
