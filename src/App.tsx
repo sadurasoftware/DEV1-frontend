@@ -1,13 +1,9 @@
 import './App.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import RegisterForm from './pages/RegisterForm';
-
 import { Dashboard } from './pages/Dashboard';
 import { Login } from './pages/Login';
 import { Navbar } from './pages/Navbar';
-
-import useThemeStore from './store/themeStore';
-import { useEffect } from 'react';
 
 const App: React.FC = () => {
 
@@ -17,9 +13,7 @@ const App: React.FC = () => {
     document.body.className = theme; // Apply 'light' or 'dark' theme to body
   }, [theme]);
 
-
   return (
-    
       <Router>
          <Navbar/>   
          <div>
@@ -38,16 +32,12 @@ const App: React.FC = () => {
           </button>
         </div>
         <Routes>
-          <Route path="/" element={<h1 className="flex justify-center">Dev Frontend</h1>} />
-          <Route path='/login' element={<Login />} />
+          <Route path="/" element={<h1 className="flex justify-center">Dev Frontend</h1>}/>
+          <Route path='/login' element={<Login/>}/>
           <Route path="/register" element={<RegisterForm />} />
           <Route path='/dashboard' element={<Dashboard/>}/>
         </Routes>
-         </div>
       </Router>
-  
   );
 };
-
-
 export default App;

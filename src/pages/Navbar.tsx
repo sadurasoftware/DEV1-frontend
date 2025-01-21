@@ -1,28 +1,21 @@
 import { Link, useNavigate } from "react-router-dom";
 import { logout } from "@/apis/logoutApi"; // Import your logout function
-import { useLoginInfoStore } from "../store/useLoginInfoStore"; // Import the store hook
+
 
 export const Navbar = () => {
   const navigate = useNavigate();
 
-  // Get token and username from the store
-  const token = useLoginInfoStore((state) => state.token);
-  const username = useLoginInfoStore((state) => state.username);
-
   const handleLogout = async () => {
-    if (token && username) {
+    
       try {
         
-        await logout(token, username);
+        await logout();
         navigate("/login");
       } catch (error) {
         console.error("Logout failed:", error);
         
       }
-    } else {
-      console.error("Token or username is null, cannot logout.");
-      
-    }
+   
   };
 
   return (
