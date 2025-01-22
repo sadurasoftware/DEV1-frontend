@@ -8,6 +8,7 @@ export type RegisterRequest = {
   
   export type RegisterResponse = {
     message: string;
+    theme?: string;
     success: boolean;
   };
   

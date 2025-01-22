@@ -8,6 +8,7 @@ export type LoginUser = {
 export type LoggedInUser = {
     token: string;  // The token a string
     username: string;    // The user object
+    theme?: string;
 }
 
 export type ErrorResponse = {
