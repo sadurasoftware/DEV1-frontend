@@ -118,6 +118,12 @@ export const Login = () => {
                 </Link>
                 {/* {data?.username && <h3>Welcome back!!... {data.username}</h3>} */}
 
+                <button
+                onClick={() => navigate("/forget-password")}
+                className="w-full mt-4 py-3 bg-gray-300 text-gray-700 font-semibold rounded-md hover:bg-gray-400 transition"
+                >
+                Forgot Password
+                </button>
             </div>
         </div>
     )

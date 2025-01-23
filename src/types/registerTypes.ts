@@ -1,17 +1,15 @@
-export type RegisterRequest = {
-    username: string;
-    email: string;
-    password: string;
-    terms: boolean;
-    theme: string;
-  };
-  
-  export type RegisterResponse = {
-    message: string;
-    theme?: string;
-    success: boolean;
-  };
-  
-  export type ErrorResponse= {
-    message: string;
-  }
+export type User = {
+  id: number;
+  username: string;
+  email: string;
+  password: string;
+};
+
+export type ApiResponse = {
+  message: string;
+  user: User;
+};
+
+export type ErrorResponse= {
+     message: string;
+     }

@@ -6,6 +6,8 @@ import { Login } from './pages/Login';
 import { Navbar } from './pages/Navbar';
 import { useEffect } from 'react';
 import useThemeStore from './store/themeStore';
+import { ForgotPassword } from './pages/Forgetpassword';
+
 
 
 const App: React.FC = () => {
@@ -45,6 +47,7 @@ const App: React.FC = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<RegisterForm />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/forget-password" element={<ForgotPassword />} />
         </Routes>
       </div>
     </Router>
