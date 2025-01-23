@@ -1,17 +1,15 @@
 import axios, { AxiosResponse } from "axios";
 import { loggedout } from "@/types/loginType";
-import { useLoginInfoStore } from "@/store/useLoginInfoStore";
+import { logoutProps } from "@/types/loginType";
 
-export const logout = async (): Promise<loggedout> => {
-  
-  const { token } = useLoginInfoStore(); 
-  const clearLoginInfo = useLoginInfoStore((state) => state.clearLoginInfo)
+export const logout = async ({ token, clearLoginInfo }: logoutProps): Promise<loggedout> => {
+
   clearLoginInfo()
 
   try {
-    const res: AxiosResponse = await axios.post("http://localhost:5000/api/auth/logout", {
+    const res: AxiosResponse = await axios.post("http://localhost:3000/api/auth/logout", {
       token: token,
-      // username: username,
+      
     }, { withCredentials: true });
 
     if (!res) {

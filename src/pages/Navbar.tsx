@@ -4,13 +4,18 @@ import { useLoginInfoStore } from '../store/useLoginInfoStore';
 
 
 export const Navbar: React.FC = () => {
-  const { token } = useLoginInfoStore();  
+  const { token, clearLoginInfo } = useLoginInfoStore(); 
+  console.log(token)
+
+
   const navigate = useNavigate();
 
-  const handleLogout = async () => {
+   const handleLogout = async () => {
     try {
-      await logout(); 
-      navigate("/login");
+      if (token) {
+        await logout({ token, clearLoginInfo }); 
+        navigate("/login");
+      }
     } catch (error) {
       console.error("Logout failed:", error);
     }
