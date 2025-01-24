@@ -14,7 +14,7 @@ export type User = {
   };
 
 export type LoggedInUser = {
-    token: string;  // The token a string
+    token: string;
     user: User;
 }
 

@@ -5,9 +5,6 @@ import { useLoginInfoStore } from '../store/useLoginInfoStore';
 
 export const Navbar: React.FC = () => {
   const { token, clearLoginInfo } = useLoginInfoStore(); 
-  console.log(token)
-
-
   const navigate = useNavigate();
 
    const handleLogout = async () => {
