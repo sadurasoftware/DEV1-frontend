@@ -10,7 +10,7 @@ export const logout = async ({ token, clearLoginInfo }: logoutProps): Promise<lo
     const res: AxiosResponse = await axios.post("http://localhost:3000/api/auth/logout", {
       token: token,
       
-    }, { withCredentials: true });
+    });
 
     if (!res) {
       throw new Error("Error fetching API");

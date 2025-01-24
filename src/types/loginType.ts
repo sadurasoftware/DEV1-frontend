@@ -14,9 +14,7 @@ export type User = {
   };
 
 export type LoggedInUser = {
-    token: string;  // The token a string
-    username: string;    // The user object
-    theme?: string;
+    token: string;  
     user: User;
 }
 

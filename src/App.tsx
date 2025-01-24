@@ -4,8 +4,6 @@ import RegisterForm from './pages/RegisterForm';
 import { Dashboard } from './pages/Dashboard';
 import { Login } from './pages/Login';
 import { useLoginInfoStore } from './store/useLoginInfoStore';
-import useThemeStore from './store/themeStore';
-import { useEffect } from 'react';
 import {AuthenticatedLayout} from './layouts/AuthentictedLayout';
 import {UnauthenticatedLayout} from './layouts/MainLayout';
 import { Navbar } from './pages/Navbar';
@@ -48,10 +46,8 @@ const App: React.FC = () => {
           <AuthenticatedLayout>
             <Routes>
               <Route path="/" element={<h1 className="flex justify-center">Dev Frontend</h1>} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<RegisterForm />} />
               <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/forget-password" element={<ForgotPassword />} />
+              
             </Routes>
           </AuthenticatedLayout>
         ) : (
@@ -59,6 +55,7 @@ const App: React.FC = () => {
             <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<RegisterForm />} />
+              <Route path="/forget-password" element={<ForgotPassword/>}/>
               <Route path="/" element={<h1 className="flex justify-center">Dev Frontend</h1>} />
             </Routes>
           </UnauthenticatedLayout>
