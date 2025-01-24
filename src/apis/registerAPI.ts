@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { RegisterRequest, RegisterResponse } from '../types/registerTypes';
+import { User, ApiResponse } from '../types/registerTypes';
 
-export const registerUser = async (data: RegisterRequest): Promise<RegisterResponse> => {
-  const response = await axios.post<RegisterResponse>('http://localhost:5000/api/register', data);
+export const registerUser = async (data: User): Promise<ApiResponse> => {
+  const response = await axios.post<ApiResponse>('http://localhost:3000/api/auth/register', data);
   return response.data;
 };

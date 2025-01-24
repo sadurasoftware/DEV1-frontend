@@ -1,17 +1,20 @@
 import { useMutation } from '@tanstack/react-query';
-import { RegisterRequest, RegisterResponse, ErrorResponse } from '../types/registerTypes';
+import { User, ApiResponse, ErrorResponse } from '../types/registerTypes';
 import { registerUser } from '../apis/registerAPI';
 import axios, { AxiosError } from 'axios';
+// import useThemeStore from '../store/themeStore';
 
 
 // Define the hook for register mutation
 export const useRegisterMutation = () => {
+  // const { setTheme } = useThemeStore();
   const { mutate, isPending, isError, isSuccess, error, data } = useMutation({
-    mutationFn: (user: RegisterRequest) => registerUser(user), 
-    onSuccess: (data: RegisterResponse) => {
-    
+    mutationFn: (user: User) => registerUser(user), 
+    onSuccess: (data: ApiResponse) => {
       console.log("User Registered:", data);
-      // localStorage.setItem("token", data.message);  
+       
+      // const userTheme = data.theme || 'light';
+      // setTheme(userTheme);
     },
     onError: (error: AxiosError<ErrorResponse>) => {
       if (axios.isAxiosError(error)) {
