@@ -3,12 +3,21 @@ export type LoginUser = {
     password: string;
 }
 
-
+export type User = {
+    id: number;
+    username: string;
+    email: string;  
+    password: string;
+    isVerified: boolean;
+    createdAt:string;
+    updatedAt:string;
+  };
 
 export type LoggedInUser = {
     token: string;  // The token a string
     username: string;    // The user object
     theme?: string;
+    user: User;
 }
 
 export type ErrorResponse = {
@@ -18,3 +27,8 @@ export type ErrorResponse = {
 export type loggedout = {
     message:string;
 }
+
+export type  logoutProps = {
+    token: string | null;
+    clearLoginInfo: () => void;
+  }
