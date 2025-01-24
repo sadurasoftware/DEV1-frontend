@@ -3,7 +3,7 @@ import { LoginUser, LoggedInUser } from "@/types/loginType";
 
 // The mutation function that triggers the login request
 export const loginUser = async (user: LoginUser): Promise<LoggedInUser> => {
-  const res: AxiosResponse = await axios.post("http://localhost:5000/api/auth/login", {
+  const res: AxiosResponse = await axios.post("http://localhost:3000/api/auth/login", {
     email: user.email,
     password: user.password,
   });

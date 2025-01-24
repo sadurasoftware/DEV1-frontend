@@ -35,9 +35,9 @@ export const Login = () => {
 
     useEffect(() => {
         if (isSuccess && data) {
-            setSuccess(data.username);
+            setSuccess(data.user.username);
             //sending store data
-            setLoginInfo(data?.token, data?.username)
+            setLoginInfo(data?.token, data?.user)
             setError("")
             setUser({ email: "", password: "" })
             navigate("/dashboard")

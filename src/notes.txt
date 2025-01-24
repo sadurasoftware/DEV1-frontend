@@ -6,8 +6,8 @@ import { Login } from './pages/Login';
 import { useLoginInfoStore } from './store/useLoginInfoStore';
 import useThemeStore from './store/themeStore';
 import { useEffect } from 'react';
-import {AuthenticatedLayout} from './layouts/AuthentictedLayout';
-import {UnauthenticatedLayout} from './layouts/MainLayout';
+import AuthenticatedLayout from './layouts/AuthentictedLayout';
+import UnauthenticatedLayout from './layouts/MainLayout';
 import { Navbar } from './pages/Navbar';
 
 const App: React.FC = () => {
