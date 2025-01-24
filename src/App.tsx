@@ -4,50 +4,37 @@ import RegisterForm from './pages/RegisterForm';
 import { Dashboard } from './pages/Dashboard';
 import { Login } from './pages/Login';
 import { useLoginInfoStore } from './store/useLoginInfoStore';
+
+// import  useThemeStore from './store/themeStore';
+import { useEffect } from 'react';
 import {AuthenticatedLayout} from './layouts/AuthentictedLayout';
 import {UnauthenticatedLayout} from './layouts/MainLayout';
 import { Navbar } from './pages/Navbar';
-import { useEffect } from 'react';
-import useThemeStore from './store/themeStore';
 import { ForgotPassword } from './pages/Forgetpassword';
+import { ResetPassword } from './pages/ResetPassword';
+// import Theme from './pages/Theme';
 
 const App: React.FC = () => {
-  const { theme, toggleTheme, setTheme } = useThemeStore();
+  // const { theme } = useThemeStore();
   const { token } = useLoginInfoStore(); 
-  const handleSetTheme = (newTheme: string) => {
-    setTheme(newTheme);
-  };
+  
 
-  useEffect(() => {
-    document.body.className = theme ; 
-  }, [theme]);
+  // useEffect(() => {
+  //   document.body.className = theme ; 
+  // }, [theme]);
 
   
   return (
     <Router>
       <div>
         <Navbar/>
-        <div className="flex justify-end p-4 space-x-4">
-          <button
-            onClick={() => handleSetTheme('light')}
-            className="px-4 py-2 bg-indigo-500 text-white rounded-md"
-          >
-            Light mode
-          </button>
-          <button
-            onClick={() => handleSetTheme('dark')}
-            className="px-4 py-2 bg-indigo-500 text-white rounded-md"
-          >
-            Dark mode
-          </button>
-        </div>
+        {/* <Theme/> */}
         
         {token ? (         
           <AuthenticatedLayout>
             <Routes>
               <Route path="/" element={<h1 className="flex justify-center">Dev Frontend</h1>} />
               <Route path="/dashboard" element={<Dashboard />} />
-              
             </Routes>
           </AuthenticatedLayout>
         ) : (
@@ -57,6 +44,8 @@ const App: React.FC = () => {
               <Route path="/register" element={<RegisterForm />} />
               <Route path="/forget-password" element={<ForgotPassword/>}/>
               <Route path="/" element={<h1 className="flex justify-center">Dev Frontend</h1>} />
+              <Route path="/forget-password" element={<ForgotPassword />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
             </Routes>
           </UnauthenticatedLayout>
         )}
