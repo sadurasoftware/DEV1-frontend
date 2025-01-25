@@ -4,7 +4,7 @@ import { User } from '../types/registerTypes';
 import { registerValidation } from '../validation/registerValidation';
 import { z } from 'zod';
 import useThemeStore from '../store/themeStore';
-
+import { PasswordType } from '../types/registerTypes';
 
 const RegisterForm: React.FC = () => {
   const { theme } = useThemeStore(); 
@@ -14,6 +14,24 @@ const RegisterForm: React.FC = () => {
     email: '',
     password: '',
   });
+
+  const [passwordCondition, setPasswordCondition] = useState<PasswordType>({
+    minLength:false,
+    maxLength: false,
+    hasUpperCase: false,
+    hasSpecialChar: false,
+    hasNumber:false
+  })
+
+  const validatedPassword = (password:string) =>{
+    setPasswordCondition({
+      minLength : password.length >= 6,
+      maxLength : password.length <= 20,
+      hasUpperCase : /[A-Z]/.test(password),
+      hasNumber : /[0-9]/.test(password),
+      hasSpecialChar : /[^A-Za-z0-9]/.test(password)
+    })
+  }
 
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
   const [apiError, setApiError] = useState<string | null>(null);
@@ -29,7 +47,12 @@ const RegisterForm: React.FC = () => {
 
   // Handle input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+    const { name, value } = e.target; 
+      if(name == 'password')
+      {
+        validatedPassword(value)
+      }
+
     setFormData({
       ...formData,
       [name]: value,
@@ -121,7 +144,26 @@ const RegisterForm: React.FC = () => {
             onChange={handleChange}
             className={`w-full p-3 border ${inputStyles} rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500`}
           />
-          {formErrors.password && <p className="text-red-500 text-sm">{formErrors.password}</p>}
+          {formErrors.password && <p style={{ color: 'red' }}>{formErrors.password}</p>}
+            
+            {/* <p>Password must be 6-20 characters long, include at least one uppercase letter, one number, and one special character.</p> */}
+            
+            <p style={{ color: passwordCondition.minLength ? 'green' : 'red' }}>
+              {passwordCondition.minLength ? '✔' : '❌'} At least 6 characters
+            </p>
+            <p style={{ color: passwordCondition.maxLength ? 'green' : 'red' }}>
+              {passwordCondition.maxLength ? '✔' : '❌'} Maximum 20 characters
+            </p>
+            <p style={{ color: passwordCondition.hasUpperCase ? 'green' : 'red' }}>
+              {passwordCondition.hasUpperCase ? '✔' : '❌'} Contains at least one uppercase letter
+            </p>
+            <p style={{ color: passwordCondition.hasNumber ? 'green' : 'red' }}>
+              {passwordCondition.hasNumber ? '✔' : '❌'} Contains at least one number
+            </p>
+            <p style={{ color: passwordCondition.hasSpecialChar ? 'green' : 'red' }}>
+              {passwordCondition.hasSpecialChar ? '✔' : '❌'} Contains at least one special character
+            </p>
+          
         </div>
 
         <div className="text-center mt-4">
