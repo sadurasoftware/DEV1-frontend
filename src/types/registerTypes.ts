@@ -12,4 +12,12 @@ export type ApiResponse = {
 
 export type ErrorResponse= {
      message: string;
-     }
+}
+
+export type PasswordType = {
+  minLength:boolean,
+    maxLength: boolean,
+    hasUpperCase: boolean,
+    hasSpecialChar: boolean,
+    hasNumber:boolean
+}
