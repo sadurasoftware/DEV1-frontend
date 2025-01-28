@@ -4,15 +4,16 @@ import RegisterForm from './pages/RegisterForm';
 import { Dashboard } from './pages/Dashboard';
 import { Login } from './pages/Login';
 import { useLoginInfoStore } from './store/useLoginInfoStore';
-
-// import  useThemeStore from './store/themeStore';
-import { useEffect } from 'react';
 import {AuthenticatedLayout} from './layouts/AuthentictedLayout';
 import {UnauthenticatedLayout} from './layouts/MainLayout';
 import { Navbar } from './pages/Navbar';
 import { ForgotPassword } from './pages/Forgetpassword';
 import { ResetPassword } from './pages/ResetPassword';
+import AdminPermission from './pages/AdminPermission';
+import { Settings } from './pages/Settings';
 // import Theme from './pages/Theme';
+// import  useThemeStore from './store/themeStore';
+// import { useEffect } from 'react';
 
 const App: React.FC = () => {
   // const { theme } = useThemeStore();
@@ -44,8 +45,9 @@ const App: React.FC = () => {
               <Route path="/register" element={<RegisterForm />} />
               <Route path="/forget-password" element={<ForgotPassword/>}/>
               <Route path="/" element={<h1 className="flex justify-center">Dev Frontend</h1>} />
-              <Route path="/forget-password" element={<ForgotPassword />} />
               <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/adminpermission" element={<AdminPermission />} />
             </Routes>
           </UnauthenticatedLayout>
         )}
