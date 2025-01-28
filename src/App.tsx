@@ -35,6 +35,7 @@ const App: React.FC = () => {
             <Routes>
               <Route path="/" element={<h1 className="flex justify-center">Dev Frontend</h1>} />
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/register" element={<RegisterForm />} />
             </Routes>
           </AuthenticatedLayout>
         ) : (
