@@ -5,14 +5,17 @@ import { registerValidation } from '../validation/registerValidation';
 import { z } from 'zod';
 import useThemeStore from '../store/themeStore';
 import { PasswordType } from '../types/registerTypes';
+import { useLoginInfoStore } from '@/store/useLoginInfoStore';
 
 const RegisterForm: React.FC = () => {
   const { theme } = useThemeStore(); 
+  const { token, user } = useLoginInfoStore();
   const [formData, setFormData] = useState<User>({
     id: 0, 
     username: '',
     email: '',
     password: '',
+    role:'user',
   });
 
   const [passwordCondition, setPasswordCondition] = useState<PasswordType>({
@@ -37,6 +40,7 @@ const RegisterForm: React.FC = () => {
   const [apiError, setApiError] = useState<string | null>(null);
   const { mutate, isError, isSuccess, error } = useRegisterMutation();
 
+  const isSuperAdmin = user?.roleName === 'superadmin';
  
   useEffect(() => {
     setFormData((prevData) => ({
@@ -46,7 +50,7 @@ const RegisterForm: React.FC = () => {
 
 
   // Handle input changes
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target; 
       if(name == 'password')
       {
@@ -67,6 +71,12 @@ const RegisterForm: React.FC = () => {
     setFormErrors({}); // Clear previous errors
     setApiError(null); 
 
+    if (!isSuperAdmin) {
+      setFormData(prevData => ({
+        ...prevData,
+        role: 'user' 
+      }));
+    }
 
     // Validate form using Zod
     try {
@@ -79,6 +89,7 @@ const RegisterForm: React.FC = () => {
             username: '',
             email: '',
             password: '',
+            role:'user'
           });
         },
         onError: (err) => {
@@ -165,6 +176,24 @@ const RegisterForm: React.FC = () => {
             </p>
           
         </div>
+
+        {isSuperAdmin &&  (
+          <div>
+            <label htmlFor="role" className={labelStyles}>Role</label>
+            <select
+              id="role"
+              name="role"
+              value={formData.role}
+              onChange={handleChange}
+              className={`w-full p-3 border ${inputStyles} rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500`}
+            >
+              <option value="superadmin">Super Admin</option>
+              <option value="admin">Admin</option>
+              <option value="user">User</option>
+            </select>
+            {formErrors.role && <p className="text-red-500 text-sm">{formErrors.role}</p>}
+          </div>
+        )}
 
         <div className="text-center mt-4">
           <button
