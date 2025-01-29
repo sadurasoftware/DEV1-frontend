@@ -40,7 +40,7 @@ const RegisterForm: React.FC = () => {
   const [apiError, setApiError] = useState<string | null>(null);
   const { mutate, isError, isSuccess, error } = useRegisterMutation();
 
-  const isSuperAdmin = user?.roleName === 'superadmin';
+  const isSuperAdmin = user?.roleId === 1;
  
   useEffect(() => {
     setFormData((prevData) => ({

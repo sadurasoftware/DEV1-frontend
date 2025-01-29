@@ -12,6 +12,7 @@ import {UnauthenticatedLayout} from './layouts/MainLayout';
 import { Navbar } from './pages/Navbar';
 import { ForgotPassword } from './pages/Forgetpassword';
 import { ResetPassword } from './pages/ResetPassword';
+import { SuperAdminDashboard } from './pages/SuperAdminDashboard';
 // import Theme from './pages/Theme';
 
 const App: React.FC = () => {
@@ -35,6 +36,7 @@ const App: React.FC = () => {
             <Routes>
               <Route path="/" element={<h1 className="flex justify-center">Dev Frontend</h1>} />
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route path='/super-admin' element={<SuperAdminDashboard/>}/>
               <Route path="/register" element={<RegisterForm />} />
             </Routes>
           </AuthenticatedLayout>
