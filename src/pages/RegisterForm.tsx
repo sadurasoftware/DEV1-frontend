@@ -1,47 +1,51 @@
 import React, { useState, useEffect } from 'react';
-import { useRegisterMutation } from '../hooks/useRegister'; 
+import { useRegisterMutation } from '../hooks/useRegister';
 import { User } from '../types/registerTypes';
 import { registerValidation } from '../validation/registerValidation';
 import { z } from 'zod';
 import useThemeStore from '../store/themeStore';
 import { PasswordType } from '../types/registerTypes';
 import { useLoginInfoStore } from '@/store/useLoginInfoStore';
+import { useFetchRoles } from '../hooks/useFetchRoles';
+import { roleType } from '@/types/rolePermissionTypes';
 
 const RegisterForm: React.FC = () => {
-  const { theme } = useThemeStore(); 
+  const { theme } = useThemeStore();
   const { token, user } = useLoginInfoStore();
   const [formData, setFormData] = useState<User>({
-    id: 0, 
+    id: 0,
     username: '',
     email: '',
     password: '',
-    role:'user',
+    role: 'user',
   });
 
   const [passwordCondition, setPasswordCondition] = useState<PasswordType>({
-    minLength:false,
+    minLength: false,
     maxLength: false,
     hasUpperCase: false,
     hasSpecialChar: false,
-    hasNumber:false
+    hasNumber: false
   })
 
-  const validatedPassword = (password:string) =>{
+  const validatedPassword = (password: string) => {
     setPasswordCondition({
-      minLength : password.length >= 6,
-      maxLength : password.length <= 20,
-      hasUpperCase : /[A-Z]/.test(password),
-      hasNumber : /[0-9]/.test(password),
-      hasSpecialChar : /[^A-Za-z0-9]/.test(password)
+      minLength: password.length >= 6,
+      maxLength: password.length <= 20,
+      hasUpperCase: /[A-Z]/.test(password),
+      hasNumber: /[0-9]/.test(password),
+      hasSpecialChar: /[^A-Za-z0-9]/.test(password)
     })
   }
 
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
   const [apiError, setApiError] = useState<string | null>(null);
   const { mutate, isError, isSuccess } = useRegisterMutation();
+  const { rolesLoading, rolesData, isRolesError, rolesError } = useFetchRoles();
+  const { roles } = rolesData || {};
 
   const isSuperAdmin = user?.roleId === 1;
- 
+
   useEffect(() => {
     setFormData((prevData) => ({
       ...prevData,
@@ -51,36 +55,35 @@ const RegisterForm: React.FC = () => {
 
   // Handle input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target; 
-      if(name == 'password')
-      {
-        validatedPassword(value)
-      }
+    const { name, value } = e.target;
+    if (name == 'password') {
+      validatedPassword(value)
+    }
 
     setFormData({
       ...formData,
       [name]: value,
     });
-    setFormErrors({}); 
-    setApiError(null); 
+    setFormErrors({});
+    setApiError(null);
   };
 
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormErrors({}); // Clear previous errors
-    setApiError(null); 
+    setApiError(null);
 
     if (!isSuperAdmin) {
       setFormData(prevData => ({
         ...prevData,
-        role: 'user' 
+        role: 'user'
       }));
     }
 
     // Validate form using Zod
     try {
-      registerValidation.parse(formData); 
+      registerValidation.parse(formData);
       mutate(formData, {
         onSuccess: () => {
           // Reset form data on success
@@ -89,12 +92,12 @@ const RegisterForm: React.FC = () => {
             username: '',
             email: '',
             password: '',
-            role:'user'
+            role: 'user'
           });
         },
         onError: (err) => {
           if (err && err.response && err.response.data) {
-            setApiError(err.response.data.message); 
+            setApiError(err.response.data.message);
           }
         },
       });
@@ -156,44 +159,50 @@ const RegisterForm: React.FC = () => {
             className={`w-full p-3 border ${inputStyles} rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500`}
           />
           {formErrors.password && <p style={{ color: 'red' }}>{formErrors.password}</p>}
-            
-            {/* <p>Password must be 6-20 characters long, include at least one uppercase letter, one number, and one special character.</p> */}
-            
-            <p style={{ color: passwordCondition.minLength ? 'green' : 'red' }}>
-              {passwordCondition.minLength ? '✔' : '❌'} At least 6 characters
-            </p>
-            <p style={{ color: passwordCondition.maxLength ? 'green' : 'red' }}>
-              {passwordCondition.maxLength ? '✔' : '❌'} Maximum 20 characters
-            </p>
-            <p style={{ color: passwordCondition.hasUpperCase ? 'green' : 'red' }}>
-              {passwordCondition.hasUpperCase ? '✔' : '❌'} Contains at least one uppercase letter
-            </p>
-            <p style={{ color: passwordCondition.hasNumber ? 'green' : 'red' }}>
-              {passwordCondition.hasNumber ? '✔' : '❌'} Contains at least one number
-            </p>
-            <p style={{ color: passwordCondition.hasSpecialChar ? 'green' : 'red' }}>
-              {passwordCondition.hasSpecialChar ? '✔' : '❌'} Contains at least one special character
-            </p>
-          
+
+          {/* <p>Password must be 6-20 characters long, include at least one uppercase letter, one number, and one special character.</p> */}
+
+          <p style={{ color: passwordCondition.minLength ? 'green' : 'red' }}>
+            {passwordCondition.minLength ? '✔' : '❌'} At least 6 characters
+          </p>
+          <p style={{ color: passwordCondition.maxLength ? 'green' : 'red' }}>
+            {passwordCondition.maxLength ? '✔' : '❌'} Maximum 20 characters
+          </p>
+          <p style={{ color: passwordCondition.hasUpperCase ? 'green' : 'red' }}>
+            {passwordCondition.hasUpperCase ? '✔' : '❌'} Contains at least one uppercase letter
+          </p>
+          <p style={{ color: passwordCondition.hasNumber ? 'green' : 'red' }}>
+            {passwordCondition.hasNumber ? '✔' : '❌'} Contains at least one number
+          </p>
+          <p style={{ color: passwordCondition.hasSpecialChar ? 'green' : 'red' }}>
+            {passwordCondition.hasSpecialChar ? '✔' : '❌'} Contains at least one special character
+          </p>
+
         </div>
 
-        {isSuperAdmin &&  (
-          <div>
-            <label htmlFor="role" className={labelStyles}>Role</label>
-            <select
-              id="role"
-              name="role"
-              value={formData.role}
-              onChange={handleChange}
-              className={`w-full p-3 border ${inputStyles} rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500`}
-            >
-              <option value="superadmin">Super Admin</option>
-              <option value="admin">Admin</option>
-              <option value="user">User</option>
-            </select>
-            {formErrors.role && <p className="text-red-500 text-sm">{formErrors.role}</p>}
-          </div>
-        )}
+        {isSuperAdmin && (
+  <div>
+    <label htmlFor="role" className={labelStyles}>Role</label>
+    <select
+      id="role"
+      name="role"
+      value={formData.role}
+      onChange={handleChange}
+      className={`w-full p-3 border ${inputStyles} rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500`}
+    >
+     {!rolesLoading ? (
+        roles?.map((role:roleType, index:number) => (
+          <option key={index} value={role.name}>
+            {role.name} 
+          </option>
+        ))
+      ) : (
+        <option value="" disabled>Loading roles...</option>
+      )}
+    </select>
+    {formErrors.role && <p className="text-red-500 text-sm">{formErrors.role}</p>}
+  </div>
+)}
 
         <div className="text-center mt-4">
           <button

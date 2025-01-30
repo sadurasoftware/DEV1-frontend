@@ -2,7 +2,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { logout } from '@/apis/logoutApi';
 import { useLoginInfoStore } from '../store/useLoginInfoStore';
 
-
 export const Navbar: React.FC = () => {
   const { token, clearLoginInfo, user } = useLoginInfoStore();
   const navigate = useNavigate();
@@ -20,66 +19,73 @@ export const Navbar: React.FC = () => {
 
   return (
     <div className="bg-gray-500 p-4">
-      <div className="flex space-x-6 justify-end">
-        {token ? (
-          <div>
-            <button
-              className="text-white hover:text-blue-400 transition-colors mx-3"
-              onClick={handleLogout}
-            >
-              Logout
-            </button>
-            {
-              user?.roleId == 3 &&
-              <div>
+      <div className="max-w-7xl mx-auto flex justify-between items-center">
+        
+        <div className="text-white text-xl font-semibold">
+          
+          MyApp
+        </div>
+
+        
+        <div className="flex space-x-6">
+          {token ? (
+            <div className="flex space-x-6">
+              <button
+                className="text-white hover:text-blue-400 transition-colors"
+                onClick={handleLogout}
+              >
+                Logout
+              </button>
+
+              {user?.roleId === 3 && (
                 <Link
                   to="/dashboard"
-                  className="text-white hover:text-blue-400 transition-colors mx-3"
+                  className="text-white hover:text-blue-400 transition-colors"
                 >
                   Dashboard
                 </Link>
-              </div>
-            }
+              )}
 
-
-            {
-
-              user?.roleId === 1 &&
-              <div>
+              {user?.roleId === 1 && (
+                <div className="flex space-x-6">
                   <Link
-                  to="/register"
-                  className="text-white hover:text-blue-400 transition-colors mx-3"
-                >
-                  Add User
-                </Link>
-                <Link
-                  to="/super-admin"
-                  className="text-white hover:text-blue-400 transition-colors mx-3"
-                >
-                  Dashboard
-                </Link>
-              </div>
-                
-            }
-
-          </div>
-
-        ) : (
-          <>
-            <Link
-              to="/register"
-              className="text-white hover:text-blue-400 transition-colors mx-3"
-            >
-              Register
-            </Link>
-            <Link
-              to="/login"
-              className="text-white hover:text-blue-400 transition-colors mx-3"
-            >
-              Login
-            </Link>
-          </>
-        )}
+                    to="/register"
+                    className="text-white hover:text-blue-400 transition-colors"
+                  >
+                    Add User
+                  </Link>
+                  <Link
+                    to="/super-admin"
+                    className="text-white hover:text-blue-400 transition-colors"
+                  >
+                    Super Admin Dashboard
+                  </Link>
+                  <Link
+                    to="/settings"
+                    className="text-white hover:text-blue-400 transition-colors"
+                  >
+                    Settings
+                  </Link>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="flex space-x-6">
+              <Link
+                to="/register"
+                className="text-white hover:text-blue-400 transition-colors"
+              >
+                Register
+              </Link>
+              <Link
+                to="/login"
+                className="text-white hover:text-blue-400 transition-colors"
+              >
+                Login
+              </Link>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

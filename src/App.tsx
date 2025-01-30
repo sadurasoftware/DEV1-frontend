@@ -13,6 +13,8 @@ import { SuperAdminDashboard } from './pages/SuperAdminDashboard';
 import AdminPermission from './pages/AdminPermission';
 import { Settings } from './pages/Settings';
 import RolePage from './pages/Rolepage';
+import Admins from './pages/Admins';
+import Users from './pages/Users';
 
 // import Theme from './pages/Theme';
 // import  useThemeStore from './store/themeStore';
@@ -41,6 +43,11 @@ const App: React.FC = () => {
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path='/super-admin' element={<SuperAdminDashboard/>}/>
               <Route path="/register" element={<RegisterForm />} />
+              <Route path='/users' element={<Users/>}/>
+              <Route path="/admins" element={<Admins />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/adminpermission" element={<AdminPermission />} />
+              <Route path="/rolepage" element={<RolePage />} />
             </Routes>
           </AuthenticatedLayout>
         ) : (
@@ -50,11 +57,7 @@ const App: React.FC = () => {
               <Route path="/register" element={<RegisterForm />} />
               <Route path="/forget-password" element={<ForgotPassword/>}/>
               <Route path="/" element={<h1 className="flex justify-center">Dev Frontend</h1>} />
-              <Route path="/reset-password" element={<ResetPassword />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/adminpermission" element={<AdminPermission />} />
-              <Route path="/rolepage" element={<RolePage />} />
-             
+              <Route path="/reset-password" element={<ResetPassword />} />             
             </Routes>
           </UnauthenticatedLayout>
         )}

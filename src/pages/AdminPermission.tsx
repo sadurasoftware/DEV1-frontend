@@ -86,7 +86,7 @@ const AdminPermission: React.FC = () => {
       <h2 className="text-2xl font-semibold text-center mb-6">Create Permission Template</h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
+        {/* <div>
           <label htmlFor="name" className="block text-gray-700">Name</label>
           <input
             type="text"
@@ -109,7 +109,7 @@ const AdminPermission: React.FC = () => {
             className="w-full p-3 border border-gray-300 rounded-md"
             rows={3}
           />
-        </div>
+        </div> */}
 
         <div>
           <label htmlFor="applicableOn" className="block text-gray-700">Applicable On</label>

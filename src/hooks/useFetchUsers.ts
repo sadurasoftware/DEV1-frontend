@@ -4,10 +4,10 @@ import { fetchUsers } from '../apis/usersFetchApi';
 import { User } from '../types/loginType';
 
 export const useFetchUsers = () => {
-  const { isLoading, data, isError, error } = useQuery<User[], Error>({
+  const { isLoading:usersLoading, data:users, isError:isUsersError, error:usersError } = useQuery<User[], Error>({
     queryKey: ['users'],
     queryFn: fetchUsers,
   });
 
-  return { isLoading, data, isError, error };
+  return { usersLoading, users, isUsersError, usersError };
 };

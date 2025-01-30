@@ -9,7 +9,7 @@ export const registerValidation = z.object({
   .regex(/[A-Z]/, 'Password must contain atleast one Capital letter')
   .regex(/[0-9]/, 'Password must contain atleast one Number')
   .regex(/[^A-Za-z0-9]/, 'Password must contain at least one special character')
-  .min(6, 'Password must be at least 6 characters')
+  .min(8, 'Password must be at least 8 characters')
   .min(1,"Password is required")
   ,   
   // terms: z.boolean().refine(val => val === true, 'You must accept the terms and conditions'),

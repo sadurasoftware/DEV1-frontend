@@ -3,7 +3,7 @@ export type User = {
   username: string;
   email: string;
   password: string;
-  role:'superadmin' | 'admin' | 'user';
+  role:'superadmin' | 'admin' | 'user'| 'moderator'| 'viewer';
 };
 
 export type ApiResponse = {
