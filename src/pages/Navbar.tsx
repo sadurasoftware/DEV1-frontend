@@ -1,16 +1,16 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { logout } from '@/apis/logoutApi'; 
-import { useLoginInfoStore } from '../store/useLoginInfoStore'; 
+import { logout } from '@/apis/logoutApi';
+import { useLoginInfoStore } from '../store/useLoginInfoStore';
 
 
 export const Navbar: React.FC = () => {
-  const { token, clearLoginInfo, user } = useLoginInfoStore(); 
+  const { token, clearLoginInfo, user } = useLoginInfoStore();
   const navigate = useNavigate();
 
-   const handleLogout = async () => {
+  const handleLogout = async () => {
     try {
       if (token) {
-        await logout({ token, clearLoginInfo }); 
+        await logout({ token, clearLoginInfo });
         navigate("/login");
       }
     } catch (error) {
@@ -29,26 +29,41 @@ export const Navbar: React.FC = () => {
             >
               Logout
             </button>
-            <Link
-            to="/dashboard"
-            className="text-white hover:text-blue-400 transition-colors mx-3"
-          >
-            Dashboard
-          </Link>
+            {
+              user?.roleId == 3 &&
+              <div>
+                <Link
+                  to="/dashboard"
+                  className="text-white hover:text-blue-400 transition-colors mx-3"
+                >
+                  Dashboard
+                </Link>
+              </div>
+            }
 
-          {
-          
-          user?.roleName === 'superadmin' &&  
-          <Link
-          to="/register"
-          className="text-white hover:text-blue-400 transition-colors mx-3"
-        >
-          Add User
-        </Link>
-          }
+
+            {
+
+              user?.roleId === 1 &&
+              <div>
+                  <Link
+                  to="/register"
+                  className="text-white hover:text-blue-400 transition-colors mx-3"
+                >
+                  Add User
+                </Link>
+                <Link
+                  to="/super-admin"
+                  className="text-white hover:text-blue-400 transition-colors mx-3"
+                >
+                  Dashboard
+                </Link>
+              </div>
+                
+            }
 
           </div>
-            
+
         ) : (
           <>
             <Link

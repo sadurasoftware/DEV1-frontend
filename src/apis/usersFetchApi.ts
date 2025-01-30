@@ -1,0 +1,12 @@
+import axios from 'axios';
+import { User } from '../types/loginType';
+
+export const fetchUsers = async (): Promise<User[]> => {
+  try {
+    const response = await axios.get('http://localhost:3000/api/users');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    throw error;
+  }
+};

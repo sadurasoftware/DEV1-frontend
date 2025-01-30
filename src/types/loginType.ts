@@ -9,7 +9,7 @@ export type User = {
     email: string;  
     password: string;
     isVerified: boolean;
-    roleName: string;
+    roleId: number;
     createdAt:string;
     updatedAt:string;
   };

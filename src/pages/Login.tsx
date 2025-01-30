@@ -40,7 +40,15 @@ export const Login = () => {
             setLoginInfo(data?.token, data?.user)
             setError("")
             setUser({ email: "", password: "" })
-            navigate("/dashboard")
+            if(data?.user?.roleId === 1)
+            {
+                navigate("/super-admin")   
+            }
+            else
+            {
+                navigate("/dashboard")
+
+            }
         }
 
         if (isError && mutationError) {
