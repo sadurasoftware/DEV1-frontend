@@ -12,6 +12,8 @@ import { ResetPassword } from './pages/ResetPassword';
 import { SuperAdminDashboard } from './pages/SuperAdminDashboard';
 import AdminPermission from './pages/AdminPermission';
 import { Settings } from './pages/Settings';
+import RolePage from './pages/Rolepage';
+
 // import Theme from './pages/Theme';
 // import  useThemeStore from './store/themeStore';
 // import { useEffect } from 'react';
@@ -51,6 +53,8 @@ const App: React.FC = () => {
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/adminpermission" element={<AdminPermission />} />
+              <Route path="/rolepage" element={<RolePage />} />
+             
             </Routes>
           </UnauthenticatedLayout>
         )}

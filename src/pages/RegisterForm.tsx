@@ -38,7 +38,7 @@ const RegisterForm: React.FC = () => {
 
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
   const [apiError, setApiError] = useState<string | null>(null);
-  const { mutate, isError, isSuccess, error } = useRegisterMutation();
+  const { mutate, isError, isSuccess } = useRegisterMutation();
 
   const isSuperAdmin = user?.roleId === 1;
  
