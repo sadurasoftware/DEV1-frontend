@@ -44,9 +44,13 @@ export const Login = () => {
             {
                 navigate("/super-admin")   
             }
+            else if(data?.user?.roleId === 2)
+            {
+                navigate("/admindashboard")
+            }
             else
             {
-                navigate("/dashboard")
+                navigate("/userdashboard")
 
             }
         }
