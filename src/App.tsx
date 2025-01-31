@@ -15,6 +15,9 @@ import { Settings } from './pages/Settings';
 import RolePage from './pages/Rolepage';
 import Admins from './pages/Admins';
 import Users from './pages/Users';
+import { UserDashboard } from './pages/UserDashboard';
+import { EditUserProfile } from './pages/EditUserProfile';
+import { AdminDashboard } from './pages/AdminDashboard';
 
 // import Theme from './pages/Theme';
 // import  useThemeStore from './store/themeStore';
@@ -42,6 +45,9 @@ const App: React.FC = () => {
               <Route path="/" element={<h1 className="flex justify-center">Dev Frontend</h1>} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path='/super-admin' element={<SuperAdminDashboard/>}/>
+              <Route path='/userdashboard' element={<UserDashboard/>}/>
+              <Route path="/edit-profile/:userId" element={<EditUserProfile />} />
+              <Route path='/admindashboard' element={<AdminDashboard/>}/>
               <Route path="/register" element={<RegisterForm />} />
               <Route path='/users' element={<Users/>}/>
               <Route path="/admins" element={<Admins />} />
