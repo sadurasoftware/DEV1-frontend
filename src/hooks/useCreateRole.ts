@@ -1,12 +1,12 @@
 import { useMutation } from "@tanstack/react-query";
-import { addRole } from "@/apis/addRoleApi"; 
-import { roleType } from "@/types/rolePermissionTypes";
+import { addRole } from "@/apis/rolesApi"; 
+import { roleName } from "@/types/rolePermissionTypes";
 import axios, { AxiosError } from "axios";
 import { ErrorResponse } from "@/types/registerTypes";
 
 export const useCreateRole = () => {
   const { mutate, isPending, isError, isSuccess, error, data } = useMutation({
-    mutationFn: (role: roleType) => addRole(role), 
+    mutationFn: (role: roleName) => addRole(role), 
     onSuccess: (data) => {
       console.log("Role added:", data);
     },

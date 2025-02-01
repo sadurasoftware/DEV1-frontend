@@ -71,7 +71,7 @@ const RegisterForm: React.FC = () => {
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setFormErrors({}); // Clear previous errors
+    setFormErrors({}); 
     setApiError(null);
 
     if (!isSuperAdmin) {
