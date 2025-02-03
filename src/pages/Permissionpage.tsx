@@ -1,95 +1,164 @@
 import React, { useState } from 'react';
+import { useCreatePermission } from '../hooks/useCreatePermission';
+import { Link } from 'react-router-dom';
+import { useFetchPermissions } from '@/hooks/useFetchPermissions';
+import { useUpdatePermissionById } from '@/hooks/useUpdatePermissionById';
+import { useDeletePermissionById} from '@/hooks/useDeletePermissionById';
+import { permissionType } from '@/types/permissionsTypes';
+
 
 const Permissionpage: React.FC = () => {
-  const [permissions, setpermissions] = useState<any[]>([]);  
-  const [permissionsName, setPermissionsName] = useState<string>(''); 
-  const [editingPermissions, setEditingPermissions] = useState<any | null>(null); 
-  const [apiError, setApiError] = useState<string | null>(null); 
+  const [permissionName, setPermissionName] = useState<string>('');
+  const [permissionId, setPermissionId] = useState<number | null>(null);
 
- 
+  const { mutate, isPending, isError, isSuccess, error, data } = useCreatePermission();
+  const { permissionsLoading, permissionsData, isPermissionsError, permissionsError, refetch } = useFetchPermissions();
+  const { permission } = permissionsData || {};
+
+  const { mutate: updatePermission, updatePermissionPending, isPermissionUpdateError, updatePermissionError, updatePermissionSuccess } = useUpdatePermissionById();
+  const { deletePermission, deletePermissionPending } = useDeletePermissionById();
+
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPermissionsName(e.target.value);
+    setPermissionName(e.target.value);
   };
 
-  
-  const handleAddPermission = (e: React.FormEvent) => {
+
+  const handlePermissionSelect = (id: number) => {
+    setPermissionId(id);
+    const selectedPermission = permission?.find(perm => perm.id === id);
+    if (selectedPermission) {
+      setPermissionName(selectedPermission.name);
+    }
+  };
+
+
+
+  const permissionSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setApiError(null);
- 
-    setpermissions([...permissions, { id: permissions.length + 1, name: permissionsName }]);
-    setPermissionsName(''); 
+    try {
+      if (permissionName.trim()) {
+        if (permissionId) {
+
+          console.log(permissionId, permissionName)
+          updatePermission({ id: permissionId, name: permissionName }, {
+            onSuccess: () => {
+              refetch();
+            },
+          });
+        } else {
+
+          mutate({ name: permissionName }, {
+            onSuccess: () => {
+              refetch();
+            },
+          });
+        }
+      }
+    } catch (err) {
+      console.error("Error during permission submission:", err);
+    }
   };
 
-  const handleEditPermissions = (e: React.FormEvent) => {
-    e.preventDefault();
-    setApiError(null);
-
-    setpermissions(permissions.map((permissions) => (permissions.id === editingPermissions.id ? { ...permissions, name: permissionsName } : permissions)));
-    setEditingPermissions(null); 
-    setPermissionsName('');  
-  };
 
   const handleDeletePermission = (id: number) => {
-    setpermissions(permissions.filter((permissions) => permissions.id !== id));
+    deletePermission(id, {
+      onSuccess: () => {
+        refetch();
+      },
+    });
   };
- 
-  const handleEditButtonClick = (permissions: any) => {
-    setEditingPermissions(permissions);
-    setPermissionsName(permissions.name); 
-  };
-
 
   return (
     <div className="max-w-lg mx-auto p-6 rounded-lg shadow-md bg-white">
-      <h2 className="text-2xl font-semibold text-center mb-6">Manage Permissions</h2>
+      <h2 className="text-2xl font-semibold text-center mb-6">Manage Permission</h2>
 
-      <form onSubmit={editingPermissions ? handleEditPermissions : handleAddPermission} className="space-y-4">
+      <form onSubmit={permissionSubmit} className="space-y-4">
         <div>
           <label htmlFor="permissionName" className="block text-gray-700">Permission Name</label>
           <input
             type="text"
             id="permissionName"
             name="permissionName"
-            value={permissionsName}
+            value={permissionName}
             onChange={handleInputChange}
             className="w-full p-3 border border-gray-300 rounded-md"
             required
           />
         </div>
 
+        {isError && error && (
+          <div className="text-red-600 text-center mt-2">{error.message}</div>
+        )}
+
+        {isSuccess && data && (
+          <div className="text-green-600 text-center mt-2">Permission created successfully!</div>
+        )}
+
+        {updatePermissionSuccess && (
+          <div className="text-green-600 text-center mt-2">Permission updated successfully!</div>
+        )}
+
+        {isPermissionUpdateError && updatePermissionError && (
+          <div className="text-red-600 text-center mt-2">{updatePermissionError.message}</div>
+        )}
+
         <div className="text-center mt-4">
           <button
             type="submit"
             className="w-full py-3 bg-indigo-500 text-white font-semibold rounded-md hover:bg-indigo-600"
+            disabled={isPending || updatePermissionPending}
           >
-            {editingPermissions ? 'Update permission' : 'Add permission'}
+            {isPending || updatePermissionPending ? (permissionId ? 'Updating Permission...' : 'Creating Permission...') : (permissionId ? 'Update Permission' : 'Create Permission')}
           </button>
         </div>
       </form>
 
-      {apiError && <p className="text-red-500 text-center mt-4">{apiError}</p>}
+      <div className="mt-6">
+        <h3 className="text-xl font-semibold text-center mb-4">Existing Permissions</h3>
 
-      <ul className="space-y-4 mt-4">
-        {permissions.map((permissions) => (
-          <li key={permissions.id} className="flex justify-between items-center">
-            <span>{permissions.name}</span>
-            <div>
-              <button
-                onClick={() => handleEditButtonClick(permissions)}
-                className="px-4 py-2 bg-blue-500 text-white rounded-md mr-2"
-              >
-                Edit
-              </button>
-              <button
-                onClick={() => handleDeletePermission(permissions.id)}
-                className="px-4 py-2 bg-red-500 text-white rounded-md"
-              >
-                Delete
-              </button>
-            </div>
-          </li>
-        ))}
-      </ul>
+        {permissionsLoading ? (
+          <div className="text-center">Loading permissions...</div>
+        ) : isPermissionsError && permissionsError ? (
+          <div className="text-red-600 text-center">{permissionsError.message}</div>
+        ) : (
+          <div className="text-center">
+            <table className="w-full">
+              <tbody>
+                {permission?.map((perm: permissionType) => (
+                  <tr key={perm.id}>
+                    <td>{perm.name}</td>
+                    <td>
+                      <button
+                        className="bg-yellow-400 text-white font-semibold rounded-md hover:bg-yellow-600 p-2"
+                        onClick={() => handlePermissionSelect(perm.id)}
+                      >
+                        Edit
+                      </button>
+                    </td>
+                    <td>
+                      <button
+                        className="bg-red-500 text-white font-semibold rounded-md hover:bg-red-600 p-2"
+                        onClick={() => handleDeletePermission(perm.id)}
+                        disabled={deletePermissionPending}
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+        )}
+      </div>
+
+      <div className="text-center mt-4">
+        <Link to="/settings" className="text-blue-500 hover:text-blue-700">
+          Back to Settings
+        </Link>
+      </div>
     </div>
   );
 };

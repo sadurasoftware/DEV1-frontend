@@ -13,12 +13,14 @@ import { SuperAdminDashboard } from './pages/SuperAdminDashboard';
 import SuperAdminPermission from './pages/SuperAdminPermission';
 import { Settings } from './pages/Settings';
 import RolePage from './pages/Rolepage';
+import Permissionpage from './pages/Permissionpage';
 import Admins from './pages/Admins';
 import Users from './pages/Users';
 import { UserDashboard } from './pages/UserDashboard';
 import { EditUserProfile } from './pages/EditUserProfile';
 import { AdminDashboard } from './pages/AdminDashboard';
 import { EditForm } from './pages/editForm';
+
 
 // import Theme from './pages/Theme';
 // import  useThemeStore from './store/themeStore';
@@ -55,8 +57,8 @@ const App: React.FC = () => {
               <Route path="/settings" element={<Settings />} />
               <Route path="/super-admin-permissions" element={<SuperAdminPermission />} />
               <Route path="/rolepage" element={<RolePage />} />
+              <Route path="/permissionpage" element={<Permissionpage />} />
               <Route path="/edit/:id" element={<EditForm />} />
-              
             </Routes>
           </AuthenticatedLayout>
         ) : (
