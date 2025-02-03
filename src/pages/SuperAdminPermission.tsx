@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import {PermissionTemplateAdmin}  from '../types/permissionTemplate';
+import { PermissionTemplateAdmin } from '../types/permissionTemplate';
+import { useFetchPermissions } from '@/hooks/useFetchPermissions';
 
-const AdminPermission: React.FC = () => {
+const SuperAdminPermission: React.FC = () => {
   const [permissionData, setPermissionData] = useState<PermissionTemplateAdmin>({
     name: '',
     description: '',
@@ -18,6 +19,11 @@ const AdminPermission: React.FC = () => {
 
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
   const [apiError, setApiError] = useState<string | null>(null);
+
+  const { permissionsLoading, permissionsData, refetch } = useFetchPermissions();
+  const { permission } = permissionsData || {};
+
+  console.log(permission);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
@@ -41,7 +47,7 @@ const AdminPermission: React.FC = () => {
     }
   };
 
-  
+
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
     setPermissionData({
@@ -62,7 +68,7 @@ const AdminPermission: React.FC = () => {
     // }
 
     try {
-    //   console.log('Permission template saved:', permissionData);
+      //   console.log('Permission template saved:', permissionData);
       // Reset the form on success
       setPermissionData({
         name: '',
@@ -125,64 +131,26 @@ const AdminPermission: React.FC = () => {
           </select>
         </div>
 
-        <div className="space-y-2">
-          <label className="block text-gray-700">Assign Permissions</label>
-          <div className="flex items-center">
-            <input
-              type="checkbox"
-              id="create"
-              name="create"
-              checked={permissionData.permissions.create}
-              onChange={handleInputChange} 
-              className="mr-2"
-            />
-            <label htmlFor="create">Create</label>
+        {!permissionsLoading && permissionsData && permission && (
+          <div className="space-y-2">
+            <label className="block text-gray-700">Assign Permissions</label>
+            {permission.map((perm) => (
+              <div key={perm.id} className="flex items-center">
+                <input
+                  type="checkbox"
+                  id={perm.name}
+                  name={perm.name}
+                  // checked={permissionData.permission[perm.name] || false}
+                  onChange={handleInputChange}
+                  className="mr-2"
+                />
+                <label htmlFor={perm.name}>{perm.name}</label>
+              </div>
+            ))}
           </div>
-          <div className="flex items-center">
-            <input
-              type="checkbox"
-              id="view"
-              name="view"
-              checked={permissionData.permissions.view}
-              onChange={handleInputChange}
-              className="mr-2"
-            />
-            <label htmlFor="view">View</label>
-          </div>
-          <div className="flex items-center">
-            <input
-              type="checkbox"
-              id="update"
-              name="update"
-              checked={permissionData.permissions.update}
-              onChange={handleInputChange}
-              className="mr-2"
-            />
-            <label htmlFor="update">Update</label>
-          </div>
-          <div className="flex items-center">
-            <input
-              type="checkbox"
-              id="delete"
-              name="delete"
-              checked={permissionData.permissions.delete}
-              onChange={handleInputChange}
-              className="mr-2"
-            />
-            <label htmlFor="delete">Delete</label>
-          </div>
-          <div className="flex items-center">
-            <input
-              type="checkbox"
-              id="export"
-              name="export"
-              checked={permissionData.permissions.export}
-              onChange={handleInputChange}
-              className="mr-2"
-            />
-            <label htmlFor="export">Export</label>
-          </div>
-        </div>
+        )}
+
+
 
         <div className="text-center mt-4">
           <button
@@ -191,7 +159,7 @@ const AdminPermission: React.FC = () => {
           >
             Save Permission Template
           </button>
-          <Link className="text-indigo-500 hover:text-indigo-600 text-center block mt-5" to="/settings"> Back to settings  </Link> 
+          <Link className="text-indigo-500 hover:text-indigo-600 text-center block mt-5" to="/settings"> Back to settings  </Link>
         </div>
       </form>
 
@@ -200,4 +168,4 @@ const AdminPermission: React.FC = () => {
   );
 };
 
-export default AdminPermission;
+export default SuperAdminPermission;

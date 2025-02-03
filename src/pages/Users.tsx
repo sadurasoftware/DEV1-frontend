@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useFetchUsers } from '@/hooks/useFetchUsers';
 
 const Users = () => {
@@ -35,6 +35,7 @@ const Users = () => {
                   <th className="px-4 py-2 text-left">Username</th>
                   <th className="px-4 py-2 text-left">Email</th>
                   <th className="px-4 py-2 text-left">Verified</th>
+                  <th className="px-4 py-2 text-left">Edit</th>
                 </tr>
               </thead>
               <tbody className="text-gray-700">
@@ -44,6 +45,8 @@ const Users = () => {
                     <td className="px-4 py-2">{user.username}</td>
                     <td className="px-4 py-2">{user.email}</td>
                     <td className="px-4 py-2">{user.isVerified ? 'Verified' : 'Registered'}</td>
+                    <td className="px-4 py-2"><Link to={`/edit/${user.id}`}>Edit</Link></td>
+
                   </tr>
                 ))}
               </tbody>
