@@ -1,4 +1,9 @@
 export type roleType = {
+    id:number;
+    name:string;
+}
+
+export type roleName = {
     name:string;
 }
 
