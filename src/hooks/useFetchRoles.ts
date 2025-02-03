@@ -1,6 +1,5 @@
-// hooks/useUsers.ts
 import { useQuery } from '@tanstack/react-query';
-import { fetchRoles } from '../apis/roleFetchApi';
+import { fetchRoles } from '../apis/rolesFetchApi';
 import { rolesResponse } from '../types/rolePermissionTypes';
 
 export const useFetchRoles = () => {
