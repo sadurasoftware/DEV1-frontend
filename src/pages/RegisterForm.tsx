@@ -44,7 +44,11 @@ const RegisterForm: React.FC = () => {
   const { rolesLoading, rolesData, isRolesError, rolesError } = useFetchRoles();
   const { roles } = rolesData || {};
 
+  
+
   const isSuperAdmin = user?.roleId === 1;
+
+  const rolesFilter = roles?.filter((role)=>role.name!== 'superadmin')
 
   useEffect(() => {
     setFormData((prevData) => ({
@@ -191,7 +195,7 @@ const RegisterForm: React.FC = () => {
       className={`w-full p-3 border ${inputStyles} rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500`}
     >
      {!rolesLoading ? (
-        roles?.map((role:roleType, index:number) => (
+        rolesFilter?.map((role:roleType, index:number) => (
           <option key={index} value={role.name}>
             {role.name} 
           </option>

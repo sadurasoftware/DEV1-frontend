@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router-dom";
-
 export const Settings = () => {
   const navigate = useNavigate();
 
@@ -10,7 +9,7 @@ export const Settings = () => {
 
         <div className="space-y-4">
           <button
-            onClick={() => navigate("/adminpermission")}
+            onClick={() => navigate("/super-admin-permissions")}
             className="w-full py-3 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition"
           >
             Admin User Permission  
@@ -26,13 +25,13 @@ export const Settings = () => {
             onClick={() => navigate("/rolepage")}
             className="w-full py-3 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition"
           >
-            Add Role  
+            Roles  
           </button>
           <button
             onClick={() => navigate("/permissionpage")}
             className="w-full py-3 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition"
           >
-            Add Permission  
+            Permissions  
           </button>
         </div>
       </div>

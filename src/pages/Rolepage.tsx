@@ -122,7 +122,6 @@ const RolePage: React.FC = () => {
         ) : (
           <div className="text-center">
             <table className="w-full">
-              {/* Add tbody around tr elements */}
               <tbody>
                 {roles?.map((role: roleType) => (
                   <tr key={role.id}>
