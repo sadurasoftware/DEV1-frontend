@@ -5,7 +5,7 @@ import { useGetUsers } from '../hooks/useGetUser';
 
 export const UserDashboard = () => {
   const { token, user } = useLoginInfoStore();
-  const userId = user?.id ? user.id.toString() : ''; 
+  const userId = user?.id ? user.id:0; 
   const { isLoading, data, isError, error } = useGetUsers(userId);
   const navigate = useNavigate();
 

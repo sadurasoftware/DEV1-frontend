@@ -1,4 +1,3 @@
-// hooks/useUsers.ts
 import { useQuery } from '@tanstack/react-query';
 import { fetchUsers } from '../apis/usersFetchApi';
 import { User } from '../types/loginType';
