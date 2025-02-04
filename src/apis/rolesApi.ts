@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from "axios";
-import { roleName, rolesResponse } from "@/types/rolePermissionTypes";
+import { roleName, rolesResponse } from "@/types/roleTypes";
 
 export const addRole = async (role: roleName): Promise<rolesResponse> => {
   

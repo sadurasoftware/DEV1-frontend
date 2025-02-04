@@ -19,15 +19,3 @@ export type rolesResponse = {
     roles: rolesType[];
 }
 
-export type permissionsType = {
-    id: number;
-    name: string;
-    createdAt: string;
-    updatedAt: string;
-}
-
-export type permissionsResponse = {
-    message: string;
-    permission: permissionsType[];
-}
-

@@ -19,7 +19,7 @@ import Users from './pages/Users';
 import { UserDashboard } from './pages/UserDashboard';
 import { EditUserProfile } from './pages/EditUserProfile';
 import { AdminDashboard } from './pages/AdminDashboard';
-import { EditForm } from './pages/editForm';
+import { EditForm } from './pages/EditForm';
 
 
 // import Theme from './pages/Theme';
