@@ -5,8 +5,10 @@ import { useGetAdmin } from '../hooks/useGetAdmin';
 
 export const AdminDashboard = () => {
   const { token, user } = useLoginInfoStore();
-  const userId = user?.id ? user.id.toString() : ''; 
+  const userId = user?.id ? user.id : 0;
   const { isLoading, data, isError, error } = useGetAdmin(userId);
+
+  const { userData } = data || {};
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -15,11 +17,10 @@ export const AdminDashboard = () => {
     }
   }, [token, navigate]);
 
-
+ 
   const handleEditClick = () => {
-    navigate(`/edit-profile/${userId}`);
+    navigate(`/edit-admin-profile/${userId}`);
   };
-
 
   return (
     <div className="container mx-auto mt-8 px-4">
@@ -33,23 +34,22 @@ export const AdminDashboard = () => {
 
       {isError && <p className="text-center text-red-500">{`Error loading user details: ${error?.message}`}</p>}
 
-      {data && (
+      {data && userData && (
         <div className="flex justify-center">
           <div className="max-w-md w-full">
             <div className="bg-white shadow-lg rounded-lg p-6 border border-gray-200">
               <p className="text-center mt-4 text-lg font-semibold text-gray-500">
-                <span className="font-bold">Name:</span> {data.username}
+                <span className="font-bold">Name:</span> {userData.username}
               </p>
               <p className="text-center mt-4 text-lg font-semibold text-gray-500">
-                <span className="font-bold">Email:</span> {data.email}
+                <span className="font-bold">Email:</span> {userData.email}
               </p>
-              {/* <p className="text-center mt-4 text-lg font-semibold text-gray-500">
-                <span className="font-bold">Role:</span> {data.role}
-              </p> */}
               <p className="text-center mt-4 text-lg font-semibold text-gray-500">
-                <span className="font-bold">Status:</span> {data.isVerified ? 'Verified' : 'Registered'}
+                <span className="font-bold">Role:</span> {userData.roleId}
               </p>
-
+              <p className="text-center mt-4 text-lg font-semibold text-gray-500">
+                <span className="font-bold">Status:</span> {userData.isVerified ? 'Verified' : 'Registered'}
+              </p>
 
               <div className="flex justify-center mt-6">
                 <button

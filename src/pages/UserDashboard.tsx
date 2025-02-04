@@ -7,6 +7,8 @@ export const UserDashboard = () => {
   const { token, user } = useLoginInfoStore();
   const userId = user?.id ? user.id:0; 
   const { isLoading, data, isError, error } = useGetUsers(userId);
+
+  const { userData } = data || {};
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -33,20 +35,18 @@ export const UserDashboard = () => {
 
       {isError && <p className="text-center text-red-500">{`Error loading user details: ${error?.message}`}</p>}
 
-      {data && (
+      {data && userData && (
         <div className="flex justify-center">
           <div className="max-w-md w-full">
             <div className="bg-white shadow-lg rounded-lg p-6 border border-gray-200">
-              {/* <h5 className="text-xl font-bold text-center text-gray-800">Name: {data.username}</h5>
-              <h6 className="text-lg font-semibold text-center text-gray-500">Email: {data.email}</h6> */}
               <p className="text-center mt-4 text-lg font-semibold text-gray-500">
-                <span className="font-bold">Name:</span> {data.username}
+                <span className="font-bold">Name:</span> {userData.username}
               </p>
               <p className="text-center mt-4 text-lg font-semibold text-gray-500">
-                <span className="font-bold">Email:</span> {data.email}
+                <span className="font-bold">Email:</span> {userData.email}
               </p>
               <p className="text-center mt-4 text-lg font-semibold text-gray-500">
-                <span className="font-bold">Status:</span> {data.isVerified ? 'Verified' : 'Registered'}
+                <span className="font-bold">Status:</span> {userData.isVerified ? 'Verified' : 'Registered'}
               </p>
 
 

@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useLoginInfoStore } from '../store/useLoginInfoStore';
 import { useNavigate, useParams } from 'react-router-dom';
-import { updateUser } from '../apis/edituserAPI';
-import { fetchUser } from '../apis/fetchuserAPI'; 
+import { updateAdmin } from '../apis/editadminAPI';
+import { fetchAdmin } from '../apis/fetchadminAPI'; 
 
-export const EditUserProfile = () => {
+export const EditAdminProfile = () => {
   const { user } = useLoginInfoStore();
   const { userId } = useParams();  
   const navigate = useNavigate();
@@ -16,20 +16,20 @@ export const EditUserProfile = () => {
 
 
   useEffect(() => {
-    const fetchUserData = async () => {
+    const fetchAdminData = async () => {
       if (userId) {
         try {
-          const response = await fetchUser(Number(userId));  
+          const response = await fetchAdmin(Number(userId));  
           setFormData({
             username: response.username,
             email: response.email,
           });
         } catch (error) {
-          setError('Failed to fetch user data');
+          setError('Failed to fetch admin data');
         }
       }
     };
-    fetchUserData();
+    fetchAdminData();
   }, [userId]);
 
 
@@ -59,9 +59,9 @@ export const EditUserProfile = () => {
 
     setIsLoading(true);
     try {
-      await updateUser(userId, formData);  
+      await updateAdmin(userId, formData);  
       setIsLoading(false);
-      navigate(`/userdashboard`);  
+      navigate(`/admindashboard`);  
     } catch (err) {
       setIsLoading(false);
       setError('Error updating profile');
