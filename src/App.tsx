@@ -19,7 +19,8 @@ import Users from './pages/Users';
 import { UserDashboard } from './pages/UserDashboard';
 import { EditUserProfile } from './pages/EditUserProfile';
 import { AdminDashboard } from './pages/AdminDashboard';
-import { EditForm } from './pages/editForm';
+import { EditForm } from './pages/EditForm';
+import { EditAdminProfile } from './pages/EditAdminProfile';
 
 
 // import Theme from './pages/Theme';
@@ -51,6 +52,7 @@ const App: React.FC = () => {
               <Route path='/userdashboard' element={<UserDashboard/>}/>
               <Route path="/edit-profile/:userId" element={<EditUserProfile />} />
               <Route path='/admindashboard' element={<AdminDashboard/>}/>
+              <Route path="/edit-admin-profile/:userId" element={<EditAdminProfile/>}/>
               <Route path="/register" element={<RegisterForm />} />
               <Route path='/users' element={<Users/>}/>
               <Route path="/admins" element={<Admins />} />
