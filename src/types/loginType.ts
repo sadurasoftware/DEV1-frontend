@@ -31,3 +31,12 @@ export type  logoutProps = {
     token: string | null;
     clearLoginInfo: () => void;
   }
+
+export type GetUserResponse = {
+    userData: User; 
+  }
+
+export type GetAdminResponse = {
+    userData: User; 
+  }
+

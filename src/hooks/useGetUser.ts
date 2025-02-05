@@ -1,9 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import { getUser } from '../apis/getuserAPI';
-import { User } from '../types/loginType';
+import { GetUserResponse } from '../types/loginType';
 
 export const useGetUsers = (userId: number) => {
-  const { isLoading, data, isError, error } = useQuery<User, Error>({
+  const { isLoading, data, isError, error } = useQuery<GetUserResponse, Error>({
     queryKey: ['user', userId],  
     queryFn: () => getUser(userId),  
     enabled: !!userId,  
