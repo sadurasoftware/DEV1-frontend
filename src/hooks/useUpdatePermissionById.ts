@@ -5,7 +5,7 @@ import axios, { AxiosError } from "axios";
 import { ErrorResponse } from "@/types/loginType";
 
 export const useUpdatePermissionById = () => {
-  const { mutate, isPending: updatePermissionPending, isError: isPermissionUpdateError, error: updatePermissionError, isSuccess:updatePermissionSuccess } = useMutation<
+  const { mutate, data:updatedRole, isPending: updatePermissionPending, isError: isPermissionUpdateError, error: updatePermissionError, isSuccess:updatePermissionSuccess } = useMutation<
    permissionsResponse,  
     ErrorResponse,     
     { id: number, name: string } 
@@ -29,6 +29,7 @@ export const useUpdatePermissionById = () => {
 
   return {
     mutate,
+    updatedRole,
     updatePermissionPending,
     isPermissionUpdateError,
     updatePermissionError,
