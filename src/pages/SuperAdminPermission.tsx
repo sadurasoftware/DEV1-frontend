@@ -127,7 +127,7 @@ const SuperAdminPermission: React.FC = () => {
             className="w-full p-3 border border-gray-300 rounded-md"
           >
             <option value="admin">Admin Users</option>
-            <option value="regular">Non Admin Users</option>
+            <option value="user">Non Admin Users</option>
           </select>
         </div>
 

@@ -2,20 +2,36 @@ import React, { useState } from 'react';
 import { useResetPasswordMutation } from '../hooks/useResetPassword';
 import { Link } from "react-router-dom";
 import { useSearchParams } from 'react-router-dom';
+import { passwordValidation } from '../validation/passwordValidation';
+import {z} from 'zod';
 
 export const ResetPassword = () => {
   const [password, setPassword] = useState<string>('');
+  const [passwordError ,setPasswordError] = useState<string>('');
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token'); 
   const { mutate, isError, error, successMessage } = useResetPasswordMutation();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log(token);
+    console.log(password);
     if (token && password) {
-        mutate({ password, token }); 
-      } else {
-        console.error("Token or password is missing");
-      }
+      console.log("inside if")
+        try {
+      
+                  passwordValidation.parse({password});
+                  setPasswordError('');
+                  mutate({password, token});
+                
+              } catch (err) {
+                  if (err instanceof z.ZodError) {
+                    setPasswordError(err.errors[0]?.message || "Invalid input");
+                  }
+              }
+    } else {
+      setPasswordError("Token or password is missing");
+    }
   };
 
   return (
@@ -45,6 +61,7 @@ export const ResetPassword = () => {
         </form>
 
         {isError && <p className="text-red-500 mt-4 text-center">{error}</p>}
+        {passwordError && <p className="text-red-500 mt-4 text-center">{passwordError}</p>}
         {successMessage && <p className="text-green-500 mt-4 text-center">{successMessage}</p>}
 
         <Link to="/login" className="mt-5 text-center block text-blue-500 hover:underline">

@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { updateRole } from "@/apis/rolesApi";
-import { rolesResponse } from "../types/rolePermissionTypes";
+import { rolesResponse } from "../types/roleTypes";
 import axios, { AxiosError } from "axios";
 import { ErrorResponse } from "@/types/loginType";
 

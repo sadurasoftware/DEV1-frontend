@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useCreateRole } from '../hooks/useCreateRole';
 import { Link } from 'react-router-dom';
 import { useFetchRoles } from '@/hooks/useFetchRoles';
-import { roleType } from '@/types/rolePermissionTypes';
+import { roleType } from '@/types/roleTypes';
 import { useUpdateRoleById } from '@/hooks/useUpdateRoleById';
 import { useDeleteRoleById } from '@/hooks/useDeleteRoleById';
 

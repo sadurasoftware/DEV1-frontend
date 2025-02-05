@@ -7,11 +7,11 @@ import useThemeStore from '../store/themeStore';
 import { PasswordType } from '../types/registerTypes';
 import { useLoginInfoStore } from '@/store/useLoginInfoStore';
 import { useFetchRoles } from '../hooks/useFetchRoles';
-import { roleType } from '@/types/rolePermissionTypes';
+import { roleType } from '@/types/roleTypes';
 
 const RegisterForm: React.FC = () => {
   const { theme } = useThemeStore();
-  const { token, user } = useLoginInfoStore();
+  const { user } = useLoginInfoStore();
   const [formData, setFormData] = useState<User>({
     id: 0,
     username: '',
@@ -41,14 +41,14 @@ const RegisterForm: React.FC = () => {
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
   const [apiError, setApiError] = useState<string | null>(null);
   const { mutate, isError, isSuccess } = useRegisterMutation();
-  const { rolesLoading, rolesData, isRolesError, rolesError } = useFetchRoles();
+  const { rolesLoading, rolesData } = useFetchRoles();
   const { roles } = rolesData || {};
 
-  
+
 
   const isSuperAdmin = user?.roleId === 1;
 
-  const rolesFilter = roles?.filter((role)=>role.name!== 'superadmin')
+  const rolesFilter = roles?.filter((role) => role.name !== 'superadmin')
 
   useEffect(() => {
     setFormData((prevData) => ({
@@ -57,7 +57,7 @@ const RegisterForm: React.FC = () => {
   }, [theme]);
 
 
-  // Handle input changes
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     if (name == 'password') {
@@ -72,10 +72,10 @@ const RegisterForm: React.FC = () => {
     setApiError(null);
   };
 
-  // Handle form submission
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setFormErrors({}); 
+    setFormErrors({});
     setApiError(null);
 
     if (!isSuperAdmin) {
@@ -85,12 +85,12 @@ const RegisterForm: React.FC = () => {
       }));
     }
 
-    // Validate form using Zod
+
     try {
       registerValidation.parse(formData);
       mutate(formData, {
         onSuccess: () => {
-          // Reset form data on success
+
           setFormData({
             id: 0,
             username: '',
@@ -116,6 +116,33 @@ const RegisterForm: React.FC = () => {
     }
   };
 
+  const generatedPassword = () =>{
+  
+    // const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_-+={}[]";
+    const charset =`^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$`;
+
+    let generatePassword = "";
+
+    for(let i = 0; i<12; i++)
+    {
+      const randomIndex = Math.floor(Math.random()*charset.length);
+      generatePassword += charset.charAt(randomIndex);
+     
+    }
+    setFormData((prevData) => ({
+      ...prevData,
+      password: generatePassword,
+    }));
+    validatedPassword(generatePassword)
+  }
+  console.log(formData.password);
+
+  const copyToClipboard = () => {
+    if(formData.password)
+    {
+      navigator.clipboard.writeText(formData.password)
+    }
+  }
 
   const formStyles = theme === 'light' ? 'bg-white text-black' : 'bg-gray-800 text-white';
   const labelStyles = theme === 'light' ? 'text-black' : 'text-white';
@@ -163,11 +190,12 @@ const RegisterForm: React.FC = () => {
             className={`w-full p-3 border ${inputStyles} rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500`}
           />
           {formErrors.password && <p style={{ color: 'red' }}>{formErrors.password}</p>}
-
-          {/* <p>Password must be 6-20 characters long, include at least one uppercase letter, one number, and one special character.</p> */}
+          <button onClick={generatedPassword} className='py-3 mt-3 my-3 p-3 bg-indigo-500 text-white font-semibold rounded-md hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500'>Generate Password</button>
+          <button onClick={copyToClipboard} className='py-3 mt-3 my-3 p-3 bg-indigo-500 text-white font-semibold rounded-md hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500'>Copy</button>
+          
 
           <p style={{ color: passwordCondition.minLength ? 'green' : 'red' }}>
-            {passwordCondition.minLength ? '✔' : '❌'} At least 6 characters
+            {passwordCondition.minLength ? '✔' : '❌'} At least 8 characters
           </p>
           <p style={{ color: passwordCondition.maxLength ? 'green' : 'red' }}>
             {passwordCondition.maxLength ? '✔' : '❌'} Maximum 20 characters
@@ -185,28 +213,28 @@ const RegisterForm: React.FC = () => {
         </div>
 
         {isSuperAdmin && (
-  <div>
-    <label htmlFor="role" className={labelStyles}>Role</label>
-    <select
-      id="role"
-      name="role"
-      value={formData.role}
-      onChange={handleChange}
-      className={`w-full p-3 border ${inputStyles} rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500`}
-    >
-     {!rolesLoading ? (
-        rolesFilter?.map((role:roleType, index:number) => (
-          <option key={index} value={role.name}>
-            {role.name} 
-          </option>
-        ))
-      ) : (
-        <option value="" disabled>Loading roles...</option>
-      )}
-    </select>
-    {formErrors.role && <p className="text-red-500 text-sm">{formErrors.role}</p>}
-  </div>
-)}
+          <div>
+            <label htmlFor="role" className={labelStyles}>Role</label>
+            <select
+              id="role"
+              name="role"
+              value={formData.role}
+              onChange={handleChange}
+              className={`w-full p-3 border ${inputStyles} rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500`}
+            >
+              {!rolesLoading ? (
+                rolesFilter?.map((role: roleType, index: number) => (
+                  <option key={index} value={role.name}>
+                    {role.name}
+                  </option>
+                ))
+              ) : (
+                <option value="" disabled>Loading roles...</option>
+              )}
+            </select>
+            {formErrors.role && <p className="text-red-500 text-sm">{formErrors.role}</p>}
+          </div>
+        )}
 
         <div className="text-center mt-4">
           <button

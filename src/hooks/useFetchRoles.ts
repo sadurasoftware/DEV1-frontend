@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { fetchRoles } from '../apis/rolesFetchApi';
-import { rolesResponse } from '../types/rolePermissionTypes';
+import { rolesResponse } from '../types/roleTypes';
 
 export const useFetchRoles = () => {
     const { isLoading: rolesLoading, data:rolesData, isError: isRolesError, error: rolesError, refetch } = useQuery<rolesResponse>({
