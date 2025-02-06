@@ -22,16 +22,22 @@ export const Settings = () => {
             User Permission
           </button> */}
           <button
-            onClick={() => navigate("/rolepage")}
+            onClick={() => navigate("/roles")}
             className="w-full py-3 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition"
           >
             Roles  
           </button>
           <button
-            onClick={() => navigate("/permissionpage")}
+            onClick={() => navigate("/permissions")}
             className="w-full py-3 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition"
           >
             Permissions  
+          </button>
+          <button
+            onClick={() => navigate("/modules")}
+            className="w-full py-3 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition"
+          >
+            Modules
           </button>
         </div>
       </div>
