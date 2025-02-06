@@ -10,12 +10,12 @@ const Modules: React.FC = () => {
   const [moduleName, setModuleName] = useState<string>('');
   const [moduleId, setModuleId] = useState<number | null>(null);
 
-  const [sucess, setSuccess] = useState<string>('');
+  const [success, setSuccess] = useState<string>('');
   const [errror, setError] = useState<string>('');
 
   const { mutate, isPending, isError, isSuccess, error, data } = useCreateModule();
   const { modulesLoading, modulesData, isModulesError, modulesError, refetch } = useFetchModules();
-  const { modules } = modulesData || {};
+  const { module } = modulesData || {};
 
   const { mutate: updateModule, updateModulePending, isModuleUpdateError, updateModuleError, updateModuleSuccess } = useUpdateModuleById();
   const { deleteModule, deleteModulePending } = useDeleteModuleById();
@@ -28,7 +28,7 @@ const Modules: React.FC = () => {
 
   const handleModuleSelect = (id: number) => {
     setModuleId(id);
-    const selectedModule = modules?.find(module => module.id === id);
+    const selectedModule = module?.find(mod => mod.id === id);
     if (selectedModule) {
       setModuleName(selectedModule.name);
     }
@@ -128,13 +128,13 @@ const Modules: React.FC = () => {
           <div className="text-center">
             <table className="w-full">
               <tbody>
-                {modules?.map((module: moduleType) => (
-                  <tr key={module.id}>
-                    <td>{module.name}</td>
+                {module?.map((mod: moduleType) => (
+                  <tr key={mod.id}>
+                    <td>{mod.name}</td>
                     <td>
                       <button
                         className="bg-yellow-400 text-white font-semibold rounded-md hover:bg-yellow-600 p-2"
-                        onClick={() => handleModuleSelect(module.id)}
+                        onClick={() => handleModuleSelect(mod.id)}
                       >
                         Edit
                       </button>
@@ -142,7 +142,7 @@ const Modules: React.FC = () => {
                     <td>
                       <button
                         className="bg-red-500 text-white font-semibold rounded-md hover:bg-red-600 p-2"
-                        onClick={() => handleDeleteModule(module.id)}
+                        onClick={() => handleDeleteModule(mod.id)}
                         disabled={deleteModulePending}
                       >
                         Delete
