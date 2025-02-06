@@ -20,6 +20,7 @@ import { EditUserProfile } from './pages/EditUserProfile';
 import { AdminDashboard } from './pages/AdminDashboard';
 import { EditForm } from './pages/EditForm';
 import { EditAdminProfile } from './pages/EditAdminProfile';
+import Modules from './pages/Modules';
 
 
 // import Theme from './pages/Theme';
@@ -56,9 +57,10 @@ const App: React.FC = () => {
               <Route path="/admins" element={<Admins />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/super-admin-permissions" element={<SuperAdminPermission />} />
-              <Route path="/rolepage" element={<RolePage />} />
-              <Route path="/permissionpage" element={<Permissionpage />} />
+              <Route path="/roles" element={<RolePage />} />
+              <Route path="/permissions" element={<Permissionpage />} />
               <Route path="/edit/:id" element={<EditForm />} />
+              <Route path="/modules" element={<Modules />} />
             </Routes>
           </AuthenticatedLayout>
         ) : (
