@@ -20,7 +20,7 @@ const SuperAdminPermission: React.FC = () => {
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
   const [apiError, setApiError] = useState<string | null>(null);
 
-  const { permissionsLoading, permissionsData, refetch } = useFetchPermissions();
+  const { permissionsLoading, permissionsData } = useFetchPermissions();
   const { permission } = permissionsData || {};
 
   console.log(permission);
@@ -39,7 +39,7 @@ const SuperAdminPermission: React.FC = () => {
         },
       }));
     } else {
-      // For text inputs and text areas
+     
       setPermissionData({
         ...permissionData,
         [name]: value,
@@ -61,15 +61,9 @@ const SuperAdminPermission: React.FC = () => {
     setFormErrors({});
     setApiError(null);
 
-    // Simple validation
-    // if (!permissionData.name) {
-    //   setFormErrors((prev) => ({ ...prev, name: 'Permission template name is required' }));
-    //   return;
-    // }
-
+  
     try {
-      //   console.log('Permission template saved:', permissionData);
-      // Reset the form on success
+     
       setPermissionData({
         name: '',
         description: '',
@@ -88,59 +82,39 @@ const SuperAdminPermission: React.FC = () => {
   };
 
   return (
-    <div className="max-w-lg mx-auto p-6 rounded-lg shadow-md bg-white">
+    <div className="max-w-4xl mx-auto p-6 rounded-lg shadow-md bg-white">
       <h2 className="text-2xl font-semibold text-center mb-6">Create Permission Template</h2>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* <div>
-          <label htmlFor="name" className="block text-gray-700">Name</label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            value={permissionData.name}
-            onChange={handleInputChange}
-            className="w-full p-3 border border-gray-300 rounded-md"
-          />
-          {formErrors.name && <p className="text-red-500 text-sm">{formErrors.name}</p>}
+      <form onSubmit={handleSubmit} className="space-y-6">
+
+       
+        <div className="space-y-4">
+
+          <div>
+            <label htmlFor="applicableOn" className="block text-gray-700">Applicable On</label>
+            <select
+              id="applicableOn"
+              name="applicableOn"
+              value={permissionData.applicableOn}
+              onChange={handleSelectChange}
+              className="w-full p-3 border border-gray-300 rounded-md"
+            >
+              <option value="admin">Admin </option>
+              <option value="user">Users</option>
+            </select>
+          </div>
         </div>
 
-        <div>
-          <label htmlFor="description" className="block text-gray-700">Description</label>
-          <textarea
-            id="description"
-            name="description"
-            value={permissionData.description}
-            onChange={handleInputChange}
-            className="w-full p-3 border border-gray-300 rounded-md"
-            rows={3}
-          />
-        </div> */}
-
-        <div>
-          <label htmlFor="applicableOn" className="block text-gray-700">Applicable On</label>
-          <select
-            id="applicableOn"
-            name="applicableOn"
-            value={permissionData.applicableOn}
-            onChange={handleSelectChange}
-            className="w-full p-3 border border-gray-300 rounded-md"
-          >
-            <option value="admin">Admin Users</option>
-            <option value="user">Non Admin Users</option>
-          </select>
-        </div>
-
+       
         {!permissionsLoading && permissionsData && permission && (
-          <div className="space-y-2">
-            <label className="block text-gray-700">Assign Permissions</label>
+          <div className="grid grid-cols-2 gap-4">
+            <label className="col-span-2 text-gray-700">Assign Permissions</label>
             {permission.map((perm) => (
-              <div key={perm.id} className="flex items-center">
+              <div key={perm.id} className="flex items-center space-x-2">
                 <input
                   type="checkbox"
                   id={perm.name}
                   name={perm.name}
-                  // checked={permissionData.permission[perm.name] || false}
                   onChange={handleInputChange}
                   className="mr-2"
                 />
@@ -150,16 +124,14 @@ const SuperAdminPermission: React.FC = () => {
           </div>
         )}
 
-
-
-        <div className="text-center mt-4">
+        <div className="text-center mt-6">
           <button
             type="submit"
             className="w-full py-3 bg-indigo-500 text-white font-semibold rounded-md hover:bg-indigo-600"
           >
             Save Permission Template
           </button>
-          <Link className="text-indigo-500 hover:text-indigo-600 text-center block mt-5" to="/settings"> Back to settings  </Link>
+          <Link className="text-indigo-500 hover:text-indigo-600 text-center block mt-5" to="/settings">Back to settings</Link>
         </div>
       </form>
 

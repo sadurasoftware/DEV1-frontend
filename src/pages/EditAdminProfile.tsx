@@ -1,78 +1,79 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useLoginInfoStore } from '../store/useLoginInfoStore';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { updateAdmin } from '../apis/editadminAPI';
-import { fetchAdmin } from '../apis/fetchadminAPI'; 
+import { useGetAdmin } from '../hooks/useGetAdmin';
 
 export const EditAdminProfile = () => {
   const { user } = useLoginInfoStore();
-  const { userId } = useParams();  
+  const userId = user?.id || 0; 
   const navigate = useNavigate();
 
-  
-  const [formData, setFormData] = useState({ username: '', email: '' });
-  const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const { data, isLoading, error: fetchError } = useGetAdmin(userId);
 
+  const { userData } = data || {}; 
 
-  useEffect(() => {
-    const fetchAdminData = async () => {
-      if (userId) {
-        try {
-          const response = await fetchAdmin(Number(userId));  
-          setFormData({
-            username: response.username,
-            email: response.email,
-          });
-        } catch (error) {
-          setError('Failed to fetch admin data');
-        }
-      }
-    };
-    fetchAdminData();
-  }, [userId]);
-
+  const [formData, setFormData] = useState({
+    username: userData?.username || '',
+    email: userData?.email || '',
+  });
 
   useEffect(() => {
-    if (user?.id !== Number(userId)) {
-      navigate('/login'); 
+    if (!user) {
+      navigate('/login');
     }
-  }, [user, userId, navigate]);
+  }, [user, navigate]);
 
- 
+  useEffect(() => {
+    if (userData) {
+   
+      setFormData({
+        username: userData.username,
+        email: userData.email,
+      });
+    }
+    
+  }, [userData]);
+  console.log(userData)
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
+    setFormData((prevData) => ({
+      ...prevData,
       [name]: value,
     }));
   };
 
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!userId) {
-      setError('Invalid user ID');
+    if (!userId || !formData) {
       return;
     }
 
-    setIsLoading(true);
     try {
-      await updateAdmin(userId, formData);  
-      setIsLoading(false);
-      navigate(`/admindashboard`);  
+      await updateAdmin(userId, {
+        username: formData.username,
+        email: formData.email,
+      });
+
+      navigate('/admindashboard');
     } catch (err) {
-      setIsLoading(false);
-      setError('Error updating profile');
+      console.error('Error updating profile', err);
     }
   };
+
+  if (isLoading) {
+    return <div className="text-center">Loading...</div>;
+  }
+
+  if (fetchError) {
+    return <div className="text-center text-red-500">Error fetching user data</div>;
+  }
 
   return (
     <div className="container mx-auto mt-8 px-4">
       <h1 className="text-center text-3xl font-semibold mb-6">Edit Profile</h1>
 
-    
       <form onSubmit={handleSubmit} className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md">
         <div className="mb-4">
           <label htmlFor="username" className="block text-gray-700 font-semibold mb-2">
@@ -113,9 +114,7 @@ export const EditAdminProfile = () => {
             {isLoading ? 'Updating...' : 'Update Profile'}
           </button>
         </div>
-
-        {error && <p className="text-center text-red-500 mb-4">{error}</p>}
-      </form>  
+      </form>
     </div>
   );
 };

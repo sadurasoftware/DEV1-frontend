@@ -14,7 +14,7 @@ export const UserDashboard = () => {
   useEffect(() => {
     if (!token) {
       navigate("/login");
-    }
+    }  
   }, [token, navigate]);
 
 

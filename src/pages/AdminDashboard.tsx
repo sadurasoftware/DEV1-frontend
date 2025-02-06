@@ -22,8 +22,23 @@ export const AdminDashboard = () => {
     navigate(`/edit-admin-profile/${userId}`);
   };
 
+  const handleShowUsers = () => {
+    navigate('/users');
+  };
+
+
   return (
-    <div className="container mx-auto mt-8 px-4">
+      <div className="container mx-auto mt-8 px-4">
+      {/* <div className="flex justify-start space-x-4 mb-6"> */}
+      <div className="flex justify-end space-x-4 mb-6">
+        <button 
+          onClick={handleShowUsers} 
+          className="bg-yellow-500 text-white px-6 py-3 rounded-md hover:bg-yellow-600 transition duration-200"
+        >
+          Show Users
+        </button>
+      </div>
+      
       <h1 className="text-center text-3xl font-semibold mb-6">Welcome to Your Dashboard</h1>
 
       {isLoading && (
