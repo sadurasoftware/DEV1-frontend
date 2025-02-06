@@ -10,6 +10,9 @@ const RolePage: React.FC = () => {
   const [roleName, setRoleName] = useState<string>('');
   const [roleId, setRoleId] = useState<number | null>(null);
 
+  const [sucess, setSuccess] = useState<string>('');
+  const [errror, setError] = useState<string>('');
+
   const { mutate, isPending, isError, isSuccess, error, data } = useCreateRole();
   const { rolesLoading, rolesData, isRolesError, rolesError, refetch } = useFetchRoles();
   const { roles } = rolesData || {};
@@ -42,6 +45,7 @@ const RolePage: React.FC = () => {
           updateRole({ id: roleId, name: roleName }, {
             onSuccess: () => {
               refetch();
+              
             },
           });
         } else {
@@ -49,6 +53,7 @@ const RolePage: React.FC = () => {
           mutate({ name: roleName }, {
             onSuccess: () => {
               refetch();
+              setSuccess(data?.message || '');
             },
           });
         }

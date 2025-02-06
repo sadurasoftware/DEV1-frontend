@@ -18,8 +18,7 @@ const RegisterForm: React.FC = () => {
     email: '',
     password: '',
     role: 'user',
-  });
-
+  });  
   const [passwordCondition, setPasswordCondition] = useState<PasswordType>({
     minLength: false,
     maxLength: false,
@@ -27,6 +26,7 @@ const RegisterForm: React.FC = () => {
     hasSpecialChar: false,
     hasNumber: false
   })
+  const [copy, setCopy] = useState<string>('')
 
   const validatedPassword = (password: string) => {
     setPasswordCondition({
@@ -116,31 +116,45 @@ const RegisterForm: React.FC = () => {
     }
   };
 
-  const generatedPassword = () =>{
-  
-    // const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_-+={}[]";
-    const charset =`^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$`;
-
+  const generatedPassword = () => {
+    const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_-+={}[]";
+    
     let generatePassword = "";
-
-    for(let i = 0; i<12; i++)
-    {
-      const randomIndex = Math.floor(Math.random()*charset.length);
-      generatePassword += charset.charAt(randomIndex);
-     
+    let hasUpperCase = false;
+    let hasNumber = false;
+    let hasSpecialChar = false;
+  
+    
+    while (!hasUpperCase || !hasNumber || !hasSpecialChar || generatePassword.length < 8) {
+      generatePassword = "";
+      hasUpperCase = false;
+      hasNumber = false;
+      hasSpecialChar = false;
+  
+      for (let i = 0; i < 20; i++) {
+        const randomIndex = Math.floor(Math.random() * charset.length);
+        generatePassword += charset.charAt(randomIndex);
+      }
+  
+      hasUpperCase = /[A-Z]/.test(generatePassword);
+      hasNumber = /\d/.test(generatePassword);
+      hasSpecialChar = /[^A-Za-z0-9]/.test(generatePassword);
     }
+  
     setFormData((prevData) => ({
       ...prevData,
       password: generatePassword,
     }));
-    validatedPassword(generatePassword)
+    validatedPassword(generatePassword);
   }
-  console.log(formData.password);
+  
+  // console.log(formData.password);
 
   const copyToClipboard = () => {
     if(formData.password)
     {
       navigator.clipboard.writeText(formData.password)
+      setCopy("Copied");
     }
   }
 
@@ -190,9 +204,13 @@ const RegisterForm: React.FC = () => {
             className={`w-full p-3 border ${inputStyles} rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500`}
           />
           {formErrors.password && <p style={{ color: 'red' }}>{formErrors.password}</p>}
-          <button onClick={generatedPassword} className='py-3 mt-3 my-3 p-3 bg-indigo-500 text-white font-semibold rounded-md hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500'>Generate Password</button>
-          <button onClick={copyToClipboard} className='py-3 mt-3 my-3 p-3 bg-indigo-500 text-white font-semibold rounded-md hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500'>Copy</button>
-          
+          {isSuperAdmin && 
+            <div>
+                <button onClick={generatedPassword} type='button' className='py-3 mt-3 my-3 p-3 mx-3 bg-indigo-500 text-white font-semibold rounded-md hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500'>Generate Password</button>
+          <button onClick={copyToClipboard} type='button' className='py-3 mt-3 my-3 p-3 bg-indigo-500 text-white font-semibold rounded-md hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500'>Copy</button>   
+            {copy && <p className='text-red-300'>{copy}</p>}
+            </div>
+          }          
 
           <p style={{ color: passwordCondition.minLength ? 'green' : 'red' }}>
             {passwordCondition.minLength ? '✔' : '❌'} At least 8 characters
