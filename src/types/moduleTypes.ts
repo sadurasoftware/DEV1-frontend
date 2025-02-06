@@ -16,6 +16,6 @@ export type modulesType = {
 
 export type modulesResponse = {
     message: string;
-    modules: modulesType[];
+    module: modulesType[];
 }
 
