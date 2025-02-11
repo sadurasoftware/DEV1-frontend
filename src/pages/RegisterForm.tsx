@@ -28,6 +28,7 @@ const RegisterForm: React.FC = () => {
     username: "",
     email: "",
     password: "",
+    confirmPassword: "",
     role: "user",
   })
   const [passwordCondition, setPasswordCondition] = useState<PasswordType>({
@@ -69,7 +70,7 @@ const RegisterForm: React.FC = () => {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target
-    if (name == "password") {
+    if (name == "password"  || name === "confirmPassword") {
       validatedPassword(value)
     }
 
@@ -85,6 +86,15 @@ const RegisterForm: React.FC = () => {
     e.preventDefault()
     setFormErrors({})
     setApiError(null)
+
+
+    if (formData.password !== formData.confirmPassword) {
+      setFormErrors((prevErrors) => ({
+        ...prevErrors,
+        confirmPassword: "Passwords do not match!",
+      }))
+      return
+    }
 
     if (!isSuperAdmin) {
       setFormData((prevData) => ({
@@ -102,6 +112,7 @@ const RegisterForm: React.FC = () => {
             username: "",
             email: "",
             password: "",
+            confirmPassword: "",
             role: "user",
           })
         },
@@ -155,6 +166,7 @@ const RegisterForm: React.FC = () => {
     setFormData((prevData) => ({
       ...prevData,
       password: generatePassword,
+      confirmPassword: generatePassword,
     }))
     validatedPassword(generatePassword)
   }
@@ -282,10 +294,12 @@ const RegisterForm: React.FC = () => {
                     type='password'
                     id='confirmPassword'
                     name='confirmPassword'
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
                   />
-                  {/* {formErrors.confirmPassword && (
+                  {formErrors.confirmPassword !== formErrors.password && (
                     <p style={{ color: "red" }}>Password does not match!</p>
-                    )} */}
+                    )}
                 </div>
 
                 {isSuperAdmin && (
