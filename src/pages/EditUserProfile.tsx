@@ -1,80 +1,88 @@
-import { useEffect, useState } from 'react';
-import { useLoginInfoStore } from '../store/useLoginInfoStore';
-import { useNavigate } from 'react-router-dom';
-import { updateUser } from '../apis/edituserAPI';
-import { useGetUsers } from '../hooks/useGetUser';
+import { useEffect, useState } from 'react'
+import { useLoginInfoStore } from '../store/useLoginInfoStore'
+import { useNavigate } from 'react-router-dom'
+import { updateUser } from '../apis/edituserAPI'
+import { useGetUsers } from '../hooks/useGetUser'
 
 export const EditUserProfile = () => {
-  const { user } = useLoginInfoStore();
-  const userId = user?.id || 0; 
-  const navigate = useNavigate();
+  const { user } = useLoginInfoStore()
+  const userId = user?.id || 0
+  const navigate = useNavigate()
 
-  const { data, isLoading, error: fetchError } = useGetUsers(userId);
+  const { data, isLoading, error: fetchError } = useGetUsers(userId)
 
-  const { userData } = data || {}; 
+  const { userData } = data || {}
 
   const [formData, setFormData] = useState({
     username: userData?.username || '',
     email: userData?.email || '',
-  });
+  })
 
   useEffect(() => {
     if (!user) {
-      navigate('/login');
+      navigate('/login')
     }
-  }, [user, navigate]);
+  }, [user, navigate])
 
   useEffect(() => {
     if (userData) {
       setFormData({
         username: userData.username,
         email: userData.email,
-      });
+      })
     }
-  }, [userData]);
+  }, [userData])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
+    const { name, value } = e.target
+    setFormData(prevData => ({
       ...prevData,
       [name]: value,
-    }));
-  };
+    }))
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
 
     if (!userId || !formData) {
-      return;
+      return
     }
 
     try {
       await updateUser(userId, {
         username: formData.username,
         email: formData.email,
-      });
+      })
 
-      navigate('/userdashboard');
+      navigate('/userdashboard')
     } catch (err) {
-      console.error('Error updating profile', err);
+      console.error('Error updating profile', err)
     }
-  };
+  }
 
   if (isLoading) {
-    return <div className="text-center">Loading...</div>;
+    return <div className="text-center">Loading...</div>
   }
 
   if (fetchError) {
-    return <div className="text-center text-red-500">Error fetching user data</div>;
+    return (
+      <div className="text-center text-red-500">Error fetching user data</div>
+    )
   }
 
   return (
     <div className="container mx-auto mt-8 px-4">
       <h1 className="text-center text-3xl font-semibold mb-6">Edit Profile</h1>
 
-      <form onSubmit={handleSubmit} className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md">
+      <form
+        onSubmit={handleSubmit}
+        className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md"
+      >
         <div className="mb-4">
-          <label htmlFor="username" className="block text-gray-700 font-semibold mb-2">
+          <label
+            htmlFor="username"
+            className="block text-gray-700 font-semibold mb-2"
+          >
             Name
           </label>
           <input
@@ -89,7 +97,10 @@ export const EditUserProfile = () => {
         </div>
 
         <div className="mb-4">
-          <label htmlFor="email" className="block text-gray-700 font-semibold mb-2">
+          <label
+            htmlFor="email"
+            className="block text-gray-700 font-semibold mb-2"
+          >
             Email
           </label>
           <input
@@ -114,5 +125,5 @@ export const EditUserProfile = () => {
         </div>
       </form>
     </div>
-  );
-};
+  )
+}

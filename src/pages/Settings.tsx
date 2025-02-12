@@ -1,6 +1,6 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from 'react-router-dom'
 export const Settings = () => {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -9,12 +9,12 @@ export const Settings = () => {
 
         <div className="space-y-4">
           <button
-            onClick={() => navigate("/super-admin-permissions")}
+            onClick={() => navigate('/super-admin-permissions')}
             className="w-full py-3 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition"
           >
-            Admin User Permission  
+            Admin User Permission
           </button>
-{/* 
+          {/* 
           <button
             onClick={() => navigate("/userpermission")}
             className="w-full py-3 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition"
@@ -22,19 +22,19 @@ export const Settings = () => {
             User Permission
           </button> */}
           <button
-            onClick={() => navigate("/roles")}
+            onClick={() => navigate('/roles')}
             className="w-full py-3 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition"
           >
-            Roles  
+            Roles
           </button>
           <button
-            onClick={() => navigate("/permissions")}
+            onClick={() => navigate('/permissions')}
             className="w-full py-3 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition"
           >
-            Permissions  
+            Permissions
           </button>
           <button
-            onClick={() => navigate("/modules")}
+            onClick={() => navigate('/modules')}
             className="w-full py-3 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition"
           >
             Modules
@@ -42,5 +42,5 @@ export const Settings = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
