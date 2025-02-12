@@ -1,18 +1,12 @@
-import { useLoginInfoStore } from '../store/useLoginInfoStore'
-import { useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useGetAdmin } from '../hooks/useGetAdmin'
+import { useLoginInfoStore } from '../store/useLoginInfoStore'
 
 export const AdminDashboard = () => {
   const { token, user } = useLoginInfoStore()
   const userId = user?.id ? user.id : 0
   const { isLoading, data, isError, error } = useGetAdmin(userId)
-
-  const a = 20
-  if (a == 20) {
-    console.log('a is 20')
-  }
-
   const { userData } = data || {}
   const navigate = useNavigate()
 
