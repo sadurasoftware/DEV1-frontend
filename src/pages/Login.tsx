@@ -5,6 +5,7 @@ import { useLoginMutation } from '@/hooks/useLoginMutation';
 import { loginschema } from '@/validation/validator';
 import { z } from 'zod';
 import { useLoginInfoStore } from '../store/useLoginInfoStore';
+import { Button } from '@/components/ui/button';
 
 export const Login = () => {
   // Get from store
@@ -102,12 +103,19 @@ export const Login = () => {
           </div>
         </div>
 
-        <button
+        {/* <button
           onClick={handleLogin}
           className="w-full mt-6 py-3 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition"
         >
           {isPending ? 'Logging in...' : 'Login'}
-        </button>
+        </button> */}
+
+        <Button
+          onClick={handleLogin}
+          className="w-full mt-6 py-3 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition"
+        >
+          {isPending ? 'Logging in...' : 'Login'}
+        </Button>
 
         {error && <p className="text-red-500 mt-4 text-center">{error}</p>}
         {success && (

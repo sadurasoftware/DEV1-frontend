@@ -1,45 +1,50 @@
-import { useLoginInfoStore } from '../store/useLoginInfoStore';
-import { useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
-import { useGetAdmin } from '../hooks/useGetAdmin';
+import { useLoginInfoStore } from '../store/useLoginInfoStore'
+import { useNavigate } from 'react-router-dom'
+import { useEffect } from 'react'
+import { useGetAdmin } from '../hooks/useGetAdmin'
 
 export const AdminDashboard = () => {
-  const { token, user } = useLoginInfoStore();
-  const userId = user?.id ? user.id : 0;
-  const { isLoading, data, isError, error } = useGetAdmin(userId);
+  const { token, user } = useLoginInfoStore()
+  const userId = user?.id ? user.id : 0
+  const { isLoading, data, isError, error } = useGetAdmin(userId)
 
-  const { userData } = data || {};
-  const navigate = useNavigate();
+  const a = 20
+  if (a == 20) {
+    console.log('a is 20')
+  }
+
+  const { userData } = data || {}
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (!token) {
-      navigate("/login");
+      navigate('/login')
     }
-  }, [token, navigate]);
+  }, [token, navigate])
 
- 
   const handleEditClick = () => {
-    navigate(`/edit-admin-profile/${userId}`);
-  };
+    navigate(`/edit-admin-profile/${userId}`)
+  }
 
   const handleShowUsers = () => {
-    navigate('/users');
-  };
-
+    navigate('/users')
+  }
 
   return (
-      <div className="container mx-auto mt-8 px-4">
+    <div className="container mx-auto mt-8 px-4">
       {/* <div className="flex justify-start space-x-4 mb-6"> */}
       <div className="flex justify-end space-x-4 mb-6">
-        <button 
-          onClick={handleShowUsers} 
+        <button
+          onClick={handleShowUsers}
           className="bg-yellow-500 text-white px-6 py-3 rounded-md hover:bg-yellow-600 transition duration-200"
         >
           Show Users
         </button>
       </div>
-      
-      <h1 className="text-center text-3xl font-semibold mb-6">Welcome to Your Dashboard</h1>
+
+      <h1 className="text-center text-3xl font-semibold mb-6">
+        Welcome to Your Dashboard
+      </h1>
 
       {isLoading && (
         <div className="flex justify-center">
@@ -47,7 +52,9 @@ export const AdminDashboard = () => {
         </div>
       )}
 
-      {isError && <p className="text-center text-red-500">{`Error loading user details: ${error?.message}`}</p>}
+      {isError && (
+        <p className="text-center text-red-500">{`Error loading user details: ${error?.message}`}</p>
+      )}
 
       {data && userData && (
         <div className="flex justify-center">
@@ -63,7 +70,8 @@ export const AdminDashboard = () => {
                 <span className="font-bold">Role:</span> {userData.roleId}
               </p>
               <p className="text-center mt-4 text-lg font-semibold text-gray-500">
-                <span className="font-bold">Status:</span> {userData.isVerified ? 'Verified' : 'Registered'}
+                <span className="font-bold">Status:</span>{' '}
+                {userData.isVerified ? 'Verified' : 'Registered'}
               </p>
 
               <div className="flex justify-center mt-6">
@@ -79,5 +87,5 @@ export const AdminDashboard = () => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
