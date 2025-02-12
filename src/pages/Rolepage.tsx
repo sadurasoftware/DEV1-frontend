@@ -1,76 +1,82 @@
-import React, { useState } from 'react';
-import { useCreateRole } from '../hooks/useCreateRole';
-import { Link } from 'react-router-dom';
-import { useFetchRoles } from '@/hooks/useFetchRoles';
-import { roleType } from '@/types/roleTypes';
-import { useUpdateRoleById } from '@/hooks/useUpdateRoleById';
-import { useDeleteRoleById } from '@/hooks/useDeleteRoleById';
+import React, { useState } from 'react'
+import { useCreateRole } from '../hooks/useCreateRole'
+import { Link } from 'react-router-dom'
+import { useFetchRoles } from '@/hooks/useFetchRoles'
+import { roleType } from '@/types/roleTypes'
+import { useUpdateRoleById } from '@/hooks/useUpdateRoleById'
+import { useDeleteRoleById } from '@/hooks/useDeleteRoleById'
 
 const RolePage: React.FC = () => {
-  const [roleName, setRoleName] = useState<string>('');
-  const [roleId, setRoleId] = useState<number | null>(null);
+  const [roleName, setRoleName] = useState<string>('')
+  const [roleId, setRoleId] = useState<number | null>(null)
 
-  const [sucess, setSuccess] = useState<string>('');
-  const [errror, setError] = useState<string>('');
+  const [sucess, setSuccess] = useState<string>('')
+  const [errror, setError] = useState<string>('')
 
-  const { mutate, isPending, isError, isSuccess, error, data } = useCreateRole();
-  const { rolesLoading, rolesData, isRolesError, rolesError, refetch } = useFetchRoles();
-  const { roles } = rolesData || {};
+  const { mutate, isPending, isError, isSuccess, error, data } = useCreateRole()
+  const { rolesLoading, rolesData, isRolesError, rolesError, refetch } =
+    useFetchRoles()
+  const { roles } = rolesData || {}
 
-  const { mutate: updateRole, updateRolePending, isRoleUpdateError, updateRoleError, updateRoleSuccess } = useUpdateRoleById();
-  const { deleteRole, deleteRolePending } = useDeleteRoleById();
-
+  const {
+    mutate: updateRole,
+    updateRolePending,
+    isRoleUpdateError,
+    updateRoleError,
+    updateRoleSuccess,
+  } = useUpdateRoleById()
+  const { deleteRole, deleteRolePending } = useDeleteRoleById()
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setRoleName(e.target.value);
-  };
-
+    setRoleName(e.target.value)
+  }
 
   const handleRoleSelect = (id: number) => {
-    setRoleId(id);
-    const selectedRole = roles?.find(role => role.id === id);
+    setRoleId(id)
+    const selectedRole = roles?.find(role => role.id === id)
     if (selectedRole) {
-      setRoleName(selectedRole.name);
+      setRoleName(selectedRole.name)
     }
-  };
-
+  }
 
   const roleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
     try {
       if (roleName.trim()) {
         if (roleId) {
-
           console.log(roleId, roleName)
-          updateRole({ id: roleId, name: roleName }, {
-            onSuccess: () => {
-              refetch();
-              
-            },
-          });
+          updateRole(
+            { id: roleId, name: roleName },
+            {
+              onSuccess: () => {
+                refetch()
+              },
+            }
+          )
         } else {
-
-          mutate({ name: roleName }, {
-            onSuccess: () => {
-              refetch();
-              setSuccess(data?.message || '');
-            },
-          });
+          mutate(
+            { name: roleName },
+            {
+              onSuccess: () => {
+                refetch()
+                setSuccess(data?.message || '')
+              },
+            }
+          )
         }
       }
     } catch (err) {
-      console.error("Error during role submission:", err);
+      console.error('Error during role submission:', err)
     }
-  };
-
+  }
 
   const handleDeleteRole = (id: number) => {
     deleteRole(id, {
       onSuccess: () => {
-        refetch();
+        refetch()
       },
-    });
-  };
+    })
+  }
 
   return (
     <div className="max-w-lg mx-auto p-6 rounded-lg shadow-md bg-white">
@@ -78,7 +84,9 @@ const RolePage: React.FC = () => {
 
       <form onSubmit={roleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="roleName" className="block text-gray-700">Role Name</label>
+          <label htmlFor="roleName" className="block text-gray-700">
+            Role Name
+          </label>
           <input
             type="text"
             id="roleName"
@@ -95,15 +103,21 @@ const RolePage: React.FC = () => {
         )}
 
         {isSuccess && data && (
-          <div className="text-green-600 text-center mt-2">Role created successfully!</div>
+          <div className="text-green-600 text-center mt-2">
+            Role created successfully!
+          </div>
         )}
 
         {updateRoleSuccess && (
-          <div className="text-green-600 text-center mt-2">Role updated successfully!</div>
+          <div className="text-green-600 text-center mt-2">
+            Role updated successfully!
+          </div>
         )}
 
         {isRoleUpdateError && updateRoleError && (
-          <div className="text-red-600 text-center mt-2">{updateRoleError.message}</div>
+          <div className="text-red-600 text-center mt-2">
+            {updateRoleError.message}
+          </div>
         )}
 
         <div className="text-center mt-4">
@@ -112,13 +126,21 @@ const RolePage: React.FC = () => {
             className="w-full py-3 bg-indigo-500 text-white font-semibold rounded-md hover:bg-indigo-600"
             disabled={isPending || updateRolePending}
           >
-            {isPending || updateRolePending ? (roleId ? 'Updating Role...' : 'Creating Role...') : (roleId ? 'Update Role' : 'Create Role')}
+            {isPending || updateRolePending
+              ? roleId
+                ? 'Updating Role...'
+                : 'Creating Role...'
+              : roleId
+                ? 'Update Role'
+                : 'Create Role'}
           </button>
         </div>
       </form>
 
       <div className="mt-6">
-        <h3 className="text-xl font-semibold text-center mb-4">Existing Roles</h3>
+        <h3 className="text-xl font-semibold text-center mb-4">
+          Existing Roles
+        </h3>
 
         {rolesLoading ? (
           <div className="text-center">Loading roles...</div>
@@ -153,7 +175,6 @@ const RolePage: React.FC = () => {
               </tbody>
             </table>
           </div>
-
         )}
       </div>
 
@@ -163,7 +184,7 @@ const RolePage: React.FC = () => {
         </Link>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default RolePage;
+export default RolePage

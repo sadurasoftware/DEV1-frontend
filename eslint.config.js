@@ -13,7 +13,6 @@ export default tseslint.config(
       js.configs.recommended,
       ...tseslint.configs.recommended,
       ...tseslint.configs.recommendedTypeChecked,
-      ...react.configs.recommended,
     ],
     files: ['**/*.{ts,tsx}'],
     languageOptions: {
@@ -25,7 +24,11 @@ export default tseslint.config(
         JSX: true,
       },
       parserOptions: {
-        project: true,
+        project: [
+          './tsconfig.json',
+          './tsconfig.app.json',
+          './tsconfig.node.json',
+        ],
         ecmaFeatures: {
           jsx: true,
         },
@@ -37,15 +40,12 @@ export default tseslint.config(
       react: react,
       prettier: prettier,
     },
-    settings: {
-      react: {
-        version: 'detect',
-      },
-    },
     rules: {
       ...reactHooks.configs.recommended.rules,
       'prettier/prettier': 'error',
       eqeqeq: ['error', 'always'],
+      'react/jsx-uses-react': 'error',
+      'react/jsx-uses-vars': 'error',
       'react-refresh/only-export-components': [
         'warn',
         { allowConstantExport: true },

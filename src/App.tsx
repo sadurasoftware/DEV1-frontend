@@ -1,27 +1,26 @@
-import './App.css';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import RegisterForm from './pages/RegisterForm';
-import { Login } from './pages/Login';
-import { useLoginInfoStore } from './store/useLoginInfoStore';
-import {AuthenticatedLayout} from './layouts/AuthentictedLayout';
-import {UnauthenticatedLayout} from './layouts/MainLayout';
-import { Navbar } from './pages/Navbar';
-import { ForgotPassword } from './pages/Forgetpassword';
-import { ResetPassword } from './pages/ResetPassword';
-import { SuperAdminDashboard } from './pages/SuperAdminDashboard';
-import SuperAdminPermission from './pages/SuperAdminPermission';
-import { Settings } from './pages/Settings';
-import RolePage from './pages/Rolepage';
-import Permissionpage from './pages/Permissionpage';
-import Admins from './pages/Admins';
-import Users from './pages/Users';
-import { UserDashboard } from './pages/UserDashboard';
-import { EditUserProfile } from './pages/EditUserProfile';
-import { AdminDashboard } from './pages/AdminDashboard';
-import { EditForm } from './pages/EditForm';
-import { EditAdminProfile } from './pages/EditAdminProfile';
-import Modules from './pages/Modules';
-
+import { Route, BrowserRouter as Router, Routes } from 'react-router-dom'
+import './App.css'
+import { AuthenticatedLayout } from './layouts/AuthentictedLayout'
+import { UnauthenticatedLayout } from './layouts/MainLayout'
+import { AdminDashboard } from './pages/AdminDashboard'
+import Admins from './pages/Admins'
+import { EditAdminProfile } from './pages/EditAdminProfile'
+import { EditForm } from './pages/EditForm'
+import { EditUserProfile } from './pages/EditUserProfile'
+import { ForgotPassword } from './pages/Forgetpassword'
+import { Login } from './pages/Login'
+import Modules from './pages/Modules'
+import { Navbar } from './pages/Navbar'
+import Permissionpage from './pages/Permissionpage'
+import RegisterForm from './pages/RegisterForm'
+import { ResetPassword } from './pages/ResetPassword'
+import RolePage from './pages/Rolepage'
+import { Settings } from './pages/Settings'
+import { SuperAdminDashboard } from './pages/SuperAdminDashboard'
+import SuperAdminPermission from './pages/SuperAdminPermission'
+import { UserDashboard } from './pages/UserDashboard'
+import Users from './pages/Users'
+import { useLoginInfoStore } from './store/useLoginInfoStore'
 
 // import Theme from './pages/Theme';
 // import  useThemeStore from './store/themeStore';
@@ -29,34 +28,44 @@ import Modules from './pages/Modules';
 
 const App: React.FC = () => {
   // const { theme } = useThemeStore();
-  const { token } = useLoginInfoStore(); 
-  
+  const { token } = useLoginInfoStore()
 
   // useEffect(() => {
-  //   document.body.className = theme ; 
+  //   document.body.className = theme ;
   // }, [theme]);
 
-  
   return (
     <Router>
       <div>
-        <Navbar/>
+        <Navbar />
         {/* <Theme/> */}
-        
-        {token ? (         
+
+        {token ? (
           <AuthenticatedLayout>
             <Routes>
-              <Route path="/" element={<h1 className="flex justify-center">Dev Frontend</h1>} />
-              <Route path='/super-admin' element={<SuperAdminDashboard/>}/>
-              <Route path='/userdashboard' element={<UserDashboard/>}/>
-              <Route path="/edit-profile/:userId" element={<EditUserProfile />} />
-              <Route path='/admindashboard' element={<AdminDashboard/>}/>
-              <Route path="/edit-admin-profile/:userId" element={<EditAdminProfile/>}/>
+              <Route
+                path="/"
+                element={<h1 className="flex justify-center">Dev Frontend</h1>}
+              />
+              <Route path="/super-admin" element={<SuperAdminDashboard />} />
+              <Route path="/userdashboard" element={<UserDashboard />} />
+              <Route
+                path="/edit-profile/:userId"
+                element={<EditUserProfile />}
+              />
+              <Route path="/admindashboard" element={<AdminDashboard />} />
+              <Route
+                path="/edit-admin-profile/:userId"
+                element={<EditAdminProfile />}
+              />
               <Route path="/register" element={<RegisterForm />} />
-              <Route path='/users' element={<Users/>}/>
+              <Route path="/users" element={<Users />} />
               <Route path="/admins" element={<Admins />} />
               <Route path="/settings" element={<Settings />} />
-              <Route path="/super-admin-permissions" element={<SuperAdminPermission />} />
+              <Route
+                path="/super-admin-permissions"
+                element={<SuperAdminPermission />}
+              />
               <Route path="/roles" element={<RolePage />} />
               <Route path="/permissions" element={<Permissionpage />} />
               <Route path="/edit/:id" element={<EditForm />} />
@@ -68,15 +77,18 @@ const App: React.FC = () => {
             <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<RegisterForm />} />
-              <Route path="/forget-password" element={<ForgotPassword/>}/>
-              <Route path="/" element={<h1 className="flex justify-center">Dev Frontend</h1>} />
-              <Route path="/reset-password" element={<ResetPassword />} />             
+              <Route path="/forget-password" element={<ForgotPassword />} />
+              <Route
+                path="/"
+                element={<h1 className="flex justify-center">Dev Frontend</h1>}
+              />
+              <Route path="/reset-password" element={<ResetPassword />} />
             </Routes>
           </UnauthenticatedLayout>
         )}
       </div>
     </Router>
-  );
-};
+  )
+}
 
-export default App;
+export default App

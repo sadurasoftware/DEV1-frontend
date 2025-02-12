@@ -1,7 +1,5 @@
-import React from "react"
+import React from 'react'
 
 export const EditForm = () => {
-  return (
-    <div>editForm</div>
-  )
+  return <div>editForm</div>
 }
