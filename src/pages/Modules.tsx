@@ -1,84 +1,95 @@
-import React, { useState } from 'react';
-import { useCreateModule } from '../hooks/useCreateModule';
-import { Link } from 'react-router-dom';
-import { useFetchModules } from '@/hooks/useFetchModules';
-import { moduleType } from '@/types/moduleTypes';
-import { useUpdateModuleById } from '@/hooks/useUpdateModuleById';
-import { useDeleteModuleById } from '@/hooks/useDeleteModuleById';
+import React, { useState } from 'react'
+import { useCreateModule } from '../hooks/useCreateModule'
+import { Link } from 'react-router-dom'
+import { useFetchModules } from '@/hooks/useFetchModules'
+import { moduleType } from '@/types/moduleTypes'
+import { useUpdateModuleById } from '@/hooks/useUpdateModuleById'
+import { useDeleteModuleById } from '@/hooks/useDeleteModuleById'
 
 const Modules: React.FC = () => {
-  const [moduleName, setModuleName] = useState<string>('');
-  const [moduleId, setModuleId] = useState<number | null>(null);
+  const [moduleName, setModuleName] = useState<string>('')
+  const [moduleId, setModuleId] = useState<number | null>(null)
 
-  const [success, setSuccess] = useState<string>('');
-  const [errror, setError] = useState<string>('');
+  const [success, setSuccess] = useState<string>('')
+  const [errror, setError] = useState<string>('')
 
-  const { mutate, isPending, isError, isSuccess, error, data } = useCreateModule();
-  const { modulesLoading, modulesData, isModulesError, modulesError, refetch } = useFetchModules();
-  const { module } = modulesData || {};
+  const { mutate, isPending, isError, isSuccess, error, data } =
+    useCreateModule()
+  const { modulesLoading, modulesData, isModulesError, modulesError, refetch } =
+    useFetchModules()
+  const { module } = modulesData || {}
 
-  const { mutate: updateModule, updateModulePending, isModuleUpdateError, updateModuleError, updateModuleSuccess } = useUpdateModuleById();
-  const { deleteModule, deleteModulePending } = useDeleteModuleById();
-
+  const {
+    mutate: updateModule,
+    updateModulePending,
+    isModuleUpdateError,
+    updateModuleError,
+    updateModuleSuccess,
+  } = useUpdateModuleById()
+  const { deleteModule, deleteModulePending } = useDeleteModuleById()
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setModuleName(e.target.value);
-  };
-
+    setModuleName(e.target.value)
+  }
 
   const handleModuleSelect = (id: number) => {
-    setModuleId(id);
-    const selectedModule = module?.find(mod => mod.id === id);
+    setModuleId(id)
+    const selectedModule = module?.find(mod => mod.id === id)
     if (selectedModule) {
-      setModuleName(selectedModule.name);
+      setModuleName(selectedModule.name)
     }
-  };
-
+  }
 
   const moduleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
     try {
       if (moduleName.trim()) {
         if (moduleId) {
-
           console.log(moduleId, moduleName)
-          updateModule({ id: moduleId, name: moduleName }, {
-            onSuccess: () => {
-              refetch();
-              
-            },
-          });
+          updateModule(
+            { id: moduleId, name: moduleName },
+            {
+              onSuccess: () => {
+                refetch()
+              },
+            }
+          )
         } else {
-
-          mutate({ name: moduleName }, {
-            onSuccess: () => {
-              refetch();
-              setSuccess(data?.message || '');
-            },
-          });
+          mutate(
+            { name: moduleName },
+            {
+              onSuccess: () => {
+                refetch()
+                setSuccess(data?.message || '')
+              },
+            }
+          )
         }
       }
     } catch (err) {
-      console.error("Error during module submission:", err);
+      console.error('Error during module submission:', err)
     }
-  };
-
+  }
 
   const handleDeleteModule = (id: number) => {
     deleteModule(id, {
       onSuccess: () => {
-        refetch();
+        refetch()
       },
-    });
-  };
+    })
+  }
 
   return (
     <div className="max-w-lg mx-auto p-6 rounded-lg shadow-md bg-white">
-      <h2 className="text-2xl font-semibold text-center mb-6">Manage Modules</h2>
+      <h2 className="text-2xl font-semibold text-center mb-6">
+        Manage Modules
+      </h2>
 
       <form onSubmit={moduleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="moduleName" className="block text-gray-700">Module Name</label>
+          <label htmlFor="moduleName" className="block text-gray-700">
+            Module Name
+          </label>
           <input
             type="text"
             id="moduleName"
@@ -95,15 +106,21 @@ const Modules: React.FC = () => {
         )}
 
         {isSuccess && data && (
-          <div className="text-green-600 text-center mt-2">Module created successfully!</div>
+          <div className="text-green-600 text-center mt-2">
+            Module created successfully!
+          </div>
         )}
 
         {updateModuleSuccess && (
-          <div className="text-green-600 text-center mt-2">Module updated successfully!</div>
+          <div className="text-green-600 text-center mt-2">
+            Module updated successfully!
+          </div>
         )}
 
         {isModuleUpdateError && updateModuleError && (
-          <div className="text-red-600 text-center mt-2">{updateModuleError.message}</div>
+          <div className="text-red-600 text-center mt-2">
+            {updateModuleError.message}
+          </div>
         )}
 
         <div className="text-center mt-4">
@@ -112,13 +129,21 @@ const Modules: React.FC = () => {
             className="w-full py-3 bg-indigo-500 text-white font-semibold rounded-md hover:bg-indigo-600"
             disabled={isPending || updateModulePending}
           >
-            {isPending || updateModulePending ? (moduleId ? 'Updating Module...' : 'Creating Module...') : (moduleId ? 'Update Module' : 'Create Module')}
+            {isPending || updateModulePending
+              ? moduleId
+                ? 'Updating Module...'
+                : 'Creating Module...'
+              : moduleId
+                ? 'Update Module'
+                : 'Create Module'}
           </button>
         </div>
       </form>
 
       <div className="mt-6">
-        <h3 className="text-xl font-semibold text-center mb-4">Existing Modules</h3>
+        <h3 className="text-xl font-semibold text-center mb-4">
+          Existing Modules
+        </h3>
 
         {modulesLoading ? (
           <div className="text-center">Loading Modules...</div>
@@ -153,7 +178,6 @@ const Modules: React.FC = () => {
               </tbody>
             </table>
           </div>
-
         )}
       </div>
 
@@ -163,7 +187,7 @@ const Modules: React.FC = () => {
         </Link>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Modules;
+export default Modules

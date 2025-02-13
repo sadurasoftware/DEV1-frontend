@@ -1,42 +1,41 @@
 export type LoginUser = {
-    email: string;
-    password: string;
+  email: string
+  password: string
 }
 
 export type User = {
-    id: number;
-    username: string;
-    email: string;  
-    password: string;
-    isVerified: boolean;
-    roleId: number;
-    createdAt:string;
-    updatedAt:string;
-  };
+  id: number
+  username: string
+  email: string
+  password: string
+  isVerified: boolean
+  roleId: number
+  createdAt: string
+  updatedAt: string
+}
 
 export type LoggedInUser = {
-    token: string;
-    user: User;
+  token: string
+  user: User
 }
 
 export type ErrorResponse = {
-    message:string;
-  }
-
-export type loggedout = {
-    message:string;
+  message: string
 }
 
-export type  logoutProps = {
-    token: string | null;
-    clearLoginInfo: () => void;
-  }
+export type loggedout = {
+  message: string
+}
+
+export type logoutProps = {
+  token: string | null
+  clearLoginInfo: () => void
+}
 
 export type GetUserResponse = {
-    userData: User; 
-  }
+  userData: User
+}
 
 export type GetAdminResponse = {
-    userData: User; 
-  }
-
+  userData: User
+}

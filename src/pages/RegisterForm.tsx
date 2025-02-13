@@ -1,37 +1,30 @@
-import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
-import { Checkbox } from "@/components/ui/checkbox"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { FaCircleXmark, FaCircleCheck } from "react-icons/fa6"
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { FaCircleCheck, FaCircleXmark } from 'react-icons/fa6'
 
-import { Link, useNavigate } from "react-router-dom"
-import React, { useState, useEffect } from "react"
-import { useRegisterMutation } from "../hooks/useRegister"
-import { User } from "../types/registerTypes"
-import { registerValidation } from "../validation/registerValidation"
-import { z } from "zod"
-import useThemeStore from "../store/themeStore"
-import { PasswordType } from "../types/registerTypes"
-import { useLoginInfoStore } from "@/store/useLoginInfoStore"
-import { useFetchRoles } from "../hooks/useFetchRoles"
-import { roleType } from "@/types/roleTypes"
+import { useLoginInfoStore } from '@/store/useLoginInfoStore'
+import { roleType } from '@/types/roleTypes'
+import React, { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { z } from 'zod'
+import { useFetchRoles } from '../hooks/useFetchRoles'
+import { useRegisterMutation } from '../hooks/useRegister'
+import useThemeStore from '../store/themeStore'
+import { PasswordType, User } from '../types/registerTypes'
+import { registerValidation } from '../validation/registerValidation'
 
 const RegisterForm: React.FC = () => {
   const { theme } = useThemeStore()
   const { user } = useLoginInfoStore()
   const [formData, setFormData] = useState<User>({
     id: 0,
-    username: "",
-    email: "",
-    password: "",
-    role: "user",
+    username: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    role: 'user',
   })
   const [passwordCondition, setPasswordCondition] = useState<PasswordType>({
     minLength: false,
@@ -40,7 +33,7 @@ const RegisterForm: React.FC = () => {
     hasSpecialChar: false,
     hasNumber: false,
   })
-  const [copy, setCopy] = useState<string>("")
+  const [copy, setCopy] = useState<string>('')
 
   const validatedPassword = (password: string) => {
     setPasswordCondition({
@@ -60,10 +53,10 @@ const RegisterForm: React.FC = () => {
 
   const isSuperAdmin = user?.roleId === 1
 
-  const rolesFilter = roles?.filter((role) => role.name !== "superadmin")
+  const rolesFilter = roles?.filter(role => role.name !== 'superadmin')
 
   useEffect(() => {
-    setFormData((prevData) => ({
+    setFormData(prevData => ({
       ...prevData,
     }))
   }, [theme])
@@ -72,7 +65,7 @@ const RegisterForm: React.FC = () => {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target
-    if (name == "password") {
+    if (name === 'password' || name === 'confirmPassword') {
       validatedPassword(value)
     }
 
@@ -89,10 +82,18 @@ const RegisterForm: React.FC = () => {
     setFormErrors({})
     setApiError(null)
 
+    if (formData.password !== formData.confirmPassword) {
+      setFormErrors(prevErrors => ({
+        ...prevErrors,
+        confirmPassword: 'Passwords do not match!',
+      }))
+      return
+    }
+
     if (!isSuperAdmin) {
-      setFormData((prevData) => ({
+      setFormData(prevData => ({
         ...prevData,
-        role: "user",
+        role: 'user',
       }))
     }
 
@@ -102,13 +103,14 @@ const RegisterForm: React.FC = () => {
         onSuccess: () => {
           setFormData({
             id: 0,
-            username: "",
-            email: "",
-            password: "",
-            role: "user",
+            username: '',
+            email: '',
+            password: '',
+            confirmPassword: '',
+            role: 'user',
           })
         },
-        onError: (err) => {
+        onError: err => {
           if (err && err.response && err.response.data) {
             setApiError(err.response.data.message)
           }
@@ -117,7 +119,7 @@ const RegisterForm: React.FC = () => {
     } catch (err) {
       if (err instanceof z.ZodError) {
         const errors: { [key: string]: string } = {}
-        err.errors.forEach((error) => {
+        err.errors.forEach(error => {
           errors[error.path[0]] = error.message
         })
         setFormErrors(errors)
@@ -127,9 +129,9 @@ const RegisterForm: React.FC = () => {
 
   const generatedPassword = () => {
     const charset =
-      "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_-+={}[]"
+      'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_-+={}[]'
 
-    let generatePassword = ""
+    let generatePassword = ''
     let hasUpperCase = false
     let hasNumber = false
     let hasSpecialChar = false
@@ -140,7 +142,7 @@ const RegisterForm: React.FC = () => {
       !hasSpecialChar ||
       generatePassword.length < 8
     ) {
-      generatePassword = ""
+      generatePassword = ''
       hasUpperCase = false
       hasNumber = false
       hasSpecialChar = false
@@ -155,9 +157,10 @@ const RegisterForm: React.FC = () => {
       hasSpecialChar = /[^A-Za-z0-9]/.test(generatePassword)
     }
 
-    setFormData((prevData) => ({
+    setFormData(prevData => ({
       ...prevData,
       password: generatePassword,
+      confirmPassword: generatePassword,
     }))
     validatedPassword(generatePassword)
   }
@@ -167,7 +170,7 @@ const RegisterForm: React.FC = () => {
   const copyToClipboard = () => {
     if (formData.password) {
       navigator.clipboard.writeText(formData.password)
-      setCopy("Copied")
+      setCopy('Copied')
     }
   }
 
@@ -181,42 +184,42 @@ const RegisterForm: React.FC = () => {
 
   return (
     <>
-      <div className='min-h-screen flex items-center justify-center'>
-        <div className='p-8 rounded-lg border shadow-lg w-full max-w-xl'>
-          <h2 className='text-2xl font-semibold text-center mb-6'>Register</h2>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="p-8 rounded-lg border shadow-lg w-full max-w-xl">
+          <h2 className="text-2xl font-semibold text-center mb-6">Register</h2>
           <form onSubmit={handleSubmit}>
-            <div className='space-y-4'>
+            <div className="space-y-4">
               <div>
-                <Label htmlFor='username'>Name</Label>
+                <Label htmlFor="username">Name</Label>
                 <Input
-                  type='text'
-                  id='username'
-                  name='username'
+                  type="text"
+                  id="username"
+                  name="username"
                   value={formData.username}
                   onChange={handleChange}
                 />
                 {formErrors.username && (
-                  <p className='text-red-500 text-sm'>{formErrors.username}</p>
+                  <p className="text-red-500 text-sm">{formErrors.username}</p>
                 )}
               </div>
               <div>
-                <Label htmlFor='email'>Email</Label>
+                <Label htmlFor="email">Email</Label>
                 <Input
-                  id='email'
-                  name='email'
+                  id="email"
+                  name="email"
                   value={formData.email}
                   onChange={handleChange}
                 />
                 {formErrors.email && (
-                  <p className='text-red-500 text-sm'>{formErrors.email}</p>
+                  <p className="text-red-500 text-sm">{formErrors.email}</p>
                 )}
               </div>
               <div>
-                <Label htmlFor='password'>Password</Label>
+                <Label htmlFor="password">Password</Label>
                 <Input
-                  type='password'
-                  id='password'
-                  name='password'
+                  type="password"
+                  id="password"
+                  name="password"
                   value={formData.password}
                   onChange={handleChange}
                 />
@@ -225,32 +228,35 @@ const RegisterForm: React.FC = () => {
                   <div>
                     <Button
                       onClick={generatedPassword}
-                      type='button'
-                      className='py-3 mt-3 my-3 p-3 mx-3 bg-indigo-500 text-white font-semibold rounded-md hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500'>
+                      type="button"
+                      className="py-3 mt-3 my-3 p-3 mx-3 bg-indigo-500 text-white font-semibold rounded-md hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    >
                       Generate Password
                     </Button>
                     <Button
                       onClick={copyToClipboard}
-                      type='button'
-                      className='py-3 mt-3 my-3 p-3 bg-indigo-500 text-white font-semibold rounded-md hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500'>
+                      type="button"
+                      className="py-3 mt-3 my-3 p-3 bg-indigo-500 text-white font-semibold rounded-md hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    >
                       Copy
                     </Button>
-                    {copy && <p className='text-red-300'>{copy}</p>}
+                    {copy && <p className="text-red-300">{copy}</p>}
                   </div>
                 )}
 
-                <div className='pt-2'>
+                <div className="pt-2">
                   {formErrors.password && (
-                    <p className='text-red-500 text-sm'>
+                    <p className="text-red-500 text-sm">
                       {formErrors.password}
                     </p>
                   )}
-                  <p className='text-red-500 text-sm'>Password should </p>
+                  <p className="text-red-500 text-sm">Password should </p>
                   <p
-                    className='errorMsg'
+                    className="errorMsg"
                     style={{
-                      color: passwordCondition.maxLength ? "green" : "red",
-                    }}>
+                      color: passwordCondition.maxLength ? 'green' : 'red',
+                    }}
+                  >
                     {passwordCondition.maxLength ? (
                       <FaCircleCheck />
                     ) : (
@@ -259,10 +265,11 @@ const RegisterForm: React.FC = () => {
                     Maximum 20 characters
                   </p>
                   <p
-                    className='errorMsg'
+                    className="errorMsg"
                     style={{
-                      color: passwordCondition.minLength ? "green" : "red",
-                    }}>
+                      color: passwordCondition.minLength ? 'green' : 'red',
+                    }}
+                  >
                     {passwordCondition.minLength ? (
                       <FaCircleCheck />
                     ) : (
@@ -272,10 +279,11 @@ const RegisterForm: React.FC = () => {
                   </p>
 
                   <p
-                    className='errorMsg'
+                    className="errorMsg"
                     style={{
-                      color: passwordCondition.hasUpperCase ? "green" : "red",
-                    }}>
+                      color: passwordCondition.hasUpperCase ? 'green' : 'red',
+                    }}
+                  >
                     {passwordCondition.hasUpperCase ? (
                       <FaCircleCheck />
                     ) : (
@@ -284,10 +292,11 @@ const RegisterForm: React.FC = () => {
                     Contains at least one uppercase letter
                   </p>
                   <p
-                    className='errorMsg'
+                    className="errorMsg"
                     style={{
-                      color: passwordCondition.hasNumber ? "green" : "red",
-                    }}>
+                      color: passwordCondition.hasNumber ? 'green' : 'red',
+                    }}
+                  >
                     {passwordCondition.hasNumber ? (
                       <FaCircleCheck />
                     ) : (
@@ -296,10 +305,11 @@ const RegisterForm: React.FC = () => {
                     Contains at least one number
                   </p>
                   <p
-                    className='errorMsg'
+                    className="errorMsg"
                     style={{
-                      color: passwordCondition.hasSpecialChar ? "green" : "red",
-                    }}>
+                      color: passwordCondition.hasSpecialChar ? 'green' : 'red',
+                    }}
+                  >
                     {passwordCondition.hasSpecialChar ? (
                       <FaCircleCheck />
                     ) : (
@@ -309,11 +319,13 @@ const RegisterForm: React.FC = () => {
                   </p>
                 </div>
                 <div>
-                  <Label htmlFor='confirmPassword'>Confirm Password</Label>
+                  <Label htmlFor="confirmPassword">Confirm Password</Label>
                   <Input
-                    type='password'
-                    id='confirmPassword'
-                    name='confirmPassword'
+                    type="password"
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
                   />
                   {/* {formErrors.confirmPassword && (
                     <p className='text-red-500 text-sm'>Password does not match!</p>
@@ -322,14 +334,15 @@ const RegisterForm: React.FC = () => {
 
                 {isSuperAdmin && (
                   <div>
-                    <Label htmlFor='role'>Role</Label>
+                    <Label htmlFor="role">Role</Label>
 
                     <select
-                      id='role'
-                      name='role'
+                      id="role"
+                      name="role"
                       value={formData.role}
                       onChange={handleChange}
-                      className={`w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500`}>
+                      className={`w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500`}
+                    >
                       {!rolesLoading ? (
                         rolesFilter?.map((role: roleType, index: number) => (
                           <option key={index} value={role.name}>
@@ -337,30 +350,32 @@ const RegisterForm: React.FC = () => {
                           </option>
                         ))
                       ) : (
-                        <option value='' disabled>
+                        <option value="" disabled>
                           Loading roles...
                         </option>
                       )}
                     </select>
                     {formErrors.role && (
-                      <p className='text-red-500 text-sm'>{formErrors.role}</p>
+                      <p className="text-red-500 text-sm">{formErrors.role}</p>
                     )}
                   </div>
                 )}
-                <div className='flex gap-2 mt-4'>
-                  <Checkbox id='terms' />
-                  <div className='grid gap-1.5 leading-none'>
+                <div className="flex gap-2 mt-4">
+                  <Checkbox id="terms" />
+                  <div className="grid gap-1.5 leading-none">
                     <label
-                      htmlFor='terms'
-                      className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'>
-                      Accept <Link to='/'>terms and conditions</Link>
+                      htmlFor="terms"
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                      Accept <Link to="/">terms and conditions</Link>
                     </label>
                   </div>
                 </div>
                 <div>
                   <Button
-                    type='submit'
-                    className='w-full mt-6 py-3 bg-indigo-500 text-white font-semibold rounded-md hover:bg-indigo-600 transition'>
+                    type="submit"
+                    className="w-full mt-6 py-3 bg-indigo-500 text-white font-semibold rounded-md hover:bg-indigo-600 transition"
+                  >
                     Register
                   </Button>
                 </div>
@@ -368,15 +383,15 @@ const RegisterForm: React.FC = () => {
             </div>
           </form>
           {isSuccess && (
-            <p className='text-green-500 text-center mt-4'>
+            <p className="text-green-500 text-center mt-4">
               Registration successful! Please check your email for verification.
             </p>
           )}
           {isError && apiError && (
-            <p className='text-red-500 text-center mt-4'>{apiError}</p>
+            <p className="text-red-500 text-center mt-4">{apiError}</p>
           )}
-          <div className='pt-5'>
-            <Link to='/login'>Already Registered? Login here</Link>
+          <div className="pt-5">
+            <Link to="/login">Already Registered? Login here</Link>
           </div>
         </div>
       </div>

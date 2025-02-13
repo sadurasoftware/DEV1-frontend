@@ -1,31 +1,31 @@
-import { useLoginInfoStore } from '../store/useLoginInfoStore';
-import { useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
-import { useGetUsers } from '../hooks/useGetUser';
+import { useLoginInfoStore } from '../store/useLoginInfoStore'
+import { useNavigate } from 'react-router-dom'
+import { useEffect } from 'react'
+import { useGetUsers } from '../hooks/useGetUser'
 
 export const UserDashboard = () => {
-  const { token, user } = useLoginInfoStore();
-  const userId = user?.id ? user.id:0; 
-  const { isLoading, data, isError, error } = useGetUsers(userId);
+  const { token, user } = useLoginInfoStore()
+  const userId = user?.id ? user.id : 0
+  const { isLoading, data, isError, error } = useGetUsers(userId)
 
-  const { userData } = data || {};
-  const navigate = useNavigate();
+  const { userData } = data || {}
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (!token) {
-      navigate("/login");
-    }  
-  }, [token, navigate]);
-
+      navigate('/login')
+    }
+  }, [token, navigate])
 
   const handleEditClick = () => {
-    navigate(`/edit-profile/${userId}`);
-  };
-
+    navigate(`/edit-profile/${userId}`)
+  }
 
   return (
     <div className="container mx-auto mt-8 px-4">
-      <h1 className="text-center text-3xl font-semibold mb-6">Welcome to Your Dashboard</h1>
+      <h1 className="text-center text-3xl font-semibold mb-6">
+        Welcome to Your Dashboard
+      </h1>
 
       {isLoading && (
         <div className="flex justify-center">
@@ -33,7 +33,9 @@ export const UserDashboard = () => {
         </div>
       )}
 
-      {isError && <p className="text-center text-red-500">{`Error loading user details: ${error?.message}`}</p>}
+      {isError && (
+        <p className="text-center text-red-500">{`Error loading user details: ${error?.message}`}</p>
+      )}
 
       {data && userData && (
         <div className="flex justify-center">
@@ -46,9 +48,9 @@ export const UserDashboard = () => {
                 <span className="font-bold">Email:</span> {userData.email}
               </p>
               <p className="text-center mt-4 text-lg font-semibold text-gray-500">
-                <span className="font-bold">Status:</span> {userData.isVerified ? 'Verified' : 'Registered'}
+                <span className="font-bold">Status:</span>{' '}
+                {userData.isVerified ? 'Verified' : 'Registered'}
               </p>
-
 
               <div className="flex justify-center mt-6">
                 <button
@@ -63,5 +65,5 @@ export const UserDashboard = () => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
