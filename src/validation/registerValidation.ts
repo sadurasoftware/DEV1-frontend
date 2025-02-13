@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const registerValidation = z.object({
   username: z.string().min(1, 'Name is required'),
-  email: z.string().email('Invalid email address'),
+  email: z.string().email('Please enter a valid email'),
   password: z
   .string()
   .max(20, 'Password cannot be more than 20 characters' )

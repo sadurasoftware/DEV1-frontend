@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
+import { Checkbox } from "@/components/ui/checkbox"
 import {
   Select,
   SelectContent,
@@ -8,6 +9,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { FaCircleXmark, FaCircleCheck } from "react-icons/fa6"
+
 import { Link, useNavigate } from "react-router-dom"
 import React, { useState, useEffect } from "react"
 import { useRegisterMutation } from "../hooks/useRegister"
@@ -220,60 +223,89 @@ const RegisterForm: React.FC = () => {
 
                 {isSuperAdmin && (
                   <div>
-                    <button
+                    <Button
                       onClick={generatedPassword}
                       type='button'
                       className='py-3 mt-3 my-3 p-3 mx-3 bg-indigo-500 text-white font-semibold rounded-md hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500'>
                       Generate Password
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       onClick={copyToClipboard}
                       type='button'
                       className='py-3 mt-3 my-3 p-3 bg-indigo-500 text-white font-semibold rounded-md hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500'>
                       Copy
-                    </button>
+                    </Button>
                     {copy && <p className='text-red-300'>{copy}</p>}
                   </div>
                 )}
 
-                <div>
+                <div className='pt-2'>
                   {formErrors.password && (
-                    <p style={{ color: "red" }}>{formErrors.password}</p>
+                    <p className='text-red-500 text-sm'>
+                      {formErrors.password}
+                    </p>
                   )}
+                  <p className='text-red-500 text-sm'>Password should </p>
                   <p
-                    style={{
-                      color: passwordCondition.minLength ? "green" : "red",
-                    }}>
-                    {passwordCondition.minLength ? "✔" : "❌"} At least 8
-                    characters
-                  </p>
-                  <p
+                    className='errorMsg'
                     style={{
                       color: passwordCondition.maxLength ? "green" : "red",
                     }}>
-                    {passwordCondition.maxLength ? "✔" : "❌"} Maximum 20
-                    characters
+                    {passwordCondition.maxLength ? (
+                      <FaCircleCheck />
+                    ) : (
+                      <FaCircleXmark />
+                    )}
+                    Maximum 20 characters
                   </p>
                   <p
+                    className='errorMsg'
+                    style={{
+                      color: passwordCondition.minLength ? "green" : "red",
+                    }}>
+                    {passwordCondition.minLength ? (
+                      <FaCircleCheck />
+                    ) : (
+                      <FaCircleXmark />
+                    )}
+                    At least 8 characters long
+                  </p>
+
+                  <p
+                    className='errorMsg'
                     style={{
                       color: passwordCondition.hasUpperCase ? "green" : "red",
                     }}>
-                    {passwordCondition.hasUpperCase ? "✔" : "❌"} Contains at
-                    least one uppercase letter
+                    {passwordCondition.hasUpperCase ? (
+                      <FaCircleCheck />
+                    ) : (
+                      <FaCircleXmark />
+                    )}
+                    Contains at least one uppercase letter
                   </p>
                   <p
+                    className='errorMsg'
                     style={{
                       color: passwordCondition.hasNumber ? "green" : "red",
                     }}>
-                    {passwordCondition.hasNumber ? "✔" : "❌"} Contains at least
-                    one number
+                    {passwordCondition.hasNumber ? (
+                      <FaCircleCheck />
+                    ) : (
+                      <FaCircleXmark />
+                    )}
+                    Contains at least one number
                   </p>
                   <p
+                    className='errorMsg'
                     style={{
                       color: passwordCondition.hasSpecialChar ? "green" : "red",
                     }}>
-                    {passwordCondition.hasSpecialChar ? "✔" : "❌"} Contains at
-                    least one special character
+                    {passwordCondition.hasSpecialChar ? (
+                      <FaCircleCheck />
+                    ) : (
+                      <FaCircleXmark />
+                    )}
+                    Contains at least one special character
                   </p>
                 </div>
                 <div>
@@ -284,7 +316,7 @@ const RegisterForm: React.FC = () => {
                     name='confirmPassword'
                   />
                   {/* {formErrors.confirmPassword && (
-                    <p style={{ color: "red" }}>Password does not match!</p>
+                    <p className='text-red-500 text-sm'>Password does not match!</p>
                     )} */}
                 </div>
 
@@ -315,6 +347,16 @@ const RegisterForm: React.FC = () => {
                     )}
                   </div>
                 )}
+                <div className='flex gap-2 mt-4'>
+                  <Checkbox id='terms' />
+                  <div className='grid gap-1.5 leading-none'>
+                    <label
+                      htmlFor='terms'
+                      className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'>
+                      Accept <Link to='/'>terms and conditions</Link>
+                    </label>
+                  </div>
+                </div>
                 <div>
                   <Button
                     type='submit'
