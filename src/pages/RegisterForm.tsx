@@ -1,24 +1,17 @@
 import { Button } from '@/components/ui/button'
-import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import { Link, useNavigate } from 'react-router-dom'
-import React, { useState, useEffect } from 'react'
-import { useRegisterMutation } from '../hooks/useRegister'
-import { User } from '../types/registerTypes'
-import { registerValidation } from '../validation/registerValidation'
-import { z } from 'zod'
-import useThemeStore from '../store/themeStore'
-import { PasswordType } from '../types/registerTypes'
+import { Label } from '@/components/ui/label'
 import { useLoginInfoStore } from '@/store/useLoginInfoStore'
-import { useFetchRoles } from '../hooks/useFetchRoles'
 import { roleType } from '@/types/roleTypes'
+import React, { useEffect, useState } from 'react'
+import { FaEye, FaEyeSlash } from 'react-icons/fa'
+import { Link } from 'react-router-dom'
+import { z } from 'zod'
+import { useFetchRoles } from '../hooks/useFetchRoles'
+import { useRegisterMutation } from '../hooks/useRegister'
+import useThemeStore from '../store/themeStore'
+import { PasswordType, User } from '../types/registerTypes'
+import { registerValidation } from '../validation/registerValidation'
 
 const RegisterForm: React.FC = () => {
   const { theme } = useThemeStore()
@@ -39,6 +32,8 @@ const RegisterForm: React.FC = () => {
     hasNumber: false,
   })
   const [copy, setCopy] = useState<string>('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   const validatedPassword = (password: string) => {
     setPasswordCondition({
@@ -70,7 +65,7 @@ const RegisterForm: React.FC = () => {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target
-    if (name == 'password' || name === 'confirmPassword') {
+    if (name === 'password' || name === 'confirmPassword') {
       validatedPassword(value)
     }
 
@@ -219,15 +214,22 @@ const RegisterForm: React.FC = () => {
                   <p className="text-red-500 text-sm">{formErrors.email}</p>
                 )}
               </div>
-              <div>
+              <div className="relative">
                 <Label htmlFor="password">Password</Label>
                 <Input
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   id="password"
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
                 />
+
+                <span
+                  className="absolute right-3 top-10 cursor-pointer"
+                  onClick={() => setShowPassword(prev => !prev)}
+                >
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </span>
 
                 {isSuperAdmin && (
                   <div>
@@ -294,15 +296,23 @@ const RegisterForm: React.FC = () => {
                     least one special character
                   </p>
                 </div>
-                <div>
+                <div className="relative">
                   <Label htmlFor="confirmPassword">Confirm Password</Label>
                   <Input
-                    type="password"
+                    type={showConfirmPassword ? 'text' : 'password'}
                     id="confirmPassword"
                     name="confirmPassword"
                     value={formData.confirmPassword}
                     onChange={handleChange}
                   />
+
+                  <span
+                    className="absolute right-3 top-10 cursor-pointer"
+                    onClick={() => setShowConfirmPassword(prev => !prev)}
+                  >
+                    {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                  </span>
+
                   {formErrors.confirmPassword !== formErrors.password && (
                     <p style={{ color: 'red' }}>Password does not match!</p>
                   )}

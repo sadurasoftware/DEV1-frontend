@@ -37,17 +37,7 @@ export const Settings = () => {
             onClick={() => navigate('/modules')}
             className="w-full py-3 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition"
           >
-            {/* Modules
-            onClick={() => navigate("/rolepage")}
-            className="w-full py-3 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition"
-          > */}
-            Add Role  
-          </button>
-          <button
-            onClick={() => navigate("/permissionpage")}
-            className="w-full py-3 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition"
-          >
-            Add Permission  
+            Modules
           </button>
         </div>
       </div>

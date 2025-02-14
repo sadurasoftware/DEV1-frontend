@@ -1,17 +1,17 @@
 import { Button } from '@/components/ui/button'
-import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
-
+import { Label } from '@/components/ui/label'
 import React, { useState } from 'react'
-import { useResetPasswordMutation } from '../hooks/useResetPassword'
-import { Link } from 'react-router-dom'
-import { useSearchParams } from 'react-router-dom'
-import { passwordValidation } from '../validation/passwordValidation'
+import { FaEye, FaEyeSlash } from 'react-icons/fa'
+import { Link, useSearchParams } from 'react-router-dom'
 import { z } from 'zod'
+import { useResetPasswordMutation } from '../hooks/useResetPassword'
+import { passwordValidation } from '../validation/passwordValidation'
 
 export const ResetPassword = () => {
   const [password, setPassword] = useState<string>('')
   const [passwordError, setPasswordError] = useState<string>('')
+  const [showPassword, setShowPassword] = useState(false)
   const [searchParams] = useSearchParams()
   const token = searchParams.get('token')
   const { mutate, isError, error, successMessage } = useResetPasswordMutation()
@@ -44,10 +44,10 @@ export const ResetPassword = () => {
         </h2>
         <div className="space-y-4">
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <Label htmlFor="email">Email</Label>
+            <div className="relative">
+              <Label htmlFor="email">New Password</Label>
               <Input
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 id="password"
                 name="password"
                 placeholder="Enter your new password"
@@ -55,7 +55,14 @@ export const ResetPassword = () => {
                 onChange={e => setPassword(e.target.value)}
                 required
               />
+              <span
+                className="absolute right-3 top-10 cursor-pointer"
+                onClick={() => setShowPassword(prev => !prev)}
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </span>
             </div>
+
             <div>
               <Button
                 type="submit"
