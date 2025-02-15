@@ -5,6 +5,7 @@ import { useLoginMutation } from '@/hooks/useLoginMutation'
 import { LoginUser } from '@/types/loginType'
 import { loginschema } from '@/validation/validator'
 import { useEffect, useState } from 'react'
+import { FaEye, FaEyeSlash } from 'react-icons/fa'
 import { Link, useNavigate } from 'react-router-dom'
 import { z } from 'zod'
 import { useLoginInfoStore } from '../store/useLoginInfoStore'
@@ -16,6 +17,7 @@ export const Login = () => {
   const [user, setUser] = useState<LoginUser>({ email: '', password: '' })
   const [error, setError] = useState<string>('')
   const [success, setSuccess] = useState<string>('')
+  const [showPassword, setShowPassword] = useState(false)
 
   const navigate = useNavigate()
 
@@ -93,15 +95,22 @@ export const Login = () => {
               value={user.email}
             />
           </div>
-          <div>
+          <div className="relative">
             <Label htmlFor="password">Password</Label>
             <Input
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               placeholder="Password"
               name="password"
               onChange={handleChange}
               value={user.password}
             />
+
+            <span
+              className="absolute right-3 top-10 cursor-pointer"
+              onClick={() => setShowPassword(prev => !prev)}
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </span>
           </div>
           <Button
             onClick={handleLogin}
