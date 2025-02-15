@@ -77,7 +77,7 @@ const RegisterForm: React.FC = () => {
     setApiError(null)
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setFormErrors({})
     setApiError(null)

@@ -1,10 +1,10 @@
-import { RoleModulePermissionCreate } from '@/apis/roleModulePermissionStoreApi'
+import { RoleModulePermissionCreate } from '@/apis/roleModulePermissionCreateApi'
 import { ErrorResponse } from '@/types/loginType'
 import { RoleModulePermission } from '@/types/roleModulePermissionType'
 import { useMutation } from '@tanstack/react-query'
 import axios, { AxiosError } from 'axios'
 
-export const useRoleModulePermissionMutation = () => {
+export const useRoleModulePermissionCreate = () => {
   const { mutate, isPending, isError, isSuccess, error, data } = useMutation({
     mutationFn: (roleModulePermission: RoleModulePermission) =>
       RoleModulePermissionCreate(roleModulePermission),
