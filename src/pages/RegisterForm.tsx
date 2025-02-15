@@ -1,24 +1,16 @@
 import { Button } from '@/components/ui/button'
-import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import { Link, useNavigate } from 'react-router-dom'
-import React, { useState, useEffect } from 'react'
-import { useRegisterMutation } from '../hooks/useRegister'
-import { User } from '../types/registerTypes'
-import { registerValidation } from '../validation/registerValidation'
-import { z } from 'zod'
-import useThemeStore from '../store/themeStore'
-import { PasswordType } from '../types/registerTypes'
+import { Label } from '@/components/ui/label'
 import { useLoginInfoStore } from '@/store/useLoginInfoStore'
-import { useFetchRoles } from '../hooks/useFetchRoles'
 import { roleType } from '@/types/roleTypes'
+import React, { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { z } from 'zod'
+import { useFetchRoles } from '../hooks/useFetchRoles'
+import { useRegisterMutation } from '../hooks/useRegister'
+import useThemeStore from '../store/themeStore'
+import { PasswordType, User } from '../types/registerTypes'
+import { registerValidation } from '../validation/registerValidation'
 
 const RegisterForm: React.FC = () => {
   const { theme } = useThemeStore()
@@ -82,7 +74,7 @@ const RegisterForm: React.FC = () => {
     setApiError(null)
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setFormErrors({})
     setApiError(null)
