@@ -1,5 +1,5 @@
-import axios, { AxiosResponse } from 'axios'
 import { RoleModulePermission } from '@/types/roleModulePermissionType'
+import axios, { AxiosResponse } from 'axios'
 
 export const RoleModulePermissionCreate = async (
   data: RoleModulePermission
