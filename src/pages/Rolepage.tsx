@@ -1,10 +1,10 @@
-import React, { useState } from 'react'
-import { useCreateRole } from '../hooks/useCreateRole'
-import { Link } from 'react-router-dom'
-import { useFetchRoles } from '@/hooks/useFetchRoles'
-import { roleType } from '@/types/roleTypes'
-import { useUpdateRoleById } from '@/hooks/useUpdateRoleById'
 import { useDeleteRoleById } from '@/hooks/useDeleteRoleById'
+import { useFetchRoles } from '@/hooks/useFetchRoles'
+import { useUpdateRoleById } from '@/hooks/useUpdateRoleById'
+import { roleType } from '@/types/roleTypes'
+import React, { useState } from 'react'
+import { Link } from 'react-router-dom'
+import { useCreateRole } from '../hooks/useCreateRole'
 
 const RolePage: React.FC = () => {
   const [roleName, setRoleName] = useState<string>('')

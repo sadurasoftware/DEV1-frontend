@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import { PermissionTemplateUser } from '../types/userpermission'
 import { Link } from 'react-router-dom'
+import { PermissionTemplateUser } from '../types/userpermission'
 
 const UserPermission: React.FC = () => {
   const [permissionData, setPermissionData] = useState<PermissionTemplateUser>({
