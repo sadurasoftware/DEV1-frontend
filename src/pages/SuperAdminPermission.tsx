@@ -1,94 +1,92 @@
+import { useFetchModules } from '@/hooks/useFetchModules'
+import { useFetchPermissions } from '@/hooks/useFetchPermissions'
+import { useFetchRoles } from '@/hooks/useFetchRoles'
+import { useRoleModulePermissionCreate } from '@/hooks/useRoleModulePermissionCreate'
+import { moduleType } from '@/types/moduleTypes'
+import { permissionType } from '@/types/permissionsTypes'
+import { PermissionsData } from '@/types/roleModulePermissionType'
+import { roleType } from '@/types/roleTypes'
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { PermissionTemplateAdmin } from '../types/permissionTemplate'
-import { useFetchPermissions } from '@/hooks/useFetchPermissions'
-import { useFetchModules } from '@/hooks/useFetchModules'
-import { useFetchRoles } from '@/hooks/useFetchRoles'
-import { roleType } from '@/types/roleTypes'
-import { permissionType } from '@/types/permissionsTypes'
+// import { useFetchRoleModulePermission } from '@/hooks/useFetchRoleModulePermission'
 
 const SuperAdminPermission: React.FC = () => {
-  const [permissionData, setPermissionData] = useState<PermissionTemplateAdmin>(
-    {
-      name: '',
-      description: '',
-      applicableOn: 'admin',
-      permissions: {
-        create: false,
-        view: false,
-        update: false,
-        delete: false,
-        export: false,
-      },
-    }
-  )
+  const [selectedRole, setSelectedRole] = useState<string>('')
+  const [permissionData, setPermissionData] = useState<PermissionsData>({})
 
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({})
   const [apiError, setApiError] = useState<string | null>(null)
 
-  const { rolesLoading, rolesData, isRolesError, rolesError } = useFetchRoles()
+  const { rolesLoading, rolesData } = useFetchRoles()
   const { roles } = rolesData || {}
 
-  const { modulesLoading, modulesData, isModulesError, modulesError, refetch } =
-    useFetchModules()
-  const { module } = modulesData || {}
+  const { modulesLoading, modulesData } = useFetchModules()
+  const module: moduleType[] = modulesData?.module || []
+
+  const { mutate } = useRoleModulePermissionCreate()
 
   const { permissionsLoading, permissionsData } = useFetchPermissions()
-  const { permission } = permissionsData || {}
+  const permissions = permissionsData?.permission || []
 
-  console.log(permission)
+  // const { modulePermissionLoading, modulePermissionData, isModulePermissionError, modulePermissionError, refetch,} = useFetchRoleModulePermission();
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  const handleCheckboxChange = (
+    moduleId: number,
+    permissionId: number,
+    checked: boolean
   ) => {
-    const { name, value, type } = e.target
-
-    if (type === 'checkbox') {
-      const checked = (e.target as HTMLInputElement).checked
-
-      setPermissionData(prevData => ({
-        ...prevData,
-        permissions: {
-          ...prevData.permissions,
-          [name]: checked,
-        },
-      }))
-    } else {
-      setPermissionData({
-        ...permissionData,
-        [name]: value,
-      })
-    }
+    setPermissionData(prevState => ({
+      ...prevState,
+      [moduleId]: {
+        ...prevState[moduleId],
+        [permissionId]: checked,
+      },
+    }))
   }
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const { name, value } = e.target
-    setPermissionData({
-      ...permissionData,
-      [name]: value,
-    })
+    setSelectedRole(e.target.value)
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setFormErrors({})
     setApiError(null)
 
+    if (!selectedRole) {
+      setFormErrors({ role: 'Role is required' })
+      return
+    }
+
+    const roleIdNumber = Number(selectedRole)
+
+    const payload = {
+      roleId: roleIdNumber,
+      modulePermissions: Object.keys(permissionData).map((moduleId: string) => {
+        const moduleIdNum = Number(moduleId)
+        const permissionsForModule = Object.keys(permissionData[moduleIdNum])
+          .filter(
+            (permissionId: string) =>
+              permissionData[moduleIdNum][Number(permissionId)]
+          )
+          .map((permissionId: string) => ({
+            permissionId: Number(permissionId),
+          }))
+
+        return {
+          moduleId: moduleIdNum,
+          permissions: permissionsForModule,
+        }
+      }),
+    }
+
     try {
-      setPermissionData({
-        name: '',
-        description: '',
-        applicableOn: 'admin',
-        permissions: {
-          create: false,
-          view: false,
-          update: false,
-          delete: false,
-          export: false,
-        },
-      })
+      console.log('Submitting data: ', payload)
+      mutate(payload)
+      setSelectedRole('')
+      setPermissionData({})
     } catch (err) {
-      setApiError('Failed to save permission template')
+      setApiError(`Failed to save permission template ${err}`)
     }
   }
 
@@ -105,11 +103,13 @@ const SuperAdminPermission: React.FC = () => {
             <select
               id="role"
               name="role"
-              className={`w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500`}
+              className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              onChange={handleSelectChange}
+              value={selectedRole}
             >
               {!rolesLoading ? (
                 roles?.map((role: roleType, index: number) => (
-                  <option key={index} value={role.name}>
+                  <option key={index} value={role.id}>
                     {role.name}
                   </option>
                 ))
@@ -133,9 +133,8 @@ const SuperAdminPermission: React.FC = () => {
                   Modules
                 </th>
                 {!permissionsLoading &&
-                  permissionsData &&
-                  permission &&
-                  permission.map(perm => (
+                  permissions &&
+                  permissions.map((perm: permissionType) => (
                     <th
                       key={perm.id}
                       className="px-4 py-2 text-center font-semibold text-gray-700 border-b"
@@ -147,18 +146,16 @@ const SuperAdminPermission: React.FC = () => {
             </thead>
             <tbody>
               {!modulesLoading &&
-                modulesData &&
                 module &&
-                module.map(mod => (
+                module.map((mod: moduleType) => (
                   <tr key={mod.id} className="border-b hover:bg-gray-50">
                     <td className="px-4 py-2 text-left text-gray-800">
                       {mod.name}
                     </td>
 
                     {!permissionsLoading &&
-                      permissionsData &&
-                      permission &&
-                      permission.map(perm => (
+                      permissions &&
+                      permissions.map((perm: permissionType) => (
                         <td
                           key={`${mod.id}-${perm.id}`}
                           className="text-center py-2"
@@ -168,8 +165,13 @@ const SuperAdminPermission: React.FC = () => {
                             id={`${mod.id}-${perm.id}`}
                             name={`${mod.id}-${perm.id}`}
                             className="form-checkbox h-5 w-5 text-blue-500"
-                            // checked={mod.permissions && mod.permissions[perm.name]}
-                            // onChange={() => handleCheckboxChange(mod.id, perm.id)}
+                            onChange={e =>
+                              handleCheckboxChange(
+                                mod.id,
+                                perm.id,
+                                e.target.checked
+                              )
+                            }
                           />
                         </td>
                       ))}

@@ -1,5 +1,5 @@
-import { Link, useNavigate } from 'react-router-dom'
 import { useFetchUsers } from '@/hooks/useFetchUsers'
+import { Link, useNavigate } from 'react-router-dom'
 
 const Users = () => {
   const { usersLoading, users, isUsersError, usersError } = useFetchUsers()

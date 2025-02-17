@@ -2,11 +2,11 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { FaCircleCheck, FaCircleXmark } from 'react-icons/fa6'
-
 import { useLoginInfoStore } from '@/store/useLoginInfoStore'
 import { roleType } from '@/types/roleTypes'
 import React, { useEffect, useState } from 'react'
+import { FaEye, FaEyeSlash } from 'react-icons/fa'
+import { FaCircleCheck, FaCircleXmark } from 'react-icons/fa6'
 import { Link } from 'react-router-dom'
 import { z } from 'zod'
 import { useFetchRoles } from '../hooks/useFetchRoles'
@@ -34,6 +34,8 @@ const RegisterForm: React.FC = () => {
     hasNumber: false,
   })
   const [copy, setCopy] = useState<string>('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   const validatedPassword = (password: string) => {
     setPasswordCondition({
@@ -77,7 +79,7 @@ const RegisterForm: React.FC = () => {
     setApiError(null)
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setFormErrors({})
     setApiError(null)
@@ -214,15 +216,22 @@ const RegisterForm: React.FC = () => {
                   <p className="text-red-500 text-sm">{formErrors.email}</p>
                 )}
               </div>
-              <div>
+              <div className="relative">
                 <Label htmlFor="password">Password</Label>
                 <Input
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   id="password"
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
                 />
+
+                <span
+                  className="absolute right-3 top-10 cursor-pointer"
+                  onClick={() => setShowPassword(prev => !prev)}
+                >
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </span>
 
                 {isSuperAdmin && (
                   <div>
@@ -318,18 +327,26 @@ const RegisterForm: React.FC = () => {
                     Contains at least one special character
                   </p>
                 </div>
-                <div>
+                <div className="relative">
                   <Label htmlFor="confirmPassword">Confirm Password</Label>
                   <Input
-                    type="password"
+                    type={showConfirmPassword ? 'text' : 'password'}
                     id="confirmPassword"
                     name="confirmPassword"
                     value={formData.confirmPassword}
                     onChange={handleChange}
                   />
-                  {/* {formErrors.confirmPassword && (
-                    <p className='text-red-500 text-sm'>Password does not match!</p>
-                    )} */}
+
+                  <span
+                    className="absolute right-3 top-10 cursor-pointer"
+                    onClick={() => setShowConfirmPassword(prev => !prev)}
+                  >
+                    {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                  </span>
+
+                  {formErrors.confirmPassword !== formErrors.password && (
+                    <p style={{ color: 'red' }}>Password does not match!</p>
+                  )}
                 </div>
 
                 {isSuperAdmin && (

@@ -1,6 +1,6 @@
-import { useLoginInfoStore } from '../store/useLoginInfoStore'
-import { useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useLoginInfoStore } from '../store/useLoginInfoStore'
 
 export const SuperAdminDashboard = () => {
   const { token, user } = useLoginInfoStore()
