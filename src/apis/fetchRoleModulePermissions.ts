@@ -6,16 +6,19 @@ export const RoleModulePermissionFetch = async (
   roleId: number
 ): Promise<RoleModulePermission> => {
   const token = useLoginInfoStore.getState().token
+  console.log(token)
   try {
-    const res: AxiosResponse<RoleModulePermission> = await axios.post(
+    const res: AxiosResponse<RoleModulePermission> = await axios.get(
       `http://localhost:3000/api/role-module-permissions/modulespermissionsByRole`,
-      { roleId },
+     
       {
+        params: { roleId },
         headers: {
           Authorization: `Bearer ${token}`,
         },
       }
     )
+
 
     if (res.status !== 200) {
       throw new Error('Error fetching API: ' + res.status)
