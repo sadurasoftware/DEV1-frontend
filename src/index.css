@@ -1,9 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;900&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Poppins', Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
@@ -17,11 +18,10 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-
 @media (prefers-color-scheme: light) {
   :root {
-    color: #213547;
-    background-color: #ffffff;
+    color: #111111;
+    background-color: #f9fbfc;
   }
   a:hover {
     color: #747bff;
@@ -30,9 +30,42 @@
     background-color: #f9f9f9;
   }
 }
+.poppins-light {
+  font-family: 'Poppins', serif;
+  font-weight: 300;
+  font-style: normal;
+}
+
+.poppins-regular {
+  font-family: 'Poppins', serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.poppins-semibold {
+  font-family: 'Poppins', serif;
+  font-weight: 600;
+  font-style: normal;
+}
+
+.poppins-bold {
+  font-family: 'Poppins', serif;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.poppins-black {
+  font-family: 'Poppins', serif;
+  font-weight: 900;
+  font-style: normal;
+}
 
 @layer base {
   :root {
+    --cust-blue: 218, 100%, 50%;
+    --cust-green: 151, 90%, 51%;
+    --cust-gray-dark: hsla(0, 0%, 83%, 1);
+    --cust-gray-light: hsla(0, 0%, 47%, 1);
     --background: 0 0% 100%;
     --foreground: 240 10% 3.9%;
     --card: 0 0% 100%;
@@ -60,6 +93,10 @@
     --radius: 0.5rem;
   }
   .dark {
+    --cust-blue: 218, 100%, 50%;
+    --cust-green: 151, 90%, 51%;
+    --cust-gray-dark: hsla(0, 0%, 83%, 1);
+    --cust-gray-light: hsla(0, 0%, 47%, 1);
     --background: 240 10% 3.9%;
     --foreground: 0 0% 98%;
     --card: 240 10% 3.9%;
@@ -96,6 +133,9 @@
   }
 }
 
-.errorMsg{
-  @apply flex gap-2 text-sm items-center m-1
+.errorMsg {
+  @apply flex gap-2 text-xs items-center m-1 italic;
+}
+.label {
+  @apply text-sm text-cust-gray-light dark:text-cust-gray-dark;
 }

@@ -8,9 +8,9 @@ import { EditAdminProfile } from './pages/EditAdminProfile'
 import { EditForm } from './pages/EditForm'
 import { EditUserProfile } from './pages/EditUserProfile'
 import { ForgotPassword } from './pages/Forgetpassword'
+import Landing from './pages/Landing'
 import { Login } from './pages/Login'
 import Modules from './pages/Modules'
-import { Navbar } from './pages/Navbar'
 import Permissionpage from './pages/Permissionpage'
 import RegisterForm from './pages/RegisterForm'
 import { ResetPassword } from './pages/ResetPassword'
@@ -37,7 +37,6 @@ const App: React.FC = () => {
   return (
     <Router>
       <div>
-        <Navbar />
         {/* <Theme/> */}
 
         {token ? (
@@ -80,7 +79,8 @@ const App: React.FC = () => {
               <Route path="/forget-password" element={<ForgotPassword />} />
               <Route
                 path="/"
-                element={<h1 className="flex justify-center">Dev Frontend</h1>}
+                element={<Landing />}
+                // element={<h1 className="flex justify-center">Dev Frontend</h1>}
               />
               <Route path="/reset-password" element={<ResetPassword />} />
             </Routes>
