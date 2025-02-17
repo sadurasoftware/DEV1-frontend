@@ -1,10 +1,12 @@
 import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useLoginInfoStore } from '@/store/useLoginInfoStore'
 import { roleType } from '@/types/roleTypes'
 import React, { useEffect, useState } from 'react'
 import { FaEye, FaEyeSlash } from 'react-icons/fa'
+import { FaCircleCheck, FaCircleXmark } from 'react-icons/fa6'
 import { Link } from 'react-router-dom'
 import { z } from 'zod'
 import { useFetchRoles } from '../hooks/useFetchRoles'
@@ -182,28 +184,57 @@ const RegisterForm: React.FC = () => {
   //     ? "border-gray-300 text-black"
   //     : "border-gray-600 text-white bg-gray-700"
 
+  const errPWmxLength = passwordCondition.maxLength
+  const errPWminLength = passwordCondition.minLength
+  const errPWupperClass = passwordCondition.hasUpperCase
+  const errPWnum = passwordCondition.hasNumber
+  const errPWspeChar = passwordCondition.hasSpecialChar
+
   return (
     <>
       <div className="min-h-screen flex items-center justify-center">
-        <div className="p-8 rounded-lg border shadow-lg w-full max-w-xl">
-          <h2 className="text-2xl font-semibold text-center mb-6">Register</h2>
+        <div className="p-8 rounded-lg border w-md  m-auto mt-3 mb-3 bg-white dark:bg-black">
+          <h2 className="text-2xl font-semibold  mb-6 dark:text-cust-green">
+            Let’s get started
+          </h2>
           <form onSubmit={handleSubmit}>
             <div className="space-y-4">
-              <div>
-                <Label htmlFor="username">Name</Label>
-                <Input
-                  type="text"
-                  id="username"
-                  name="username"
-                  value={formData.username}
-                  onChange={handleChange}
-                />
-                {formErrors.username && (
-                  <p className="text-red-500 text-sm">{formErrors.username}</p>
-                )}
+              <div className="grid gap-4 grid-cols-2">
+                <div>
+                  <Label htmlFor="username" className="label">
+                    First Name
+                  </Label>
+                  <Input
+                    type="text"
+                    id="username"
+                    name="username"
+                    value={formData.username}
+                    onChange={handleChange}
+                  />
+                  {formErrors.username && (
+                    <p className="text-red-500 text-sm">
+                      {formErrors.username}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <Label htmlFor="lastname" className="label">
+                    Last Name
+                  </Label>
+                  <Input
+                    type="text"
+                    id="lastname"
+                    name="lastname"
+                    // value={formData.lastname}
+                    onChange={handleChange}
+                  />
+                  {/* <p className="text-red-500 text-sm"> Last Name is required</p> */}
+                </div>
               </div>
               <div>
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email" className="label">
+                  Email
+                </Label>
                 <Input
                   id="email"
                   name="email"
@@ -214,113 +245,131 @@ const RegisterForm: React.FC = () => {
                   <p className="text-red-500 text-sm">{formErrors.email}</p>
                 )}
               </div>
-              <div className="relative">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  type={showPassword ? 'text' : 'password'}
-                  id="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                />
+              <div>
+                <Label htmlFor="password" className="label">
+                  Password
+                </Label>
+                <div className="relative">
+                  <Input
+                    type={showPassword ? 'text' : 'password'}
+                    id="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                  />
 
-                <span
-                  className="absolute right-3 top-10 cursor-pointer"
-                  onClick={() => setShowPassword(prev => !prev)}
-                >
-                  {showPassword ? <FaEyeSlash /> : <FaEye />}
-                </span>
-
+                  <span
+                    className="absolute right-3 top-3 cursor-pointer"
+                    onClick={() => setShowPassword(prev => !prev)}
+                  >
+                    {showPassword ? <FaEyeSlash /> : <FaEye />}
+                  </span>
+                </div>
                 {isSuperAdmin && (
                   <div>
-                    <button
+                    <Button
                       onClick={generatedPassword}
                       type="button"
                       className="py-3 mt-3 my-3 p-3 mx-3 bg-indigo-500 text-white font-semibold rounded-md hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     >
                       Generate Password
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       onClick={copyToClipboard}
                       type="button"
                       className="py-3 mt-3 my-3 p-3 bg-indigo-500 text-white font-semibold rounded-md hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     >
                       Copy
-                    </button>
+                    </Button>
                     {copy && <p className="text-red-300">{copy}</p>}
                   </div>
                 )}
 
-                <div>
+                <div className="pt-2">
                   {formErrors.password && (
-                    <p style={{ color: 'red' }}>{formErrors.password}</p>
+                    <p className="text-red-500 text-sm">
+                      {formErrors.password}
+                    </p>
                   )}
+                  <p className="text-red-500 text-sm">Password should </p>
                   <p
+                    className="errorMsg"
                     style={{
-                      color: passwordCondition.minLength ? 'green' : 'red',
+                      color: errPWmxLength ? 'green' : 'red',
                     }}
                   >
-                    {passwordCondition.minLength ? '✔' : '❌'} At least 8
-                    characters
+                    {errPWmxLength ? <FaCircleCheck /> : <FaCircleXmark />}
+                    Maximum 20 characters
                   </p>
                   <p
+                    className="errorMsg"
                     style={{
-                      color: passwordCondition.maxLength ? 'green' : 'red',
+                      color: errPWminLength ? 'green' : 'red',
                     }}
                   >
-                    {passwordCondition.maxLength ? '✔' : '❌'} Maximum 20
-                    characters
+                    {errPWminLength ? <FaCircleCheck /> : <FaCircleXmark />}
+                    At least 8 characters long
+                  </p>
+
+                  <p
+                    className="errorMsg"
+                    style={{
+                      color: errPWupperClass ? 'green' : 'red',
+                    }}
+                  >
+                    {errPWupperClass ? <FaCircleCheck /> : <FaCircleXmark />}
+                    Contains at least one uppercase letter
                   </p>
                   <p
+                    className="errorMsg"
                     style={{
-                      color: passwordCondition.hasUpperCase ? 'green' : 'red',
+                      color: errPWnum ? 'green' : 'red',
                     }}
                   >
-                    {passwordCondition.hasUpperCase ? '✔' : '❌'} Contains at
-                    least one uppercase letter
+                    {errPWnum ? <FaCircleCheck /> : <FaCircleXmark />}
+                    Contains at least one number
                   </p>
                   <p
+                    className="errorMsg"
                     style={{
-                      color: passwordCondition.hasNumber ? 'green' : 'red',
+                      color: errPWspeChar ? 'green' : 'red',
                     }}
                   >
-                    {passwordCondition.hasNumber ? '✔' : '❌'} Contains at
-                    least one number
-                  </p>
-                  <p
-                    style={{
-                      color: passwordCondition.hasSpecialChar ? 'green' : 'red',
-                    }}
-                  >
-                    {passwordCondition.hasSpecialChar ? '✔' : '❌'} Contains at
-                    least one special character
+                    {errPWspeChar ? <FaCircleCheck /> : <FaCircleXmark />}
+                    Contains at least one special character
                   </p>
                 </div>
-                <div className="relative">
-                  <Label htmlFor="confirmPassword">Confirm Password</Label>
-                  <Input
-                    type={showConfirmPassword ? 'text' : 'password'}
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                  />
+                <div>
+                  <Label htmlFor="confirmPassword" className="label">
+                    Confirm Password
+                  </Label>
+                  <div className="relative">
+                    <Input
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      id="confirmPassword"
+                      name="confirmPassword"
+                      value={formData.confirmPassword}
+                      onChange={handleChange}
+                    />
 
-                  <span
-                    className="absolute right-3 top-10 cursor-pointer"
-                    onClick={() => setShowConfirmPassword(prev => !prev)}
-                  >
-                    {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
-                  </span>
-
+                    <span
+                      className="absolute right-3 top-3 cursor-pointer"
+                      onClick={() => setShowConfirmPassword(prev => !prev)}
+                    >
+                      {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                    </span>
+                  </div>
                   {formErrors.confirmPassword !== formErrors.password && (
                     <p style={{ color: 'red' }}>Password does not match!</p>
                   )}
+                  {/* <p className='text-red-500 text-sm'>Password does not match!</p>*/}
                 </div>
 
                 {isSuperAdmin && (
                   <div>
-                    <Label htmlFor="role">Role</Label>
+                    <Label htmlFor="role" className="label">
+                      Role
+                    </Label>
 
                     <select
                       id="role"
@@ -346,12 +395,23 @@ const RegisterForm: React.FC = () => {
                     )}
                   </div>
                 )}
+                <div className="flex gap-2 mt-4">
+                  <Checkbox id="terms" />
+                  <div className="grid gap-1.5 leading-none">
+                    <label
+                      htmlFor="terms"
+                      className=" label  font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                      Accept <Link to="/">terms and conditions</Link>
+                    </label>
+                  </div>
+                </div>
                 <div>
                   <Button
                     type="submit"
-                    className="w-full mt-6 py-3 bg-indigo-500 text-white font-semibold rounded-md hover:bg-indigo-600 transition"
+                    className="w-full mt-6 py-3 bg-cust-blue text-white dark:text-black font-semibold rounded-md hover:bg-cust-blue transition dark:bg-cust-green dark:hover:bg-cust-green"
                   >
-                    Register
+                    Get Started
                   </Button>
                 </div>
               </div>
@@ -371,149 +431,6 @@ const RegisterForm: React.FC = () => {
         </div>
       </div>
     </>
-    // <div
-    //   className={`max-w-lg mx-auto p-6 rounded-lg shadow-md flex flex-col ${formStyles}`}>
-    //   <h2 className='text-2xl font-semibold text-center mb-6'>Register</h2>
-
-    //   <form onSubmit={handleSubmit} className='space-y-4 flex-grow'>
-    //     <div>
-    //       <label htmlFor='username' className={labelStyles}>
-    //         Name
-    //       </label>
-    //       <input
-    //         type='text'
-    //         id='username'
-    //         name='username'
-    //         value={formData.username}
-    //         onChange={handleChange}
-    //         className={`w-full p-3 border ${inputStyles} rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500`}
-    //       />
-    //       {formErrors.username && (
-    //         <p className='text-red-500 text-sm'>{formErrors.username}</p>
-    //       )}
-    //     </div>
-
-    //     <div>
-    //       <label htmlFor='email' className={labelStyles}>
-    //         Email
-    //       </label>
-    //       <input
-    //         type='email'
-    //         id='email'
-    //         name='email'
-    //         value={formData.email}
-    //         onChange={handleChange}
-    //         className={`w-full p-3 border ${inputStyles} rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500`}
-    //       />
-    //       {formErrors.email && (
-    //         <p className='text-red-500 text-sm'>{formErrors.email}</p>
-    //       )}
-    //     </div>
-
-    //     <div>
-    //       <label htmlFor='password' className={labelStyles}>
-    //         Password
-    //       </label>
-    //       <input
-    //         type='password'
-    //         id='password'
-    //         name='password'
-    //         value={formData.password}
-    //         onChange={handleChange}
-    //         className={`w-full p-3 border ${inputStyles} rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500`}
-    //       />
-    //       {formErrors.password && (
-    //         <p style={{ color: "red" }}>{formErrors.password}</p>
-    //       )}
-    //       {isSuperAdmin && (
-    //         <div>
-    //           <button
-    //             onClick={generatedPassword}
-    //             type='button'
-    //             className='py-3 mt-3 my-3 p-3 mx-3 bg-indigo-500 text-white font-semibold rounded-md hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500'>
-    //             Generate Password
-    //           </button>
-    //           <button
-    //             onClick={copyToClipboard}
-    //             type='button'
-    //             className='py-3 mt-3 my-3 p-3 bg-indigo-500 text-white font-semibold rounded-md hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500'>
-    //             Copy
-    //           </button>
-    //           {copy && <p className='text-red-300'>{copy}</p>}
-    //         </div>
-    //       )}
-
-    //       <p style={{ color: passwordCondition.minLength ? "green" : "red" }}>
-    //         {passwordCondition.minLength ? "✔" : "❌"} At least 8 characters
-    //       </p>
-    //       <p style={{ color: passwordCondition.maxLength ? "green" : "red" }}>
-    //         {passwordCondition.maxLength ? "✔" : "❌"} Maximum 20 characters
-    //       </p>
-    //       <p
-    //         style={{ color: passwordCondition.hasUpperCase ? "green" : "red" }}>
-    //         {passwordCondition.hasUpperCase ? "✔" : "❌"} Contains at least one
-    //         uppercase letter
-    //       </p>
-    //       <p style={{ color: passwordCondition.hasNumber ? "green" : "red" }}>
-    //         {passwordCondition.hasNumber ? "✔" : "❌"} Contains at least one
-    //         number
-    //       </p>
-    //       <p
-    //         style={{
-    //           color: passwordCondition.hasSpecialChar ? "green" : "red",
-    //         }}>
-    //         {passwordCondition.hasSpecialChar ? "✔" : "❌"} Contains at least
-    //         one special character
-    //       </p>
-    //     </div>
-
-    //     {isSuperAdmin && (
-    //       <div>
-    //         <label htmlFor='role' className={labelStyles}>
-    //           Role
-    //         </label>
-    //         <select
-    //           id='role'
-    //           name='role'
-    //           value={formData.role}
-    //           onChange={handleChange}
-    //           className={`w-full p-3 border ${inputStyles} rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500`}>
-    //           {!rolesLoading ? (
-    //             rolesFilter?.map((role: roleType, index: number) => (
-    //               <option key={index} value={role.name}>
-    //                 {role.name}
-    //               </option>
-    //             ))
-    //           ) : (
-    //             <option value='' disabled>
-    //               Loading roles...
-    //             </option>
-    //           )}
-    //         </select>
-    //         {formErrors.role && (
-    //           <p className='text-red-500 text-sm'>{formErrors.role}</p>
-    //         )}
-    //       </div>
-    //     )}
-
-    //     <div className='text-center mt-4'>
-    //       <button
-    //         type='submit'
-    //         className='w-full py-3 bg-indigo-500 text-white font-semibold rounded-md hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500'>
-    //         Register
-    //       </button>
-    //     </div>
-    //   </form>
-
-    //   {isSuccess && (
-    //     <p className='text-green-500 text-center mt-4'>
-    //       Registration successful! Please check your email for verification.
-    //     </p>
-    //   )}
-    //   {isError && apiError && (
-    //     <p className='text-red-500 text-center mt-4'>{apiError}</p>
-    //   )}
-    // </div>
   )
 }
 
