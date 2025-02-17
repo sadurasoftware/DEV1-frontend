@@ -8,12 +8,10 @@ import { PermissionsData } from '@/types/roleModulePermissionType'
 import { roleType } from '@/types/roleTypes'
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
-// import { useFetchRoleModulePermission } from '@/hooks/useFetchRoleModulePermission'
 
 const SuperAdminPermission: React.FC = () => {
   const [selectedRole, setSelectedRole] = useState<string>('')
   const [permissionData, setPermissionData] = useState<PermissionsData>({})
-
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({})
   const [apiError, setApiError] = useState<string | null>(null)
 
@@ -27,8 +25,6 @@ const SuperAdminPermission: React.FC = () => {
 
   const { permissionsLoading, permissionsData } = useFetchPermissions()
   const permissions = permissionsData?.permission || []
-
-  // const { modulePermissionLoading, modulePermissionData, isModulePermissionError, modulePermissionError, refetch,} = useFetchRoleModulePermission();
 
   const handleCheckboxChange = (
     moduleId: number,
@@ -46,6 +42,17 @@ const SuperAdminPermission: React.FC = () => {
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedRole(e.target.value)
+  }
+
+  const handleSelectAllPermissions = (moduleId: number, checked: boolean) => {
+    const updatedPermissions = { ...permissionData }
+
+    permissions.forEach(perm => {
+      if (!updatedPermissions[moduleId]) updatedPermissions[moduleId] = {}
+      updatedPermissions[moduleId][perm.id] = checked
+    })
+
+    setPermissionData(updatedPermissions)
   }
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -142,6 +149,10 @@ const SuperAdminPermission: React.FC = () => {
                       {perm.name}
                     </th>
                   ))}
+
+                <th className="px-4 py-2 text-center font-semibold text-gray-700 border-b">
+                  Select All
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -149,7 +160,7 @@ const SuperAdminPermission: React.FC = () => {
                 module &&
                 module.map((mod: moduleType) => (
                   <tr key={mod.id} className="border-b hover:bg-gray-50">
-                    <td className="px-4 py-2 text-left text-gray-800">
+                    <td className="px-4 py-2 text-left text-gray-800 border-r">
                       {mod.name}
                     </td>
 
@@ -158,7 +169,7 @@ const SuperAdminPermission: React.FC = () => {
                       permissions.map((perm: permissionType) => (
                         <td
                           key={`${mod.id}-${perm.id}`}
-                          className="text-center py-2"
+                          className="text-center py-2 border-r"
                         >
                           <input
                             type="checkbox"
@@ -172,9 +183,23 @@ const SuperAdminPermission: React.FC = () => {
                                 e.target.checked
                               )
                             }
+                            checked={!!permissionData[mod.id]?.[perm.id]}
                           />
                         </td>
                       ))}
+
+                    <td className="text-center py-2">
+                      <input
+                        type="checkbox"
+                        className="form-checkbox h-5 w-5 text-blue-500"
+                        onChange={e =>
+                          handleSelectAllPermissions(mod.id, e.target.checked)
+                        }
+                        checked={permissions.every(
+                          perm => permissionData[mod.id]?.[perm.id]
+                        )}
+                      />
+                    </td>
                   </tr>
                 ))}
             </tbody>
