@@ -81,7 +81,7 @@ export const Login = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center">
-      <div className="p-8 rounded-lg border shadow-lg w-full max-w-xl">
+      <div className="p-8 rounded-lg border shadow-lg w-full max-w-xl bg-white dark:bg-black">
         <h2 className="text-2xl font-semibold text-center mb-6">Login</h2>
         <div className="space-y-4">
           <div>
@@ -114,7 +114,7 @@ export const Login = () => {
           </div>
           <Button
             onClick={handleLogin}
-            className="w-full mt-6 py-3 bg-indigo-500 text-white font-semibold rounded-md hover:bg-indigo-600 transition"
+            className="w-full mt-6 py-3 bg-indigo-500 text-white font-semibold rounded-md hover:bg-indigo-600 transition  dark:bg-teal-600 dark:hover:bg-teal-700"
           >
             {isPending ? 'Logging in...' : 'Login'}
           </Button>
@@ -139,10 +139,29 @@ export const Login = () => {
           {isPending ? 'Logging in...' : 'Login'}
         </button> */}
 
+          {/* <Button
+            onClick={handleLogin}
+            className="w-full mt-6 py-3 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition"
+          >
+            {isPending ? 'Logging in...' : 'Login'}
+          </Button>
+
           {error && <p className="text-red-500 mt-4 text-center">{error}</p>}
           {success && (
             <p className="text-green-500 mt-4 text-center">{success}</p>
           )}
+
+          <Link to="/register" className="mt-5">
+            Sign up? Register here
+          </Link>
+          {data?.username && <h3>Welcome back!!... {data.username}</h3>}
+
+          <button
+            onClick={() => navigate('/forget-password')}
+            className="w-full mt-4 py-3 bg-gray-300 text-gray-700 font-semibold rounded-md hover:bg-gray-400 transition"
+          >
+            Forgot Password
+          </button> */}
         </div>
       </div>
     </div>
