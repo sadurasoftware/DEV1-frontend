@@ -35,9 +35,10 @@ const Users = () => {
               <thead className="bg-gray-200 text-gray-700">
                 <tr>
                   <th className="px-4 py-2 text-left">ID</th>
-                  <th className="px-4 py-2 text-left">Username</th>
+                  <th className="px-4 py-2 text-left">Firstname</th>
                   <th className="px-4 py-2 text-left">Email</th>
                   <th className="px-4 py-2 text-left">Verified</th>
+                  {/* <th className="px-4 py-2 text-left">Status</th> */}
                   <th className="px-4 py-2 text-left">Edit</th>
                 </tr>
               </thead>
@@ -45,7 +46,7 @@ const Users = () => {
                 {users.map((user, index) => (
                   <tr key={user.id} className="hover:bg-gray-100">
                     <td className="px-4 py-2">{index + 1}</td>
-                    <td className="px-4 py-2">{user.username}</td>
+                    <td className="px-4 py-2">{user.firstname}</td>
                     <td className="px-4 py-2">{user.email}</td>
                     <td className="px-4 py-2">
                       {user.isVerified ? 'Verified' : 'Registered'}

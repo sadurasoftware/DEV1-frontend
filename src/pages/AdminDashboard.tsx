@@ -55,7 +55,7 @@ export const AdminDashboard = () => {
           <div className="max-w-md w-full">
             <div className="bg-white shadow-lg rounded-lg p-6 border border-gray-200">
               <p className="text-center mt-4 text-lg font-semibold text-gray-500">
-                <span className="font-bold">Name:</span> {userData.username}
+                <span className="font-bold">Name:</span> {userData.firstname}
               </p>
               <p className="text-center mt-4 text-lg font-semibold text-gray-500">
                 <span className="font-bold">Email:</span> {userData.email}

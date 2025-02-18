@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
-import { useLoginInfoStore } from '../store/useLoginInfoStore'
 import { useNavigate } from 'react-router-dom'
 import { updateUser } from '../apis/edituserAPI'
 import { useGetUsers } from '../hooks/useGetUser'
+import { useLoginInfoStore } from '../store/useLoginInfoStore'
 
 export const EditUserProfile = () => {
   const { user } = useLoginInfoStore()
@@ -14,7 +14,8 @@ export const EditUserProfile = () => {
   const { userData } = data || {}
 
   const [formData, setFormData] = useState({
-    username: userData?.username || '',
+    firstname: userData?.firstname || '',
+    lastname: userData?.lastname || '',
     email: userData?.email || '',
   })
 
@@ -27,7 +28,8 @@ export const EditUserProfile = () => {
   useEffect(() => {
     if (userData) {
       setFormData({
-        username: userData.username,
+        firstname: userData.firstname,
+        lastname: userData.lastname,
         email: userData.email,
       })
     }
@@ -50,7 +52,8 @@ export const EditUserProfile = () => {
 
     try {
       await updateUser(userId, {
-        username: formData.username,
+        firstname: formData.firstname,
+        lastname: formData.lastname,
         email: formData.email,
       })
 
@@ -80,16 +83,34 @@ export const EditUserProfile = () => {
       >
         <div className="mb-4">
           <label
-            htmlFor="username"
+            htmlFor="firstname"
             className="block text-gray-700 font-semibold mb-2"
           >
             Name
           </label>
           <input
-            id="username"
+            id="firstname"
             type="text"
-            name="username"
-            value={formData.username}
+            name="firstname"
+            value={formData.firstname}
+            onChange={handleInputChange}
+            className="w-full px-4 py-2 border rounded-md border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          />
+        </div>
+
+        <div className="mb-4">
+          <label
+            htmlFor="lastname"
+            className="block text-gray-700 font-semibold mb-2"
+          >
+            LastName
+          </label>
+          <input
+            id="lastname"
+            type="text"
+            name="lastname"
+            value={formData.lastname}
             onChange={handleInputChange}
             className="w-full px-4 py-2 border rounded-md border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
