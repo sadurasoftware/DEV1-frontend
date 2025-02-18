@@ -11,6 +11,7 @@ import { ForgotPassword } from './pages/Forgetpassword'
 import Landing from './pages/Landing'
 import { Login } from './pages/Login'
 import Modules from './pages/Modules'
+import { Navbar } from './pages/Navbar'
 import Permissionpage from './pages/Permissionpage'
 import RegisterForm from './pages/RegisterForm'
 import { ResetPassword } from './pages/ResetPassword'
@@ -21,7 +22,6 @@ import SuperAdminPermission from './pages/SuperAdminPermission'
 import { UserDashboard } from './pages/UserDashboard'
 import Users from './pages/Users'
 import { useLoginInfoStore } from './store/useLoginInfoStore'
-
 // import Theme from './pages/Theme';
 // import  useThemeStore from './store/themeStore';
 // import { useEffect } from 'react';
@@ -37,6 +37,7 @@ const App: React.FC = () => {
   return (
     <Router>
       <div>
+        <Navbar />
         {/* <Theme/> */}
 
         {token ? (
