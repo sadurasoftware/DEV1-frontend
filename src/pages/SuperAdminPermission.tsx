@@ -199,7 +199,7 @@ const SuperAdminPermission: React.FC = () => {
                                 e.target.checked
                               )
                             }
-                            checked={!!permissionData[mod.id]?.[perm.id]}
+                            // checked={!!permissionData[mod.id]?.[perm.id]}
                           />
                         </td>
                       ))}

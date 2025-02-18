@@ -80,90 +80,73 @@ export const Login = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="p-8 rounded-lg border shadow-lg w-full max-w-xl bg-white dark:bg-black">
-        <h2 className="text-2xl font-semibold text-center mb-6">Login</h2>
-        <div className="space-y-4">
-          <div>
-            <Label htmlFor="email">Email</Label>
-            <Input
-              type="email"
-              id="email"
-              placeholder="Email"
-              name="email"
-              onChange={handleChange}
-              value={user.email}
-            />
-          </div>
-          <div className="relative">
-            <Label htmlFor="password">Password</Label>
-            <Input
-              type={showPassword ? 'text' : 'password'}
-              placeholder="Password"
-              name="password"
-              onChange={handleChange}
-              value={user.password}
-            />
-
-            <span
-              className="absolute right-3 top-10 cursor-pointer"
-              onClick={() => setShowPassword(prev => !prev)}
+    <>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="max-w-md w-full p-8 rounded-lg border  m-auto mt-3 mb-3 bg-white dark:bg-black">
+          <h2 className="text-2xl font-semibold  mb-6 dark:text-cust-green">
+            Login
+          </h2>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="email" className="label">
+                Email
+              </Label>
+              <Input
+                type="email"
+                id="email"
+                placeholder="Email"
+                name="email"
+                onChange={handleChange}
+                value={user.email}
+              />
+            </div>
+            <div>
+              <Label htmlFor="password" className="label">
+                Password
+              </Label>
+              <div className="relative">
+                <Input
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Password"
+                  name="password"
+                  onChange={handleChange}
+                  value={user.password}
+                />
+                <span
+                  className="absolute right-3 top-3 cursor-pointer"
+                  onClick={() => setShowPassword(prev => !prev)}
+                >
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </span>
+              </div>
+            </div>
+            <Button
+              onClick={handleLogin}
+              className="w-full mt-6 py-3 bg-cust-blue text-white dark:text-black font-semibold rounded-md hover:bg-cust-blue transition dark:bg-cust-green dark:hover:bg-cust-green"
             >
-              {showPassword ? <FaEyeSlash /> : <FaEye />}
-            </span>
+              {isPending ? 'Logging in...' : 'Login'}
+            </Button>
+            {error && <p className="text-red-500 mt-4 text-center">{error}</p>}
+            {success && (
+              <p className="text-green-500 mt-4 text-center">{success}</p>
+            )}
+            <div className="flex flex-col justify-between md:flex-row">
+              <Link to="/register" className="whitespace-pre">
+                New User? <span className="hover:underline">Register here</span>
+              </Link>
+              <Link to="/forget-password" className="whitespace-pre">
+                Forgot Password?
+              </Link>
+            </div>
+            {/* <Button
+              onClick={() => navigate('/forget-password')}
+              className="w-full mt-6 py-3 bg-gray-300 text-gray-700 font-semibold rounded-md hover:bg-gray-400 transition"
+            >
+              Forgot Password?
+            </Button> */}
           </div>
-          <Button
-            onClick={handleLogin}
-            className="w-full mt-6 py-3 bg-indigo-500 text-white font-semibold rounded-md hover:bg-indigo-600 transition  dark:bg-teal-600 dark:hover:bg-teal-700"
-          >
-            {isPending ? 'Logging in...' : 'Login'}
-          </Button>
-          {error && <p className="text-red-500 mt-4 text-center">{error}</p>}
-          {success && (
-            <p className="text-green-500 mt-4 text-center">{success}</p>
-          )}
-          <div>
-            <Link to="/register">New User? Register here</Link>
-          </div>
-          <Button
-            onClick={() => navigate('/forget-password')}
-            className="w-full mt-6 py-3 bg-gray-300 text-gray-700 font-semibold rounded-md hover:bg-gray-400 transition"
-          >
-            Forgot Password
-          </Button>
-
-          {/* <button
-          onClick={handleLogin}
-          className="w-full mt-6 py-3 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition"
-        >
-          {isPending ? 'Logging in...' : 'Login'}
-        </button> */}
-
-          {/* <Button
-            onClick={handleLogin}
-            className="w-full mt-6 py-3 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition"
-          >
-            {isPending ? 'Logging in...' : 'Login'}
-          </Button>
-
-          {error && <p className="text-red-500 mt-4 text-center">{error}</p>}
-          {success && (
-            <p className="text-green-500 mt-4 text-center">{success}</p>
-          )}
-
-          <Link to="/register" className="mt-5">
-            Sign up? Register here
-          </Link>
-          {data?.username && <h3>Welcome back!!... {data.username}</h3>}
-
-          <button
-            onClick={() => navigate('/forget-password')}
-            className="w-full mt-4 py-3 bg-gray-300 text-gray-700 font-semibold rounded-md hover:bg-gray-400 transition"
-          >
-            Forgot Password
-          </button> */}
         </div>
       </div>
-    </div>
+    </>
   )
 }

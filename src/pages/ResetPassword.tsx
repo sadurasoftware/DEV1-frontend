@@ -38,14 +38,16 @@ export const ResetPassword = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center">
-      <div className="p-8 rounded-lg border shadow-lg w-full max-w-xl">
-        <h2 className="text-2xl font-semibold text-center mb-6">
+      <div className="max-w-md w-full p-8 rounded-lg border  m-auto mt-3 mb-3 bg-white dark:bg-black">
+        <h2 className="text-2xl font-semibold  mb-6 dark:text-cuts-green">
           Reset Password
         </h2>
         <div className="space-y-4">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="relative">
-              <Label htmlFor="email">New Password</Label>
+              <Label htmlFor="email" className="label">
+                New Password
+              </Label>
               <Input
                 type={showPassword ? 'text' : 'password'}
                 id="password"
@@ -66,7 +68,7 @@ export const ResetPassword = () => {
             <div>
               <Button
                 type="submit"
-                className="w-full mt-6 py-3 bg-indigo-500 text-white font-semibold rounded-md hover:bg-indigo-600 transition"
+                className="w-full mt-6 py-3 bg-cust-blue text-white dark:text-black font-semibold rounded-md hover:bg-cust-blue transition dark:bg-cust-green dark:hover:bg-cust-green"
               >
                 Reset password
               </Button>
@@ -96,11 +98,9 @@ export const ResetPassword = () => {
             <p className="text-green-500 mt-4 text-center">{successMessage}</p>
           )}
 
-          <Link
-            to="/login"
-            className="mt-5 text-center block text-blue-500 hover:underline"
-          >
-            Remember your password? Login here
+          <Link to="/login">
+            Remember your password?{' '}
+            <span className="hover:underline">Login here</span>
           </Link>
         </div>
       </div>
