@@ -10,7 +10,6 @@ export const RoleModulePermissionFetch = async (
   try {
     const res: AxiosResponse<RoleModulePermission> = await axios.get(
       `http://localhost:3000/api/role-module-permissions/modulespermissionsByRole`,
-     
       {
         params: { roleId },
         headers: {
@@ -18,8 +17,6 @@ export const RoleModulePermissionFetch = async (
         },
       }
     )
-
-
     if (res.status !== 200) {
       throw new Error('Error fetching API: ' + res.status)
     }

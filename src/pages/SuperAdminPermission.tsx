@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from 'react'
 import { useFetchModules } from '@/hooks/useFetchModules'
 import { useFetchPermissions } from '@/hooks/useFetchPermissions'
+import { useFetchRoleModulePermission } from '@/hooks/useFetchRoleModulePermission'
 import { useFetchRoles } from '@/hooks/useFetchRoles'
 import { useRoleModulePermissionCreate } from '@/hooks/useRoleModulePermissionCreate'
-import { useFetchRoleModulePermission } from '@/hooks/useFetchRoleModulePermission'
+import { PermissionsData } from '@/types/roleModulePermissionType'
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 const SuperAdminPermission: React.FC = () => {
-  const [selectedRole, setSelectedRole] = useState<number | null>(null) 
+  const [selectedRole, setSelectedRole] = useState<number | null>(null)
   const [permissionData, setPermissionData] = useState<PermissionsData>({})
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({})
   const [apiError, setApiError] = useState<string | null>(null)
@@ -15,7 +16,7 @@ const SuperAdminPermission: React.FC = () => {
   const { rolesLoading, rolesData } = useFetchRoles()
   const { roles } = rolesData || {}
   const rolesFilter = roles?.filter(role => role.name !== 'superadmin')
-  
+
   const { modulesLoading, modulesData } = useFetchModules()
   const module = modulesData?.module || []
 
@@ -26,16 +27,16 @@ const SuperAdminPermission: React.FC = () => {
 
   const roleId = selectedRole ?? null
 
-  const { modulePermissionLoading, modulePermissionData, isModulePermissionError, modulePermissionError, refetch } = useFetchRoleModulePermission(roleId)
+  const { modulePermissionData } = useFetchRoleModulePermission(roleId || 0)
 
   useEffect(() => {
     if (modulePermissionData) {
       const initialPermissionData: PermissionsData = {}
 
-      modulePermissionData.roleModules.forEach((module) => {
+      modulePermissionData.roleModules.forEach(module => {
         initialPermissionData[module.moduleId] = {}
 
-        module.Permissions.forEach((permissionId) => {
+        module.Permissions.forEach(permissionId => {
           initialPermissionData[module.moduleId][permissionId] = true
         })
       })
@@ -59,7 +60,7 @@ const SuperAdminPermission: React.FC = () => {
   }
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedRole(Number(e.target.value)) 
+    setSelectedRole(Number(e.target.value))
   }
 
   const handleSelectAllPermissions = (moduleId: number, checked: boolean) => {
@@ -85,21 +86,25 @@ const SuperAdminPermission: React.FC = () => {
 
     const payload = {
       roleId: selectedRole,
-      modulePermissions: Object.keys(permissionData).map((moduleId: string) => {
-        const moduleIdNum = Number(moduleId) 
+      roleModules: Object.keys(permissionData).map((moduleId: string) => {
+        const moduleIdNum = Number(moduleId)
         const permissionsForModule = Object.keys(permissionData[moduleIdNum])
-          .filter((permissionId: string) => permissionData[moduleIdNum][Number(permissionId)])
+          .filter(
+            (permissionId: string) =>
+              permissionData[moduleIdNum][Number(permissionId)]
+          )
           .map((permissionId: string) => ({
             permissionId: Number(permissionId),
           }))
 
         return {
           moduleId: moduleIdNum,
-          permissions: permissionsForModule,
+          Permissions: permissionsForModule,
         }
       }),
     }
 
+    console.log(payload)
     try {
       console.log('Submitting data: ', payload)
       mutate(payload)
@@ -128,7 +133,7 @@ const SuperAdminPermission: React.FC = () => {
               value={selectedRole ?? ''}
             >
               {!rolesLoading ? (
-                rolesFilter?.map((role) => (
+                rolesFilter?.map(role => (
                   <option key={role.id} value={role.id}>
                     {role.name}
                   </option>
@@ -153,7 +158,7 @@ const SuperAdminPermission: React.FC = () => {
                   Modules
                 </th>
                 {!permissionsLoading &&
-                  permissions.map((perm) => (
+                  permissions.map(perm => (
                     <th
                       key={perm.id}
                       className="px-4 py-2 text-center font-semibold text-gray-700 border-b"
@@ -169,14 +174,14 @@ const SuperAdminPermission: React.FC = () => {
             </thead>
             <tbody>
               {!modulesLoading &&
-                module.map((mod) => (
+                module.map(mod => (
                   <tr key={mod.id} className="border-b hover:bg-gray-50">
                     <td className="px-4 py-2 text-left text-gray-800 border-r">
                       {mod.name}
                     </td>
 
                     {!permissionsLoading &&
-                      permissions.map((perm) => (
+                      permissions.map(perm => (
                         <td
                           key={`${mod.id}-${perm.id}`}
                           className="text-center py-2 border-r"
@@ -186,9 +191,13 @@ const SuperAdminPermission: React.FC = () => {
                             id={`${mod.id}-${perm.id}`}
                             name={`${mod.id}-${perm.id}`}
                             className="form-checkbox h-5 w-5 text-blue-500"
-                            checked={permissionData[mod.id]?.[perm.id] || false} 
-                            onChange={(e) =>
-                              handleCheckboxChange(mod.id, perm.id, e.target.checked)
+                            checked={permissionData[mod.id]?.[perm.id] || false}
+                            onChange={e =>
+                              handleCheckboxChange(
+                                mod.id,
+                                perm.id,
+                                e.target.checked
+                              )
                             }
                             checked={!!permissionData[mod.id]?.[perm.id]}
                           />

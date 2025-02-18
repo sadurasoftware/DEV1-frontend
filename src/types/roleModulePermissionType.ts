@@ -1,8 +1,8 @@
 export type RoleModulePermission = {
   roleId: number
-  modulePermissions: {
+  roleModules: {
     moduleId: number
-    permissions: {
+    Permissions: {
       permissionId: number
     }[]
   }[]
