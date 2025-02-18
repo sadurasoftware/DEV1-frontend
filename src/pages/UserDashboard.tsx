@@ -1,7 +1,7 @@
-import { useLoginInfoStore } from '../store/useLoginInfoStore'
-import { useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useGetUsers } from '../hooks/useGetUser'
+import { useLoginInfoStore } from '../store/useLoginInfoStore'
 
 export const UserDashboard = () => {
   const { token, user } = useLoginInfoStore()
@@ -42,7 +42,7 @@ export const UserDashboard = () => {
           <div className="max-w-md w-full">
             <div className="bg-white shadow-lg rounded-lg p-6 border border-gray-200">
               <p className="text-center mt-4 text-lg font-semibold text-gray-500">
-                <span className="font-bold">Name:</span> {userData.username}
+                <span className="font-bold">Name:</span> {userData.firstname}
               </p>
               <p className="text-center mt-4 text-lg font-semibold text-gray-500">
                 <span className="font-bold">Email:</span> {userData.email}

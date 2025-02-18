@@ -29,7 +29,7 @@ export const SuperAdminDashboard = () => {
 
         {token && (
           <h1 className="text-xl font-medium text-gray-700 mb-6">
-            Welcome, {user?.username}
+            Welcome, {user?.firstname}
           </h1>
         )}
 

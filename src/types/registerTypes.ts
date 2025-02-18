@@ -1,9 +1,11 @@
 export type User = {
   id: number
-  username: string
+  firstname: string
+  lastname: string
   email: string
   password: string
   confirmPassword: string
+  terms: boolean
   role: 'superadmin' | 'admin' | 'user' | 'moderator' | 'viewer'
 }
 
