@@ -11,6 +11,7 @@ import { ForgotPassword } from './pages/Forgetpassword'
 import Landing from './pages/Landing'
 import { Login } from './pages/Login'
 import Modules from './pages/Modules'
+import { Navbar } from './pages/Navbar'
 import Permissionpage from './pages/Permissionpage'
 import RegisterForm from './pages/RegisterForm'
 import { ResetPassword } from './pages/ResetPassword'
@@ -37,6 +38,7 @@ const App: React.FC = () => {
   return (
     <Router>
       <div>
+        <Navbar />
         {/* <Theme/> */}
 
         {token ? (

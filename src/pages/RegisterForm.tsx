@@ -1,5 +1,4 @@
 import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useLoginInfoStore } from '@/store/useLoginInfoStore'
@@ -20,10 +19,12 @@ const RegisterForm: React.FC = () => {
   const { user } = useLoginInfoStore()
   const [formData, setFormData] = useState<User>({
     id: 0,
-    username: '',
+    firstname: '',
+    lastname: '',
     email: '',
     password: '',
     confirmPassword: '',
+    terms: false,
     role: 'user',
   })
   const [passwordCondition, setPasswordCondition] = useState<PasswordType>({
@@ -66,15 +67,18 @@ const RegisterForm: React.FC = () => {
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    const { name, value } = e.target
-    if (name === 'password' || name === 'confirmPassword') {
-      validatedPassword(value)
+    const { name, value, type, checked } = e.target as HTMLInputElement
+    if (type === 'checkbox') {
+      setFormData({
+        ...formData,
+        [name]: checked,
+      })
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value,
+      })
     }
-
-    setFormData({
-      ...formData,
-      [name]: value,
-    })
     setFormErrors({})
     setApiError(null)
   }
@@ -105,10 +109,12 @@ const RegisterForm: React.FC = () => {
         onSuccess: () => {
           setFormData({
             id: 0,
-            username: '',
+            firstname: '',
+            lastname: '',
             email: '',
             password: '',
             confirmPassword: '',
+            terms: false,
             role: 'user',
           })
         },
@@ -206,14 +212,14 @@ const RegisterForm: React.FC = () => {
                   </Label>
                   <Input
                     type="text"
-                    id="username"
-                    name="username"
-                    value={formData.username}
+                    id="firstname"
+                    name="firstname"
+                    value={formData.firstname}
                     onChange={handleChange}
                   />
-                  {formErrors.username && (
+                  {formErrors.firstname && (
                     <p className="text-red-500 text-sm">
-                      {formErrors.username}
+                      {formErrors.firstname}
                     </p>
                   )}
                 </div>
@@ -225,9 +231,14 @@ const RegisterForm: React.FC = () => {
                     type="text"
                     id="lastname"
                     name="lastname"
-                    // value={formData.lastname}
+                    value={formData.lastname}
                     onChange={handleChange}
                   />
+                  {formErrors.lastname && (
+                    <p className="text-red-500 text-sm">
+                      {formErrors.lastname}
+                    </p>
+                  )}
                   {/* <p className="text-red-500 text-sm"> Last Name is required</p> */}
                 </div>
               </div>
@@ -396,7 +407,13 @@ const RegisterForm: React.FC = () => {
                   </div>
                 )}
                 <div className="flex gap-2 mt-4">
-                  <Checkbox id="terms" />
+                  <input
+                    type="checkbox"
+                    id="terms"
+                    name="terms"
+                    checked={formData.terms}
+                    onChange={handleChange}
+                  />
                   <div className="grid gap-1.5 leading-none">
                     <label
                       htmlFor="terms"
@@ -405,7 +422,29 @@ const RegisterForm: React.FC = () => {
                       Accept <Link to="/">terms and conditions</Link>
                     </label>
                   </div>
+                  {formErrors.terms && (
+                    <p className="text-red-500 text-sm">{formErrors.terms}</p>
+                  )}
                 </div>
+                {/* <div className="flex gap-2 mt-4">
+                  <Checkbox
+                    id="terms"
+                    name="terms"
+                    checked={formData.terms}
+                    onChange={handleChange}
+                  />
+                  <div className="grid gap-1.5 leading-none">
+                    <label
+                      htmlFor="terms"
+                      className=" label  font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                      Accept <Link to="/">terms and conditions</Link>
+                    </label>
+                  </div>
+                  {formErrors.terms && (
+                    <p className="text-red-500 text-sm">{formErrors.terms}</p>
+                  )}
+                </div>  */}
                 <div>
                   <Button
                     type="submit"

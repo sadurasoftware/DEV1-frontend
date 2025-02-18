@@ -1,7 +1,8 @@
 import { z } from 'zod'
 
 export const registerValidation = z.object({
-  username: z.string().min(1, 'Name is required'),
+  firstname: z.string().min(1, 'FirstName is required'),
+  lastname: z.string().min(1, 'LastName is required'),
   email: z.string().email('Please enter a valid email'),
   password: z
     .string()
@@ -14,5 +15,7 @@ export const registerValidation = z.object({
     )
     .min(8, 'Password must be at least 8 characters')
     .min(1, 'Password is required'),
-  // terms: z.boolean().refine(val => val === true, 'You must accept the terms and conditions'),
+  terms: z
+    .boolean()
+    .refine(val => val === true, 'You must accept the terms and conditions'),
 })
