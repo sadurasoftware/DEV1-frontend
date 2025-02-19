@@ -66,6 +66,8 @@
     --cust-green: 151, 90%, 51%;
     --cust-gray-dark: hsla(0, 0%, 83%, 1);
     --cust-gray-light: hsla(0, 0%, 47%, 1);
+    --success-green: 106, 100%, 31%;
+    --error-red: 0, 100%, 50%;
     --background: 200, 33%, 98%;
     --foreground: 240 10% 3.9%;
     --card: 0 0% 100%;
@@ -97,6 +99,8 @@
     --cust-green: 151, 90%, 51%;
     --cust-gray-dark: hsla(0, 0%, 83%, 1);
     --cust-gray-light: hsla(0, 0%, 47%, 1);
+    --success-green: 106, 44%, 55%;
+    --error-red: 0, 100%, 70%;
     --background: 240 10% 3.9%;
     --foreground: 0 0% 98%;
     --card: 240 10% 3.9%;
@@ -134,7 +138,7 @@
 }
 
 .errorMsg {
-  @apply flex gap-2 text-xs items-center m-1 italic;
+  @apply flex gap-2 text-xs items-center m-1.5 italic;
 }
 .label {
   @apply text-sm text-cust-gray-light dark:text-cust-gray-dark;

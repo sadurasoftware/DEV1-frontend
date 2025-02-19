@@ -1,3 +1,4 @@
+import { ModeToggle } from '@/components/mode-toggle'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
@@ -191,14 +192,6 @@ const RegisterForm: React.FC = () => {
     }
   }
 
-  // const formStyles =
-  //   theme === "light" ? "bg-white text-black" : "bg-gray-800 text-white"
-  // const labelStyles = theme === "light" ? "text-black" : "text-white"
-  // const inputStyles =
-  //   theme === "light"
-  //     ? "border-gray-300 text-black"
-  //     : "border-gray-600 text-white bg-gray-700"
-
   const errPWmxLength = passwordCondition.maxLength
   const errPWminLength = passwordCondition.minLength
   const errPWupperClass = passwordCondition.hasUpperCase
@@ -207,6 +200,7 @@ const RegisterForm: React.FC = () => {
 
   return (
     <>
+      <ModeToggle />
       <div className="min-h-screen flex items-center justify-center ">
         <div className="max-w-md w-full p-8 rounded-lg border  m-auto mt-3 mb-3 bg-white dark:bg-black">
           <h2 className="text-2xl font-semibold  mb-6 dark:text-cust-green">
@@ -227,7 +221,7 @@ const RegisterForm: React.FC = () => {
                     onChange={handleChange}
                   />
                   {formErrors.firstname && (
-                    <p className="text-red-500 text-sm">
+                    <p className="text-error-red text-sm">
                       {formErrors.firstname}
                     </p>
                   )}
@@ -244,7 +238,7 @@ const RegisterForm: React.FC = () => {
                     onChange={handleChange}
                   />
                   {formErrors.lastname && (
-                    <p className="text-red-500 text-sm">
+                    <p className="text-error-red text-sm">
                       {formErrors.lastname}
                     </p>
                   )}
@@ -261,7 +255,7 @@ const RegisterForm: React.FC = () => {
                   onChange={handleChange}
                 />
                 {formErrors.email && (
-                  <p className="text-red-500 text-sm">{formErrors.email}</p>
+                  <p className="text-error-red text-sm">{formErrors.email}</p>
                 )}
               </div>
               <div>
@@ -305,54 +299,79 @@ const RegisterForm: React.FC = () => {
 
                 <div className="pt-2">
                   {formErrors.password && (
-                    <p className="text-red-500 text-sm">
+                    <p className="text-error-red text-sm">
                       {formErrors.password}
                     </p>
                   )}
                   <p
-                    className="errorMsg"
-                    style={{
-                      color: errPWmxLength ? 'green' : 'red',
-                    }}
+                    className={
+                      errPWmxLength
+                        ? 'errorMsg text-success-green '
+                        : 'errorMsg text-error-red'
+                    }
                   >
-                    {errPWmxLength ? <FaCircleCheck /> : <FaCircleXmark />}
+                    {errPWmxLength ? (
+                      <FaCircleCheck size={10} />
+                    ) : (
+                      <FaCircleXmark size={10} />
+                    )}
                     Maximum 20 characters
                   </p>
                   <p
-                    className="errorMsg"
-                    style={{
-                      color: errPWminLength ? 'green' : 'red',
-                    }}
+                    className={
+                      errPWminLength
+                        ? 'errorMsg text-success-green '
+                        : `errorMsg text-error-red`
+                    }
                   >
-                    {errPWminLength ? <FaCircleCheck /> : <FaCircleXmark />}
+                    {errPWminLength ? (
+                      <FaCircleCheck size={10} />
+                    ) : (
+                      <FaCircleXmark size={10} />
+                    )}
                     At least 8 characters long
                   </p>
 
                   <p
-                    className="errorMsg"
-                    style={{
-                      color: errPWupperClass ? 'green' : 'red',
-                    }}
+                    className={
+                      errPWupperClass
+                        ? 'errorMsg text-success-green '
+                        : `errorMsg text-error-red`
+                    }
                   >
-                    {errPWupperClass ? <FaCircleCheck /> : <FaCircleXmark />}
+                    {errPWupperClass ? (
+                      <FaCircleCheck size={10} />
+                    ) : (
+                      <FaCircleXmark size={10} />
+                    )}
                     Contains at least one uppercase letter
                   </p>
                   <p
-                    className="errorMsg"
-                    style={{
-                      color: errPWnum ? 'green' : 'red',
-                    }}
+                    className={
+                      errPWnum
+                        ? 'errorMsg text-success-green '
+                        : `errorMsg text-error-red`
+                    }
                   >
-                    {errPWnum ? <FaCircleCheck /> : <FaCircleXmark />}
+                    {errPWnum ? (
+                      <FaCircleCheck size={10} />
+                    ) : (
+                      <FaCircleXmark size={10} />
+                    )}
                     Contains at least one number
                   </p>
                   <p
-                    className="errorMsg"
-                    style={{
-                      color: errPWspeChar ? 'green' : 'red',
-                    }}
+                    className={
+                      errPWspeChar
+                        ? 'errorMsg text-success-green '
+                        : `errorMsg text-error-red`
+                    }
                   >
-                    {errPWspeChar ? <FaCircleCheck /> : <FaCircleXmark />}
+                    {errPWspeChar ? (
+                      <FaCircleCheck size={10} />
+                    ) : (
+                      <FaCircleXmark size={10} />
+                    )}
                     Contains at least one special character
                   </p>
                 </div>
@@ -376,7 +395,7 @@ const RegisterForm: React.FC = () => {
                     </span>
                   </div>
                   {formErrors.confirmPassword !== formErrors.password && (
-                    <p className="text-red-500 text-sm">
+                    <p className="text-error-red text-sm">
                       Password does not match!
                     </p>
                   )}
@@ -406,7 +425,9 @@ const RegisterForm: React.FC = () => {
                       )}
                     </select>
                     {formErrors.role && (
-                      <p className="text-red-500 text-sm">{formErrors.role}</p>
+                      <p className="text-error-red text-sm">
+                        {formErrors.role}
+                      </p>
                     )}
                   </div>
                 )}
@@ -422,13 +443,7 @@ const RegisterForm: React.FC = () => {
                       }))
                     }}
                   />
-                  {/* <input
-                    type="checkbox"
-                    id="terms"
-                    name="terms"
-                    checked={formData.terms}
-                    onChange={handleChange}
-                  /> */}
+
                   <div className="grid gap-1.5 ">
                     <label
                       htmlFor="terms"
@@ -442,27 +457,9 @@ const RegisterForm: React.FC = () => {
                   </div>
                 </div>
                 {formErrors.terms && (
-                  <p className="text-red-500 text-sm ">{formErrors.terms}</p>
+                  <p className="text-error-red text-sm ">{formErrors.terms}</p>
                 )}
-                {/* <div className="flex gap-2 mt-4">
-                  <Checkbox
-                    id="terms"
-                    name="terms"
-                    checked={formData.terms}
-                    onChange={handleChange}
-                  />
-                  <div className="grid gap-1.5 leading-none">
-                    <label
-                      htmlFor="terms"
-                      className=" label  font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                    >
-                      Accept <Link to="/">terms and conditions</Link>
-                    </label>
-                  </div>
-                  {formErrors.terms && (
-                    <p className="text-red-500 text-sm">{formErrors.terms}</p>
-                  )}
-                </div>  */}
+
                 <div>
                   <Button
                     type="submit"
@@ -480,11 +477,11 @@ const RegisterForm: React.FC = () => {
             </p>
           )}
           {isError && apiError && (
-            <p className="text-red-500 text-center mt-4">{apiError}</p>
+            <p className="text-error-red text-center mt-4">{apiError}</p>
           )}
           <div className="pt-5 text-xs text-center">
             <Link to="/login">
-              Already Registered?
+              Already Registered?{' '}
               <span className="hover:underline">Login here</span>
             </Link>
           </div>

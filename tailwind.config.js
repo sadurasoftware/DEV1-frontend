@@ -14,6 +14,8 @@ export default {
         'cust-green': 'hsl(var(--cust-green))',
         'cust-gray-dark': 'hsl(var(--cust-gray-dark))',
         'cust-gray-light': 'hsl(var(--cust-gray-light))',
+        'success-green': 'hsl(var(--success-green))',
+        'error-red': 'hsl(var(--error-red))',
 
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',

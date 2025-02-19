@@ -1,3 +1,4 @@
+import { ModeToggle } from '@/components/mode-toggle'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -81,6 +82,7 @@ export const Login = () => {
 
   return (
     <>
+      <ModeToggle />
       <div className="min-h-screen flex items-center justify-center">
         <div className="max-w-md w-full p-8 rounded-lg border  m-auto mt-3 mb-3 bg-white dark:bg-black">
           <h2 className="text-2xl font-semibold  mb-6 dark:text-cust-green">
@@ -120,9 +122,9 @@ export const Login = () => {
                 </span>
               </div>
             </div>
-            {error && <p className="text-red-500 text-sm mt-4 ">{error}</p>}
+            {error && <p className="text-error-red text-xs mt-4 ">{error}</p>}
             {success && (
-              <p className="text-green-500 text-sm mt-4 ">{success}</p>
+              <p className="text-success-green text-xs mt-4 ">{success}</p>
             )}
             <Button
               onClick={handleLogin}
