@@ -11,7 +11,6 @@ import { ForgotPassword } from './pages/Forgetpassword'
 import Landing from './pages/Landing'
 import { Login } from './pages/Login'
 import Modules from './pages/Modules'
-import { Navbar } from './pages/Navbar'
 import Permissionpage from './pages/Permissionpage'
 import RegisterForm from './pages/RegisterForm'
 import { ResetPassword } from './pages/ResetPassword'
@@ -36,58 +35,52 @@ const App: React.FC = () => {
 
   return (
     <Router>
-      <div>
-        <Navbar />
-        {/* <Theme/> */}
+      {/* <Theme/> */}
 
-        {token ? (
-          <AuthenticatedLayout>
-            <Routes>
-              <Route
-                path="/"
-                element={<h1 className="flex justify-center">Dev Frontend</h1>}
-              />
-              <Route path="/super-admin" element={<SuperAdminDashboard />} />
-              <Route path="/userdashboard" element={<UserDashboard />} />
-              <Route
-                path="/edit-profile/:userId"
-                element={<EditUserProfile />}
-              />
-              <Route path="/admindashboard" element={<AdminDashboard />} />
-              <Route
-                path="/edit-admin-profile/:userId"
-                element={<EditAdminProfile />}
-              />
-              <Route path="/register" element={<RegisterForm />} />
-              <Route path="/users" element={<Users />} />
-              <Route path="/admins" element={<Admins />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route
-                path="/super-admin-permissions"
-                element={<SuperAdminPermission />}
-              />
-              <Route path="/roles" element={<RolePage />} />
-              <Route path="/permissions" element={<Permissionpage />} />
-              <Route path="/edit/:id" element={<EditForm />} />
-              <Route path="/modules" element={<Modules />} />
-            </Routes>
-          </AuthenticatedLayout>
-        ) : (
-          <UnauthenticatedLayout>
-            <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<RegisterForm />} />
-              <Route path="/forget-password" element={<ForgotPassword />} />
-              <Route
-                path="/"
-                element={<Landing />}
-                // element={<h1 className="flex justify-center">Dev Frontend</h1>}
-              />
-              <Route path="/reset-password" element={<ResetPassword />} />
-            </Routes>
-          </UnauthenticatedLayout>
-        )}
-      </div>
+      {token ? (
+        <AuthenticatedLayout>
+          <Routes>
+            <Route
+              path="/"
+              element={<h1 className="flex justify-center">Dev Frontend</h1>}
+            />
+            <Route path="/super-admin" element={<SuperAdminDashboard />} />
+            <Route path="/userdashboard" element={<UserDashboard />} />
+            <Route path="/edit-profile/:userId" element={<EditUserProfile />} />
+            <Route path="/admindashboard" element={<AdminDashboard />} />
+            <Route
+              path="/edit-admin-profile/:userId"
+              element={<EditAdminProfile />}
+            />
+            <Route path="/register" element={<RegisterForm />} />
+            <Route path="/users" element={<Users />} />
+            <Route path="/admins" element={<Admins />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route
+              path="/super-admin-permissions"
+              element={<SuperAdminPermission />}
+            />
+            <Route path="/roles" element={<RolePage />} />
+            <Route path="/permissions" element={<Permissionpage />} />
+            <Route path="/edit/:id" element={<EditForm />} />
+            <Route path="/modules" element={<Modules />} />
+          </Routes>
+        </AuthenticatedLayout>
+      ) : (
+        <UnauthenticatedLayout>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<RegisterForm />} />
+            <Route path="/forget-password" element={<ForgotPassword />} />
+            <Route
+              path="/"
+              element={<Landing />}
+              // element={<h1 className="flex justify-center">Dev Frontend</h1>}
+            />
+            <Route path="/reset-password" element={<ResetPassword />} />
+          </Routes>
+        </UnauthenticatedLayout>
+      )}
     </Router>
   )
 }

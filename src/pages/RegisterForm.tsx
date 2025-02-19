@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useLoginInfoStore } from '@/store/useLoginInfoStore'
@@ -198,8 +199,8 @@ const RegisterForm: React.FC = () => {
 
   return (
     <>
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="p-8 rounded-lg border w-md  m-auto mt-3 mb-3 bg-white dark:bg-black">
+      <div className="min-h-screen flex items-center justify-center ">
+        <div className="max-w-md w-full p-8 rounded-lg border  m-auto mt-3 mb-3 bg-white dark:bg-black">
           <h2 className="text-2xl font-semibold  mb-6 dark:text-cust-green">
             Let’s get started
           </h2>
@@ -239,7 +240,6 @@ const RegisterForm: React.FC = () => {
                       {formErrors.lastname}
                     </p>
                   )}
-                  {/* <p className="text-red-500 text-sm"> Last Name is required</p> */}
                 </div>
               </div>
               <div>
@@ -268,7 +268,6 @@ const RegisterForm: React.FC = () => {
                     value={formData.password}
                     onChange={handleChange}
                   />
-
                   <span
                     className="absolute right-3 top-3 cursor-pointer"
                     onClick={() => setShowPassword(prev => !prev)}
@@ -302,7 +301,6 @@ const RegisterForm: React.FC = () => {
                       {formErrors.password}
                     </p>
                   )}
-                  <p className="text-red-500 text-sm">Password should </p>
                   <p
                     className="errorMsg"
                     style={{
@@ -362,7 +360,6 @@ const RegisterForm: React.FC = () => {
                       value={formData.confirmPassword}
                       onChange={handleChange}
                     />
-
                     <span
                       className="absolute right-3 top-3 cursor-pointer"
                       onClick={() => setShowConfirmPassword(prev => !prev)}
@@ -371,17 +368,16 @@ const RegisterForm: React.FC = () => {
                     </span>
                   </div>
                   {formErrors.confirmPassword !== formErrors.password && (
-                    <p style={{ color: 'red' }}>Password does not match!</p>
+                    <p className="text-red-500 text-sm">
+                      Password does not match!
+                    </p>
                   )}
-                  {/* <p className='text-red-500 text-sm'>Password does not match!</p>*/}
                 </div>
-
                 {isSuperAdmin && (
                   <div>
                     <Label htmlFor="role" className="label">
                       Role
                     </Label>
-
                     <select
                       id="role"
                       name="role"
@@ -407,25 +403,34 @@ const RegisterForm: React.FC = () => {
                   </div>
                 )}
                 <div className="flex gap-2 mt-4">
-                  <input
+                  <Checkbox
+                    id="terms"
+                    name="terms"
+                    // checked={formData.terms}
+                    // onChange={handleChange}
+                  />
+                  {/* <input
                     type="checkbox"
                     id="terms"
                     name="terms"
                     checked={formData.terms}
                     onChange={handleChange}
-                  />
-                  <div className="grid gap-1.5 leading-none">
+                  /> */}
+                  <div className="grid gap-1.5 ">
                     <label
                       htmlFor="terms"
-                      className=" label  font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      className=" label font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                     >
-                      Accept <Link to="/">terms and conditions</Link>
+                      Accept{' '}
+                      <Link to="/" className="underline">
+                        terms and conditions
+                      </Link>
                     </label>
                   </div>
-                  {formErrors.terms && (
-                    <p className="text-red-500 text-sm">{formErrors.terms}</p>
-                  )}
                 </div>
+                {formErrors.terms && (
+                  <p className="text-red-500 text-sm ">{formErrors.terms}</p>
+                )}
                 {/* <div className="flex gap-2 mt-4">
                   <Checkbox
                     id="terms"
@@ -448,7 +453,7 @@ const RegisterForm: React.FC = () => {
                 <div>
                   <Button
                     type="submit"
-                    className="w-full mt-6 py-3 bg-cust-blue text-white dark:text-black font-semibold rounded-md hover:bg-cust-blue transition dark:bg-cust-green dark:hover:bg-cust-green"
+                    className="w-full mt-6 py-3 bg-cust-blue text-white dark:text-black font-semibold rounded-md hover:bg-cust-blue transition dark:bg-cust-green dark:hover:bg-cust-green uppercase"
                   >
                     Get Started
                   </Button>
@@ -464,8 +469,11 @@ const RegisterForm: React.FC = () => {
           {isError && apiError && (
             <p className="text-red-500 text-center mt-4">{apiError}</p>
           )}
-          <div className="pt-5">
-            <Link to="/login">Already Registered? Login here</Link>
+          <div className="pt-5 text-xs text-center">
+            <Link to="/login">
+              Already Registered?
+              <span className="hover:underline">Login here</span>
+            </Link>
           </div>
         </div>
       </div>
