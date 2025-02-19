@@ -1,4 +1,3 @@
-import { Settings, Users } from 'lucide-react'
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom'
 import './App.css'
 import AuthentictedLayout from './layouts/AuthentictedLayout'
@@ -17,9 +16,11 @@ import Permissionpage from './pages/Permissionpage'
 import RegisterForm from './pages/RegisterForm'
 import { ResetPassword } from './pages/ResetPassword'
 import RolePage from './pages/Rolepage'
+import { Settings } from './pages/Settings'
 import { SuperAdminDashboard } from './pages/SuperAdminDashboard'
 import SuperAdminPermission from './pages/SuperAdminPermission'
 import { UserDashboard } from './pages/UserDashboard'
+import Users from './pages/Users'
 
 // import Theme from './pages/Theme';
 // import  useThemeStore from './store/themeStore';

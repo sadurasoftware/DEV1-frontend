@@ -90,7 +90,7 @@ export const Login = () => {
           </h2>
           <div className="space-y-4">
             <div>
-              <Label htmlFor="email" className="label">
+              <Label htmlFor="email" className="text-xs font-medium">
                 Email
               </Label>
               <Input
@@ -103,7 +103,7 @@ export const Login = () => {
               />
             </div>
             <div>
-              <Label htmlFor="password" className="label">
+              <Label htmlFor="password" className="text-xs font-medium">
                 Password
               </Label>
               <div className="relative">
@@ -133,20 +133,20 @@ export const Login = () => {
               {isPending ? 'Logging in...' : 'Login'}
             </Button>
 
-            <div className="pt-5 flex flex-col justify-between text-xs md:flex-row">
-              <Link to="/register" className="whitespace-pre">
-                New User? <span className="hover:underline">Register here</span>
-              </Link>
-              <Link to="/forget-password" className="whitespace-pre">
-                Forgot Password?
-              </Link>
-            </div>
             {/* <Button
               onClick={() => navigate('/forget-password')}
               className="w-full mt-6 py-3 bg-gray-300 text-gray-700 font-semibold rounded-md hover:bg-gray-400 transition"
             >
               Forgot Password?
             </Button> */}
+          </div>
+          <div className="pt-5 flex flex-col justify-between text-xs md:flex-row">
+            <Link to="/register" className="whitespace-pre">
+              New User? <span className="hover:underline">Register here</span>
+            </Link>
+            <Link to="/forget-password" className="whitespace-pre">
+              Forgot Password?
+            </Link>
           </div>
         </div>
       </div>
