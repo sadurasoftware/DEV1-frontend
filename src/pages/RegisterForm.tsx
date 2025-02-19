@@ -471,7 +471,7 @@ const RegisterForm: React.FC = () => {
           )}
           <div className="pt-5 text-xs text-center">
             <Link to="/login">
-              Already Registered?
+              Already Registered?{' '}
               <span className="hover:underline">Login here</span>
             </Link>
           </div>

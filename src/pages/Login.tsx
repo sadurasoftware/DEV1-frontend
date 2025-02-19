@@ -120,17 +120,18 @@ export const Login = () => {
                 </span>
               </div>
             </div>
+            {error && <p className="text-red-500 text-sm mt-4 ">{error}</p>}
+            {success && (
+              <p className="text-green-500 text-sm mt-4 ">{success}</p>
+            )}
             <Button
               onClick={handleLogin}
-              className="w-full mt-6 py-3 bg-cust-blue text-white dark:text-black font-semibold rounded-md hover:bg-cust-blue transition dark:bg-cust-green dark:hover:bg-cust-green"
+              className="w-full mt-6 py-3 bg-cust-blue text-white dark:text-black font-semibold rounded-md hover:bg-cust-blue transition dark:bg-cust-green dark:hover:bg-cust-green uppercase"
             >
               {isPending ? 'Logging in...' : 'Login'}
             </Button>
-            {error && <p className="text-red-500 mt-4 text-center">{error}</p>}
-            {success && (
-              <p className="text-green-500 mt-4 text-center">{success}</p>
-            )}
-            <div className="flex flex-col justify-between md:flex-row">
+
+            <div className="pt-5 flex flex-col justify-between text-xs md:flex-row">
               <Link to="/register" className="whitespace-pre">
                 New User? <span className="hover:underline">Register here</span>
               </Link>

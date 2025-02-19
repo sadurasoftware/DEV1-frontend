@@ -64,11 +64,21 @@ export const ResetPassword = () => {
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
               </span>
             </div>
-
+            {isError && (
+              <p className="text-red-500 mt-4 text-center">{error}</p>
+            )}
+            {passwordError && (
+              <p className="text-red-500 mt-4 text-center">{passwordError}</p>
+            )}
+            {successMessage && (
+              <p className="text-green-500 mt-4 text-center">
+                {successMessage}
+              </p>
+            )}
             <div>
               <Button
                 type="submit"
-                className="w-full mt-6 py-3 bg-cust-blue text-white dark:text-black font-semibold rounded-md hover:bg-cust-blue transition dark:bg-cust-green dark:hover:bg-cust-green"
+                className="w-full mt-6 py-3 bg-cust-blue text-white dark:text-black font-semibold rounded-md hover:bg-cust-blue transition dark:bg-cust-green dark:hover:bg-cust-green uppercase"
               >
                 Reset password
               </Button>
@@ -90,15 +100,7 @@ export const ResetPassword = () => {
           </button>*/}
           </form>
 
-          {isError && <p className="text-red-500 mt-4 text-center">{error}</p>}
-          {passwordError && (
-            <p className="text-red-500 mt-4 text-center">{passwordError}</p>
-          )}
-          {successMessage && (
-            <p className="text-green-500 mt-4 text-center">{successMessage}</p>
-          )}
-
-          <Link to="/login">
+          <Link to="/login" className="text-xs pt-5">
             Remember your password?{' '}
             <span className="hover:underline">Login here</span>
           </Link>
