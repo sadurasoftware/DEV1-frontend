@@ -48,18 +48,18 @@ export const ForgotPassword = () => {
                 className='w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
               />
             </div> */}
+            {isError && <p className="text-red-500 text-sm mt-4 ">{error}</p>}
+            {successMessage && (
+              <p className="text-green-500 mt-4 ">{successMessage}</p>
+            )}
             <Button
               type="submit"
-              className="w-full mt-6 py-3 bg-cust-blue text-white dark:text-black font-semibold rounded-md hover:bg-cust-blue transition dark:bg-cust-green dark:hover:bg-cust-green"
+              className="w-full mt-6 py-3 bg-cust-blue text-white dark:text-black font-semibold rounded-md hover:bg-cust-blue transition dark:bg-cust-green dark:hover:bg-cust-green uppercase"
             >
               Send Reset Link
             </Button>
           </form>
-          {isError && <p className="text-red-500 mt-4 text-center">{error}</p>}
-          {successMessage && (
-            <p className="text-green-500 mt-4 text-center">{successMessage}</p>
-          )}
-          <div className="mt-5">
+          <div className="pt-5 text-xs">
             <Link to="/login">
               Remember your password?
               <span className="hover:underline"> Login here</span>
