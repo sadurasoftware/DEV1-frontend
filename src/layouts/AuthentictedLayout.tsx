@@ -1,11 +1,16 @@
-import React from 'react'
-import { AuthenticatedLayoutProps } from '../types/LayoutType'
-export const AuthenticatedLayout: React.FC<AuthenticatedLayoutProps> = ({
-  children,
-}) => {
+import { Navbar } from '@/pages/Navbar'
+import { Outlet } from 'react-router-dom'
+// import { AuthenticatedLayoutProps } from '../types/LayoutType'
+// const AuthenticatedLayout: React.FC<AuthenticatedLayoutProps> = () => {
+const AuthenticatedLayout = () => {
   return (
-    <div>
-      <main>{children}</main>
-    </div>
+    <>
+      <Navbar />
+      <main>
+        <Outlet />
+      </main>
+    </>
   )
 }
+
+export default AuthenticatedLayout

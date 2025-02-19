@@ -1,7 +1,9 @@
+import { Settings, Users } from 'lucide-react'
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom'
 import './App.css'
-import { AuthenticatedLayout } from './layouts/AuthentictedLayout'
-import { UnauthenticatedLayout } from './layouts/MainLayout'
+import AuthentictedLayout from './layouts/AuthentictedLayout'
+import Layout from './layouts/Layout'
+import ProtectedAuth from './layouts/ProtectedAuth'
 import { AdminDashboard } from './pages/AdminDashboard'
 import Admins from './pages/Admins'
 import { EditAdminProfile } from './pages/EditAdminProfile'
@@ -15,19 +17,17 @@ import Permissionpage from './pages/Permissionpage'
 import RegisterForm from './pages/RegisterForm'
 import { ResetPassword } from './pages/ResetPassword'
 import RolePage from './pages/Rolepage'
-import { Settings } from './pages/Settings'
 import { SuperAdminDashboard } from './pages/SuperAdminDashboard'
 import SuperAdminPermission from './pages/SuperAdminPermission'
 import { UserDashboard } from './pages/UserDashboard'
-import Users from './pages/Users'
-import { useLoginInfoStore } from './store/useLoginInfoStore'
+
 // import Theme from './pages/Theme';
 // import  useThemeStore from './store/themeStore';
 // import { useEffect } from 'react';
 
 const App: React.FC = () => {
   // const { theme } = useThemeStore();
-  const { token } = useLoginInfoStore()
+  // const { token } = useLoginInfoStore()
 
   // useEffect(() => {
   //   document.body.className = theme ;
@@ -35,11 +35,22 @@ const App: React.FC = () => {
 
   return (
     <Router>
-      {/* <Theme/> */}
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Login />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<RegisterForm />} />
+          <Route path="/forget-password" element={<ForgotPassword />} />
+          <Route
+            path="/"
+            element={<Landing />}
+            // element={<h1 className="flex justify-center">Dev Frontend</h1>}
+          />
+          <Route path="/reset-password" element={<ResetPassword />} />
+        </Route>
 
-      {token ? (
-        <AuthenticatedLayout>
-          <Routes>
+        <Route element={<ProtectedAuth />}>
+          <Route path="/" element={<AuthentictedLayout />}>
             <Route
               path="/"
               element={<h1 className="flex justify-center">Dev Frontend</h1>}
@@ -64,23 +75,10 @@ const App: React.FC = () => {
             <Route path="/permissions" element={<Permissionpage />} />
             <Route path="/edit/:id" element={<EditForm />} />
             <Route path="/modules" element={<Modules />} />
-          </Routes>
-        </AuthenticatedLayout>
-      ) : (
-        <UnauthenticatedLayout>
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<RegisterForm />} />
-            <Route path="/forget-password" element={<ForgotPassword />} />
-            <Route
-              path="/"
-              element={<Landing />}
-              // element={<h1 className="flex justify-center">Dev Frontend</h1>}
-            />
-            <Route path="/reset-password" element={<ResetPassword />} />
-          </Routes>
-        </UnauthenticatedLayout>
-      )}
+          </Route>
+        </Route>
+      </Routes>
+      {/* <Theme/> */}
     </Router>
   )
 }
