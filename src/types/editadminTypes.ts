@@ -1,4 +1,5 @@
 export type UpdateAdminData = {
-  username: string
+  firstname: string
+  lastname: string
   email: string
 }

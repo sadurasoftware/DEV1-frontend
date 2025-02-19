@@ -21,7 +21,6 @@ const Admins = () => {
           Back to Dashboard
         </button>
 
-        {/* Admins Table */}
         {adminLoading && <p className="text-gray-500">Loading admins...</p>}
         {isAdminsError && (
           <p className="text-red-600">
@@ -35,7 +34,7 @@ const Admins = () => {
               <thead className="bg-gray-200 text-gray-700">
                 <tr>
                   <th className="px-4 py-2 text-left">ID</th>
-                  <th className="px-4 py-2 text-left">Username</th>
+                  <th className="px-4 py-2 text-left">Firstname</th>
                   <th className="px-4 py-2 text-left">Email</th>
                   <th className="px-4 py-2 text-left">Verified</th>
                 </tr>
@@ -44,7 +43,7 @@ const Admins = () => {
                 {admins.map((admin, index) => (
                   <tr key={admin.id} className="hover:bg-gray-100">
                     <td className="px-4 py-2">{index + 1}</td>
-                    <td className="px-4 py-2">{admin.username}</td>
+                    <td className="px-4 py-2">{admin.firstname}</td>
                     <td className="px-4 py-2">{admin.email}</td>
                     <td className="px-4 py-2">
                       {admin.isVerified ? 'Verified' : 'Registered'}
