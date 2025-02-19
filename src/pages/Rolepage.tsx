@@ -79,12 +79,12 @@ const RolePage: React.FC = () => {
   }
 
   return (
-    <div className="max-w-lg mx-auto p-6 rounded-lg shadow-md bg-white">
+    <div className="max-w-lg mx-auto p-6 rounded-lg shadow-md ">
       <h2 className="text-2xl font-semibold text-center mb-6">Manage Roles</h2>
 
       <form onSubmit={roleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="roleName" className="block text-gray-700">
+          <label htmlFor="roleName" className="block ">
             Role Name
           </label>
           <input

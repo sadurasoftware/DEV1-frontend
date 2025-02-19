@@ -10,9 +10,9 @@ const Admins = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 py-8 px-4">
-      <div className="container mx-auto max-w-4xl bg-white p-6 rounded-lg shadow-lg">
-        <h1 className="text-3xl font-semibold text-gray-900 mb-4">Admins</h1>
+    <div className="min-h-screen py-8 px-4">
+      <div className="container mx-auto max-w-4xl p-6 rounded-lg shadow-lg">
+        <h1 className="text-3xl font-semibold mb-4">Admins</h1>
 
         <button
           onClick={handleBack}
@@ -30,8 +30,8 @@ const Admins = () => {
 
         {admins && (
           <div className="overflow-x-auto mt-6">
-            <table className="min-w-full table-auto bg-white shadow-md rounded-lg">
-              <thead className="bg-gray-200 text-gray-700">
+            <table className="min-w-full table-auto shadow-md rounded-lg">
+              <thead className="">
                 <tr>
                   <th className="px-4 py-2 text-left">ID</th>
                   <th className="px-4 py-2 text-left">Firstname</th>
@@ -39,7 +39,7 @@ const Admins = () => {
                   <th className="px-4 py-2 text-left">Verified</th>
                 </tr>
               </thead>
-              <tbody className="text-gray-700">
+              <tbody className="">
                 {admins.map((admin, index) => (
                   <tr key={admin.id} className="hover:bg-gray-100">
                     <td className="px-4 py-2">{index + 1}</td>

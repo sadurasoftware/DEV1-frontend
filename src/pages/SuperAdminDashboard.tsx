@@ -21,11 +21,9 @@ export const SuperAdminDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 py-8 px-4">
-      <div className="container mx-auto max-w-4xl bg-white p-6 rounded-lg shadow-lg">
-        <h1 className="text-3xl font-semibold text-gray-900 mb-4">
-          Super Admin Dashboard
-        </h1>
+    <div className="min-h-screen  py-8 px-4">
+      <div className="container mx-auto max-w-4xl  p-6 rounded-lg shadow-lg">
+        <h1 className="text-3xl font-semibold mb-4">Super Admin Dashboard</h1>
 
         {token && (
           <h1 className="text-xl font-medium text-gray-700 mb-6">

@@ -1,10 +1,10 @@
-import React, { useState } from 'react'
-import { useCreateModule } from '../hooks/useCreateModule'
-import { Link } from 'react-router-dom'
-import { useFetchModules } from '@/hooks/useFetchModules'
-import { moduleType } from '@/types/moduleTypes'
-import { useUpdateModuleById } from '@/hooks/useUpdateModuleById'
 import { useDeleteModuleById } from '@/hooks/useDeleteModuleById'
+import { useFetchModules } from '@/hooks/useFetchModules'
+import { useUpdateModuleById } from '@/hooks/useUpdateModuleById'
+import { moduleType } from '@/types/moduleTypes'
+import React, { useState } from 'react'
+import { Link } from 'react-router-dom'
+import { useCreateModule } from '../hooks/useCreateModule'
 
 const Modules: React.FC = () => {
   const [moduleName, setModuleName] = useState<string>('')
@@ -80,14 +80,14 @@ const Modules: React.FC = () => {
   }
 
   return (
-    <div className="max-w-lg mx-auto p-6 rounded-lg shadow-md bg-white">
+    <div className="max-w-lg mx-auto p-6 rounded-lg shadow-md ">
       <h2 className="text-2xl font-semibold text-center mb-6">
         Manage Modules
       </h2>
 
       <form onSubmit={moduleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="moduleName" className="block text-gray-700">
+          <label htmlFor="moduleName" className="block ">
             Module Name
           </label>
           <input

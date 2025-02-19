@@ -1,10 +1,10 @@
-import React, { useState } from 'react'
-import { useCreatePermission } from '../hooks/useCreatePermission'
-import { Link } from 'react-router-dom'
+import { useDeletePermissionById } from '@/hooks/useDeletePermissionById'
 import { useFetchPermissions } from '@/hooks/useFetchPermissions'
 import { useUpdatePermissionById } from '@/hooks/useUpdatePermissionById'
-import { useDeletePermissionById } from '@/hooks/useDeletePermissionById'
 import { permissionType } from '@/types/permissionsTypes'
+import React, { useState } from 'react'
+import { Link } from 'react-router-dom'
+import { useCreatePermission } from '../hooks/useCreatePermission'
 
 const Permissionpage: React.FC = () => {
   const [permissionName, setPermissionName] = useState<string>('')
@@ -82,14 +82,14 @@ const Permissionpage: React.FC = () => {
   }
 
   return (
-    <div className="max-w-lg mx-auto p-6 rounded-lg shadow-md bg-white">
+    <div className="max-w-lg mx-auto p-6 rounded-lg shadow-md ">
       <h2 className="text-2xl font-semibold text-center mb-6">
         Manage Permission
       </h2>
 
       <form onSubmit={permissionSubmit} className="space-y-4">
         <div>
-          <label htmlFor="permissionName" className="block text-gray-700">
+          <label htmlFor="permissionName" className="block ">
             Permission Name
           </label>
           <input

@@ -210,7 +210,7 @@ const RegisterForm: React.FC = () => {
             <div className="space-y-4">
               <div className="grid gap-4 grid-cols-2">
                 <div>
-                  <Label htmlFor="username" className="label">
+                  <Label htmlFor="username" className="text-xs font-medium">
                     First Name
                   </Label>
                   <Input
@@ -227,7 +227,7 @@ const RegisterForm: React.FC = () => {
                   )}
                 </div>
                 <div>
-                  <Label htmlFor="lastname" className="label">
+                  <Label htmlFor="lastname" className="text-xs font-medium">
                     Last Name
                   </Label>
                   <Input
@@ -245,7 +245,7 @@ const RegisterForm: React.FC = () => {
                 </div>
               </div>
               <div>
-                <Label htmlFor="email" className="label">
+                <Label htmlFor="email" className="text-xs font-medium">
                   Email
                 </Label>
                 <Input
@@ -259,7 +259,7 @@ const RegisterForm: React.FC = () => {
                 )}
               </div>
               <div>
-                <Label htmlFor="password" className="label">
+                <Label htmlFor="password" className="text-xs font-medium">
                   Password
                 </Label>
                 <div className="relative">
@@ -375,99 +375,99 @@ const RegisterForm: React.FC = () => {
                     Contains at least one special character
                   </p>
                 </div>
+              </div>
+              <div>
+                <Label
+                  htmlFor="confirmPassword"
+                  className="text-xs font-medium"
+                >
+                  Confirm Password
+                </Label>
+                <div className="relative">
+                  <Input
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                  />
+                  <span
+                    className="absolute right-3 top-3 cursor-pointer"
+                    onClick={() => setShowConfirmPassword(prev => !prev)}
+                  >
+                    {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                  </span>
+                </div>
+                {formErrors.confirmPassword !== formErrors.password && (
+                  <p className="text-error-red text-sm">
+                    Password does not match!
+                  </p>
+                )}
+              </div>
+              {isSuperAdmin && (
                 <div>
-                  <Label htmlFor="confirmPassword" className="label">
-                    Confirm Password
+                  <Label htmlFor="role" className="label">
+                    Role
                   </Label>
-                  <div className="relative">
-                    <Input
-                      type={showConfirmPassword ? 'text' : 'password'}
-                      id="confirmPassword"
-                      name="confirmPassword"
-                      value={formData.confirmPassword}
-                      onChange={handleChange}
-                    />
-                    <span
-                      className="absolute right-3 top-3 cursor-pointer"
-                      onClick={() => setShowConfirmPassword(prev => !prev)}
-                    >
-                      {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
-                    </span>
-                  </div>
-                  {formErrors.confirmPassword !== formErrors.password && (
-                    <p className="text-error-red text-sm">
-                      Password does not match!
-                    </p>
+                  <select
+                    id="role"
+                    name="role"
+                    value={formData.role}
+                    onChange={handleChange}
+                    className={`w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500`}
+                  >
+                    {!rolesLoading ? (
+                      rolesFilter?.map((role: roleType, index: number) => (
+                        <option key={index} value={role.name}>
+                          {role.name}
+                        </option>
+                      ))
+                    ) : (
+                      <option value="" disabled>
+                        Loading roles...
+                      </option>
+                    )}
+                  </select>
+                  {formErrors.role && (
+                    <p className="text-error-red text-sm">{formErrors.role}</p>
                   )}
                 </div>
-                {isSuperAdmin && (
-                  <div>
-                    <Label htmlFor="role" className="label">
-                      Role
-                    </Label>
-                    <select
-                      id="role"
-                      name="role"
-                      value={formData.role}
-                      onChange={handleChange}
-                      className={`w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500`}
-                    >
-                      {!rolesLoading ? (
-                        rolesFilter?.map((role: roleType, index: number) => (
-                          <option key={index} value={role.name}>
-                            {role.name}
-                          </option>
-                        ))
-                      ) : (
-                        <option value="" disabled>
-                          Loading roles...
-                        </option>
-                      )}
-                    </select>
-                    {formErrors.role && (
-                      <p className="text-error-red text-sm">
-                        {formErrors.role}
-                      </p>
-                    )}
-                  </div>
-                )}
-                <div className="flex gap-2 mt-4">
-                  <Checkbox
-                    id="terms"
-                    name="terms"
-                    checked={formData.terms}
-                    onCheckedChange={checked => {
-                      setFormData(formData => ({
-                        ...formData,
-                        terms: checked === true,
-                      }))
-                    }}
-                  />
+              )}
+              <div className="flex gap-2 mt-4 items-center">
+                <Checkbox
+                  id="terms"
+                  name="terms"
+                  checked={formData.terms}
+                  onCheckedChange={checked => {
+                    setFormData(formData => ({
+                      ...formData,
+                      terms: checked === true,
+                    }))
+                  }}
+                />
 
-                  <div className="grid gap-1.5 ">
-                    <label
-                      htmlFor="terms"
-                      className=" label font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                    >
-                      Accept{' '}
-                      <Link to="/" className="underline">
-                        terms and conditions
-                      </Link>
-                    </label>
-                  </div>
-                </div>
-                {formErrors.terms && (
-                  <p className="text-error-red text-sm ">{formErrors.terms}</p>
-                )}
-
-                <div>
-                  <Button
-                    type="submit"
-                    className="w-full mt-6 py-3 bg-cust-blue text-white dark:text-black font-semibold rounded-md hover:bg-cust-blue transition dark:bg-cust-green dark:hover:bg-cust-green uppercase"
+                <div className="grid gap-1.5 ">
+                  <label
+                    htmlFor="terms"
+                    className="text-xs  font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                   >
-                    Get Started
-                  </Button>
+                    <Link to="/" className="underline">
+                      Accept terms and conditions
+                    </Link>
+                  </label>
                 </div>
+              </div>
+              {formErrors.terms && (
+                <p className="text-error-red text-sm ">{formErrors.terms}</p>
+              )}
+
+              <div>
+                <Button
+                  type="submit"
+                  className="w-full py-3 bg-cust-blue text-white dark:text-black font-semibold rounded-md hover:bg-cust-blue transition dark:bg-cust-green dark:hover:bg-cust-green uppercase"
+                >
+                  Get Started
+                </Button>
               </div>
             </div>
           </form>

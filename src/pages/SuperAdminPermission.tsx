@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button'
 import { useFetchModules } from '@/hooks/useFetchModules'
 import { useFetchPermissions } from '@/hooks/useFetchPermissions'
 import { useFetchRoleModulePermission } from '@/hooks/useFetchRoleModulePermission'
@@ -116,7 +117,7 @@ const SuperAdminPermission: React.FC = () => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-6 rounded-lg shadow-md bg-white">
+    <div className="max-w-4xl mx-auto p-6 rounded-lg shadow-md ">
       <h2 className="text-2xl font-semibold text-center mb-6">
         Create Permission Template
       </h2>
@@ -151,23 +152,23 @@ const SuperAdminPermission: React.FC = () => {
         </div>
 
         <div className="overflow-x-auto p-4">
-          <table className="min-w-full table-auto border-collapse border border-gray-300">
-            <thead className="bg-gray-100">
+          <table className="min-w-full table-auto border-collapse border ">
+            <thead className="">
               <tr>
-                <th className="px-4 py-2 text-left font-semibold text-gray-700 border-b">
+                <th className="px-4 py-2 text-left font-semibold border-b">
                   Modules
                 </th>
                 {!permissionsLoading &&
                   permissions.map(perm => (
                     <th
                       key={perm.id}
-                      className="px-4 py-2 text-center font-semibold text-gray-700 border-b"
+                      className="px-4 py-2 text-center font-semibold  border-b"
                     >
                       {perm.name}
                     </th>
                   ))}
 
-                <th className="px-4 py-2 text-center font-semibold text-gray-700 border-b">
+                <th className="px-4 py-2 text-center font-semibold  border-b">
                   Select All
                 </th>
               </tr>
@@ -175,8 +176,8 @@ const SuperAdminPermission: React.FC = () => {
             <tbody>
               {!modulesLoading &&
                 module.map(mod => (
-                  <tr key={mod.id} className="border-b hover:bg-gray-50">
-                    <td className="px-4 py-2 text-left text-gray-800 border-r">
+                  <tr key={mod.id} className="border-b">
+                    <td className="px-4 py-2 text-left  border-r">
                       {mod.name}
                     </td>
 
@@ -223,12 +224,18 @@ const SuperAdminPermission: React.FC = () => {
         </div>
 
         <div className="text-center mt-6">
-          <button
+          {/* <button
             type="submit"
             className="w-full py-3 bg-indigo-500 text-white font-semibold rounded-md hover:bg-indigo-600"
           >
             Save Permission Template
-          </button>
+          </button> */}
+          <Button
+            type="submit"
+            className="w-full mt-6 py-3 bg-cust-blue text-white dark:text-black font-semibold rounded-md hover:bg-cust-blue transition dark:bg-cust-green dark:hover:bg-cust-green uppercase"
+          >
+            Save Permission Template
+          </Button>
         </div>
       </form>
       <div className="text-center mt-4">
