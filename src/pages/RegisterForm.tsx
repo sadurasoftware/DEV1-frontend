@@ -40,13 +40,23 @@ const RegisterForm: React.FC = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   const validatedPassword = (password: string) => {
-    setPasswordCondition({
-      minLength: password.length >= 6,
-      maxLength: password.length <= 20,
-      hasUpperCase: /[A-Z]/.test(password),
-      hasNumber: /[0-9]/.test(password),
-      hasSpecialChar: /[^A-Za-z0-9]/.test(password),
-    })
+    if (password === '') {
+      setPasswordCondition({
+        minLength: false,
+        maxLength: false,
+        hasUpperCase: false,
+        hasSpecialChar: false,
+        hasNumber: false,
+      })
+    } else {
+      setPasswordCondition({
+        minLength: password.length >= 6,
+        maxLength: password.length <= 20,
+        hasUpperCase: /[A-Z]/.test(password),
+        hasNumber: /[0-9]/.test(password),
+        hasSpecialChar: /[^A-Za-z0-9]/.test(password),
+      })
+    }
   }
 
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({})
@@ -68,17 +78,15 @@ const RegisterForm: React.FC = () => {
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    const { name, value, type, checked } = e.target as HTMLInputElement
-    if (type === 'checkbox') {
-      setFormData({
-        ...formData,
-        [name]: checked,
-      })
-    } else {
-      setFormData({
-        ...formData,
-        [name]: value,
-      })
+    const { name, value } = e.target as HTMLInputElement
+
+    setFormData({
+      ...formData,
+      [name]: value,
+    })
+
+    if (name === 'password') {
+      validatedPassword(value)
     }
     setFormErrors({})
     setApiError(null)
@@ -406,8 +414,13 @@ const RegisterForm: React.FC = () => {
                   <Checkbox
                     id="terms"
                     name="terms"
-                    // checked={formData.terms}
-                    // onChange={handleChange}
+                    checked={formData.terms}
+                    onCheckedChange={checked => {
+                      setFormData(formData => ({
+                        ...formData,
+                        terms: checked === true,
+                      }))
+                    }}
                   />
                   {/* <input
                     type="checkbox"
@@ -471,7 +484,7 @@ const RegisterForm: React.FC = () => {
           )}
           <div className="pt-5 text-xs text-center">
             <Link to="/login">
-              Already Registered?{' '}
+              Already Registered?
               <span className="hover:underline">Login here</span>
             </Link>
           </div>
