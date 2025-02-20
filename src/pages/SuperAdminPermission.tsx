@@ -28,7 +28,7 @@ const SuperAdminPermission: React.FC = () => {
 
   const roleId = selectedRole ?? null
 
-  const { modulePermissionData } = useFetchRoleModulePermission(roleId || 0)
+  const { modulePermissionData } = useFetchRoleModulePermission(roleId || 2)
 
   useEffect(() => {
     if (modulePermissionData) {

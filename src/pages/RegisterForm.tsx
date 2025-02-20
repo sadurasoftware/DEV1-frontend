@@ -1,3 +1,4 @@
+// import ErrorBoundary from '@/components/ErrorBoundary'
 import { ModeToggle } from '@/components/mode-toggle'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -469,6 +470,16 @@ const RegisterForm: React.FC = () => {
                   Get Started
                 </Button>
               </div>
+
+              {/* <button
+                type="button"
+                onClick={() => {
+                  throw new Error('Simulated error')
+                }}
+                className="w-full py-3 bg-red-500 text-white font-semibold rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
+              >
+                Get Error
+              </button> */}
             </div>
           </form>
           {isSuccess && (
