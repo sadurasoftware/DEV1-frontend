@@ -13,3 +13,14 @@ export type PermissionsData = {
     [permissionId: number]: boolean
   }
 }
+
+export type createModulePermissionType = {
+  roleId: number
+  moduleId: number
+  permissionId: number
+  status: boolean
+}
+
+export type successResponse = {
+  message: string
+}

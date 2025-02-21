@@ -1,6 +1,5 @@
+import { loggedout, logoutProps } from '@/types/loginType'
 import axios, { AxiosResponse } from 'axios'
-import { loggedout } from '@/types/loginType'
-import { logoutProps } from '@/types/loginType'
 
 export const logout = async ({
   token,
@@ -9,10 +8,14 @@ export const logout = async ({
   clearLoginInfo()
 
   try {
+    console.log(`logout token:${token}`)
     const res: AxiosResponse = await axios.post(
       'http://localhost:3000/api/auth/logout',
+      {},
       {
-        token: token,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       }
     )
 
