@@ -48,9 +48,11 @@ export const ForgotPassword = () => {
                 className='w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
               />
             </div> */}
-            {isError && <p className="text-red-500 text-sm mt-4 ">{error}</p>}
+            {isError && <p className="text-error-red text-xs mt-4 ">{error}</p>}
             {successMessage && (
-              <p className="text-green-500 mt-4 ">{successMessage}</p>
+              <p className="text-success-green text-xs mt-4 ">
+                {successMessage}
+              </p>
             )}
             <Button
               type="submit"
