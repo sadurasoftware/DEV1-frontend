@@ -1,17 +1,20 @@
-import { Button } from '@/components/ui/button'
 import { useFetchModules } from '@/hooks/useFetchModules'
 import { useFetchPermissions } from '@/hooks/useFetchPermissions'
 import { useFetchRoleModulePermission } from '@/hooks/useFetchRoleModulePermission'
 import { useFetchRoles } from '@/hooks/useFetchRoles'
-import { useRoleModulePermissionCreate } from '@/hooks/useRoleModulePermissionCreate'
-import { PermissionsData } from '@/types/roleModulePermissionType'
+import { useRoleModulePermissionCreate } from '@/hooks/useRoleModulePermissionCreateHook'
+import {
+  PermissionsData,
+  createModulePermissionType,
+} from '@/types/roleModulePermissionType'
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 const SuperAdminPermission: React.FC = () => {
-  const [selectedRole, setSelectedRole] = useState<number | null>(null)
+  const [selectedRole, setSelectedRole] = useState<number | null>(2)
   const [permissionData, setPermissionData] = useState<PermissionsData>({})
-  const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({})
+  const [success, setSuccess] = useState<successResponse>('')
+  // const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({})
   const [apiError, setApiError] = useState<string | null>(null)
 
   const { rolesLoading, rolesData } = useFetchRoles()
@@ -21,7 +24,7 @@ const SuperAdminPermission: React.FC = () => {
   const { modulesLoading, modulesData } = useFetchModules()
   const module = modulesData?.module || []
 
-  const { mutate } = useRoleModulePermissionCreate()
+  const { mutate, isSuccess, data } = useRoleModulePermissionCreate()
 
   const { permissionsLoading, permissionsData } = useFetchPermissions()
   const permissions = permissionsData?.permission || []
@@ -58,6 +61,22 @@ const SuperAdminPermission: React.FC = () => {
         [permissionId]: checked,
       },
     }))
+
+    const payload: createModulePermissionType = {
+      roleId: selectedRole!,
+      moduleId: moduleId,
+      permissionId: permissionId,
+      status: checked,
+    }
+
+    try {
+      mutate(payload)
+      if (isSuccess) {
+        setSuccess(data.message)
+      }
+    } catch (err) {
+      setApiError(`Failed to save permission`)
+    }
   }
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -75,46 +94,46 @@ const SuperAdminPermission: React.FC = () => {
     setPermissionData(updatedPermissions)
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    setFormErrors({})
-    setApiError(null)
+  // const handleSubmit = (e: React.FormEvent) => {
+  //   e.preventDefault()
+  //   setFormErrors({})
+  //   setApiError(null)
 
-    if (selectedRole === null) {
-      setFormErrors({ role: 'Role is required' })
-      return
-    }
+  //   if (selectedRole === null) {
+  //     setFormErrors({ role: 'Role is required' })
+  //     return
+  //   }
 
-    const payload = {
-      roleId: selectedRole,
-      roleModules: Object.keys(permissionData).map((moduleId: string) => {
-        const moduleIdNum = Number(moduleId)
-        const permissionsForModule = Object.keys(permissionData[moduleIdNum])
-          .filter(
-            (permissionId: string) =>
-              permissionData[moduleIdNum][Number(permissionId)]
-          )
-          .map((permissionId: string) => ({
-            permissionId: Number(permissionId),
-          }))
+  //   const payload = {
+  //     roleId: selectedRole,
+  //     roleModules: Object.keys(permissionData).map((moduleId: string) => {
+  //       const moduleIdNum = Number(moduleId)
+  //       const permissionsForModule = Object.keys(permissionData[moduleIdNum])
+  //         .filter(
+  //           (permissionId: string) =>
+  //             permissionData[moduleIdNum][Number(permissionId)]
+  //         )
+  //         .map((permissionId: string) => ({
+  //           permissionId: Number(permissionId),
+  //         }))
 
-        return {
-          moduleId: moduleIdNum,
-          Permissions: permissionsForModule,
-        }
-      }),
-    }
+  //       return {
+  //         moduleId: moduleIdNum,
+  //         Permissions: permissionsForModule,
+  //       }
+  //     }),
+  //   }
 
-    console.log(payload)
-    try {
-      console.log('Submitting data: ', payload)
-      mutate(payload)
-      setSelectedRole(null)
-      setPermissionData({})
-    } catch (err) {
-      setApiError(`Failed to save permission template ${err}`)
-    }
-  }
+  //   console.log(payload)
+  //   try {
+  //     console.log('Submitting data: ', payload)
+  //     mutate(payload)
+  //     setSelectedRole(null)
+  //     setPermissionData({})
+  //   } catch (err) {
+  //     setApiError(`Failed to save permission template ${err}`)
+  //   }
+  // }
 
   return (
     <div className="max-w-4xl mx-auto p-6 rounded-lg shadow-md ">
@@ -122,7 +141,7 @@ const SuperAdminPermission: React.FC = () => {
         Create Permission Template
       </h2>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form className="space-y-6">
         <div className="space-y-4">
           <div>
             <label htmlFor="role">Role</label>
@@ -145,9 +164,9 @@ const SuperAdminPermission: React.FC = () => {
                 </option>
               )}
             </select>
-            {formErrors.role && (
+            {/* {formErrors.role && (
               <p className="text-red-500 text-sm">{formErrors.role}</p>
-            )}
+            )} */}
           </div>
         </div>
 
@@ -200,7 +219,6 @@ const SuperAdminPermission: React.FC = () => {
                                 e.target.checked
                               )
                             }
-                            // checked={!!permissionData[mod.id]?.[perm.id]}
                           />
                         </td>
                       ))}
@@ -230,12 +248,12 @@ const SuperAdminPermission: React.FC = () => {
           >
             Save Permission Template
           </button> */}
-          <Button
+          {/* <Button
             type="submit"
             className="w-full mt-6 py-3 bg-cust-blue text-white dark:text-black font-semibold rounded-md hover:bg-cust-blue transition dark:bg-cust-green dark:hover:bg-cust-green uppercase"
           >
             Save Permission Template
-          </Button>
+          </Button> */}
         </div>
       </form>
       <div className="text-center mt-4">
@@ -243,6 +261,7 @@ const SuperAdminPermission: React.FC = () => {
           Back to Settings
         </Link>
       </div>
+      {success && <p className="text-green-500 text-center mt-4">{success}</p>}
       {apiError && <p className="text-red-500 text-center mt-4">{apiError}</p>}
     </div>
   )
