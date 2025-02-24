@@ -8,7 +8,7 @@ export const RoleModulePermissionFetch = async (
   const token = useLoginInfoStore.getState().token
   try {
     const res: AxiosResponse<RoleModulePermission> = await axios.get(
-      `http://localhost:3000/api/role-module-permissions//modulespermissionsByRole`,
+      `http://localhost:3000/api/role-module-permissions/modulespermissionsByRole`,
       {
         params: { roleId },
         headers: {
