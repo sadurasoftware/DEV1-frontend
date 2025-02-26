@@ -9,9 +9,16 @@ import { useCreatePermission } from '../hooks/useCreatePermission'
 const Permissionpage: React.FC = () => {
   const [permissionName, setPermissionName] = useState<string>('')
   const [permissionId, setPermissionId] = useState<number | null>(null)
+  const [isEditing, setIsEditing] = useState<boolean>(false)
+  const [success, setSuccess] = useState<string>('')
 
-  const { mutate, isPending, isError, isSuccess, error, data } =
-    useCreatePermission()
+  const {
+    mutate,
+    isPending,
+    isError,
+    error: createError,
+    data,
+  } = useCreatePermission()
   const {
     permissionsLoading,
     permissionsData,
@@ -40,36 +47,46 @@ const Permissionpage: React.FC = () => {
     const selectedPermission = permission?.find(perm => perm.id === id)
     if (selectedPermission) {
       setPermissionName(selectedPermission.name)
+      setIsEditing(true)
     }
   }
 
   const permissionSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    try {
-      if (permissionName.trim()) {
-        if (permissionId) {
-          console.log(permissionId, permissionName)
-          updatePermission(
-            { id: permissionId, name: permissionName },
-            {
-              onSuccess: () => {
-                refetch()
-              },
-            }
-          )
-        } else {
-          mutate(
-            { name: permissionName },
-            {
-              onSuccess: () => {
-                refetch()
-              },
-            }
-          )
-        }
+    if (permissionName.trim()) {
+      if (permissionId) {
+        updatePermission(
+          { id: permissionId, name: permissionName },
+          {
+            onSuccess: () => {
+              refetch()
+              setSuccess('')
+              setIsEditing(false)
+              setPermissionId(null)
+              setPermissionName('')
+            },
+            onError: error => {
+              console.log('Error updating permission:', error)
+            },
+          }
+        )
+      } else {
+        mutate(
+          { name: permissionName },
+          {
+            onSuccess: () => {
+              refetch()
+              setSuccess(data?.message || 'Permission created successfully!')
+              setPermissionName('')
+            },
+            onError: error => {
+              console.log('Error creating permisson:', error)
+            },
+          }
+        )
       }
-    } catch (err) {
-      console.error('Error during permission submission:', err)
+    } else {
+      console.log('Permission name cannot be empty.')
     }
   }
 
@@ -103,22 +120,6 @@ const Permissionpage: React.FC = () => {
           />
         </div>
 
-        {isError && error && (
-          <div className="text-red-600 text-center mt-2">{error.message}</div>
-        )}
-
-        {isSuccess && data && (
-          <div className="text-green-600 text-center mt-2">
-            Permission created successfully!
-          </div>
-        )}
-
-        {updatePermissionSuccess && (
-          <div className="text-green-600 text-center mt-2">
-            Permission updated successfully!
-          </div>
-        )}
-
         {isPermissionUpdateError && updatePermissionError && (
           <div className="text-red-600 text-center mt-2">
             {updatePermissionError.message}
@@ -132,10 +133,10 @@ const Permissionpage: React.FC = () => {
             disabled={isPending || updatePermissionPending}
           >
             {isPending || updatePermissionPending
-              ? permissionId
+              ? isEditing
                 ? 'Updating Permission...'
                 : 'Creating Permission...'
-              : permissionId
+              : isEditing
                 ? 'Update Permission'
                 : 'Create Permission'}
           </button>
@@ -190,6 +191,22 @@ const Permissionpage: React.FC = () => {
           Back to Settings
         </Link>
       </div>
+
+      {isError && createError && (
+        <div className="text-red-600 text-center mt-2">
+          {createError.message}
+        </div>
+      )}
+
+      {updatePermissionSuccess && (
+        <div className="text-green-600 text-center mt-2">
+          Permission updated successfully!
+        </div>
+      )}
+
+      {success && (
+        <div className="text-green-600 text-center mt-2">{success}</div>
+      )}
     </div>
   )
 }
