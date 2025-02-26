@@ -1,14 +1,10 @@
-import axios, { AxiosResponse } from 'axios'
+import { useLoginInfoStore } from '@/store/useLoginInfoStore'
 import { moduleName, modulesResponse } from '@/types/moduleTypes'
+import axios, { AxiosResponse } from 'axios'
 
 export const fetchModules = async (): Promise<modulesResponse> => {
-  try {
-    const response = await axios.get('http://localhost:3000/api/modules/get')
-    return response.data
-  } catch (error) {
-    console.error('Error fetching users:', error)
-    throw error
-  }
+  const response = await axios.get('http://localhost:3000/api/modules/get')
+  return response.data
 }
 
 export const addModule = async (role: moduleName): Promise<modulesResponse> => {
@@ -27,10 +23,17 @@ export const addModule = async (role: moduleName): Promise<modulesResponse> => {
 }
 
 export const deleteModuleById = async (
-  id: number
+  moduleId: number
 ): Promise<modulesResponse> => {
+  const token = useLoginInfoStore.getState().token
+  console.log(`ModuleId:${moduleId}\tToken:${token}`)
   const res: AxiosResponse<modulesResponse> = await axios.delete(
-    `http://localhost:3000/api/modules/delete/${id}`
+    `http://localhost:3000/api/role-module-permissions/delete-module/${moduleId}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
   )
   if (res.status !== 200) {
     throw new Error('Error deleting role')
@@ -42,13 +45,9 @@ export const updateModule = async (
   id: number,
   name: string
 ): Promise<modulesResponse> => {
-  try {
-    const response = await axios.put(
-      `http://localhost:3000/api/modules/update/${id}`,
-      { name }
-    )
-    return response.data
-  } catch (error) {
-    throw error
-  }
+  const response = await axios.put(
+    `http://localhost:3000/api/modules/update/${id}`,
+    { name }
+  )
+  return response.data
 }

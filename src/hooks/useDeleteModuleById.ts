@@ -1,7 +1,7 @@
-import { useMutation } from '@tanstack/react-query'
 import { deleteModuleById } from '@/apis/modulesApi'
-import { modulesResponse } from '../types/moduleTypes'
 import { ErrorResponse } from '@/types/loginType'
+import { useMutation } from '@tanstack/react-query'
+import { modulesResponse } from '../types/moduleTypes'
 
 export const useDeleteModuleById = () => {
   const {

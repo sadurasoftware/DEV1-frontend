@@ -8,7 +8,6 @@ export const logout = async ({
   clearLoginInfo()
 
   try {
-    console.log(`logout token:${token}`)
     const res: AxiosResponse = await axios.post(
       'http://localhost:3000/api/auth/logout',
       {},

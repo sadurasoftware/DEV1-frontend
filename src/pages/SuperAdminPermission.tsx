@@ -39,6 +39,7 @@ const SuperAdminPermission: React.FC = () => {
       const initialPermissionData: PermissionsData = {}
       if (modulePermissionData.roleModules.length === 0) {
         setPermissionData({})
+        console.log(permissionData)
       } else {
         modulePermissionData.roleModules.forEach(module => {
           initialPermissionData[module.moduleId] = {}
