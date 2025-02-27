@@ -3,15 +3,26 @@ import { moduleName, modulesResponse } from '@/types/moduleTypes'
 import axios, { AxiosResponse } from 'axios'
 
 export const fetchModules = async (): Promise<modulesResponse> => {
-  const response = await axios.get('http://localhost:3000/api/modules/get')
+  const token = useLoginInfoStore.getState().token
+  const response = await axios.get('http://localhost:3000/api/modules/get', {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
   return response.data
 }
 
 export const addModule = async (role: moduleName): Promise<modulesResponse> => {
+  const token = useLoginInfoStore.getState().token
   const res: AxiosResponse<modulesResponse> = await axios.post(
     'http://localhost:3000/api/modules/create',
     {
       name: role.name,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     }
   )
 
@@ -45,9 +56,15 @@ export const updateModule = async (
   id: number,
   name: string
 ): Promise<modulesResponse> => {
+  const token = useLoginInfoStore.getState().token
   const response = await axios.put(
     `http://localhost:3000/api/modules/update/${id}`,
-    { name }
+    { name },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
   )
   return response.data
 }
