@@ -6,6 +6,7 @@ import { useRoleModulePermissionCreate } from '@/hooks/useRoleModulePermissionCr
 import {
   PermissionsData,
   createModulePermissionType,
+  successResponse,
 } from '@/types/roleModulePermissionType'
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -13,7 +14,7 @@ import { Link } from 'react-router-dom'
 const SuperAdminPermission: React.FC = () => {
   const [selectedRole, setSelectedRole] = useState<number | null>(2)
   const [permissionData, setPermissionData] = useState<PermissionsData>({})
-  const [success, setSuccess] = useState<successResponse>('')
+  const [success, setSuccess] = useState<successResponse>()
   // const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({})
   const [apiError, setApiError] = useState<string | null>(null)
 
@@ -36,16 +37,20 @@ const SuperAdminPermission: React.FC = () => {
   useEffect(() => {
     if (modulePermissionData) {
       const initialPermissionData: PermissionsData = {}
+      if (modulePermissionData.roleModules.length === 0) {
+        setPermissionData({})
+      } else {
+        modulePermissionData.roleModules.forEach(module => {
+          initialPermissionData[module.moduleId] = {}
 
-      modulePermissionData.roleModules.forEach(module => {
-        initialPermissionData[module.moduleId] = {}
-
-        module.Permissions.forEach(permissionId => {
-          initialPermissionData[module.moduleId][permissionId] = true
+          module.permissions.forEach(permission => {
+            initialPermissionData[module.moduleId][permission.permissionId] =
+              permission.status
+          })
         })
-      })
 
-      setPermissionData(initialPermissionData)
+        setPermissionData(initialPermissionData)
+      }
     }
   }, [modulePermissionData])
 
@@ -72,7 +77,7 @@ const SuperAdminPermission: React.FC = () => {
     try {
       mutate(payload)
       if (isSuccess) {
-        setSuccess(data.message)
+        setSuccess(data?.message)
       }
     } catch (err) {
       setApiError(`Failed to save permission`)
@@ -196,9 +201,7 @@ const SuperAdminPermission: React.FC = () => {
               {!modulesLoading &&
                 module.map(mod => (
                   <tr key={mod.id} className="border-b">
-                    <td className="px-4 py-2 text-left  border-r">
-                      {mod.name}
-                    </td>
+                    <td className="px-4 py-2 text-left border-r">{mod.name}</td>
 
                     {!permissionsLoading &&
                       permissions.map(perm => (
