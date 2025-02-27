@@ -41,6 +41,7 @@ const RolePage: React.FC = () => {
     const selectedRole = roles?.find(role => role.id === id)
     if (selectedRole) {
       setRoleName(selectedRole.name)
+      setIsEditing(true)
     }
   }
 
