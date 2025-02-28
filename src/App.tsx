@@ -6,6 +6,7 @@ import Layout from './layouts/Layout'
 import ProtectedAuth from './layouts/ProtectedAuth'
 import { AdminDashboard } from './pages/AdminDashboard'
 import Admins from './pages/Admins'
+import Departments from './pages/Departments'
 import { EditAdminProfile } from './pages/EditAdminProfile'
 import { EditForm } from './pages/EditForm'
 import { EditUserProfile } from './pages/EditUserProfile'
@@ -79,6 +80,7 @@ const App: React.FC = () => {
               />
               <Route path="/roles" element={<RolePage />} />
               <Route path="/permissions" element={<Permissionpage />} />
+              <Route path="/departments" element={<Departments />} />
               <Route path="/edit/:id" element={<EditForm />} />
               <Route path="/modules" element={<Modules />} />
             </Route>

@@ -1,4 +1,3 @@
-// import ErrorBoundary from '@/components/ErrorBoundary'
 import { ModeToggle } from '@/components/mode-toggle'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -11,6 +10,7 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa'
 import { FaCircleCheck, FaCircleXmark } from 'react-icons/fa6'
 import { Link } from 'react-router-dom'
 import { z } from 'zod'
+import { useFetchDepartments } from '../hooks/useFetchDepartments'
 import { useFetchRoles } from '../hooks/useFetchRoles'
 import { useRegisterMutation } from '../hooks/useRegister'
 import useThemeStore from '../store/themeStore'
@@ -29,6 +29,7 @@ const RegisterForm: React.FC = () => {
     confirmPassword: '',
     terms: false,
     role: 'user',
+    department: '',
   })
   const [passwordCondition, setPasswordCondition] = useState<PasswordType>({
     minLength: false,
@@ -66,6 +67,8 @@ const RegisterForm: React.FC = () => {
   const { mutate, isError, isSuccess } = useRegisterMutation()
   const { rolesLoading, rolesData } = useFetchRoles()
   const { roles } = rolesData || {}
+  const { departmentsLoading, departmentsData } = useFetchDepartments()
+  const { departments } = departmentsData || {}
 
   const isSuperAdmin = user?.roleId === 1
 
@@ -116,7 +119,6 @@ const RegisterForm: React.FC = () => {
 
     try {
       registerValidation.parse(formData)
-      // throw new Error('Test error during registration')
       mutate(formData, {
         onSuccess: () => {
           setFormData({
@@ -128,6 +130,7 @@ const RegisterForm: React.FC = () => {
             confirmPassword: '',
             terms: false,
             role: 'user',
+            department: '',
           })
         },
         onError: err => {
@@ -435,6 +438,39 @@ const RegisterForm: React.FC = () => {
                   )}
                 </div>
               )}
+
+              {isSuperAdmin && (
+                <div>
+                  <Label htmlFor="department" className="label">
+                    Department
+                  </Label>
+                  <select
+                    id="department"
+                    name="department"
+                    value={formData.department}
+                    onChange={handleChange}
+                    className={`w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500`}
+                  >
+                    {!departmentsLoading ? (
+                      departments?.map((department, index) => (
+                        <option key={index} value={department.name}>
+                          {department.name}
+                        </option>
+                      ))
+                    ) : (
+                      <option value="" disabled>
+                        Loading departments...
+                      </option>
+                    )}
+                  </select>
+                  {formErrors.department && (
+                    <p className="text-error-red text-sm">
+                      {formErrors.department}
+                    </p>
+                  )}
+                </div>
+              )}
+
               <div className="flex gap-2 mt-4 items-center">
                 <Checkbox
                   id="terms"
@@ -471,16 +507,6 @@ const RegisterForm: React.FC = () => {
                   Get Started
                 </Button>
               </div>
-
-              {/* <button
-                type="button"
-                onClick={() => {
-                  throw new Error('Simulated error')
-                }}
-                className="w-full py-3 bg-red-500 text-white font-semibold rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
-              >
-                Get Error
-              </button> */}
             </div>
           </form>
           {isSuccess && (
