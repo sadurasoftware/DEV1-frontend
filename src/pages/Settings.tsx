@@ -30,16 +30,22 @@ export const Settings = () => {
             Roles
           </Button>
           <Button
+            onClick={() => navigate('/modules')}
+            className="w-full mt-6 py-3 bg-cust-blue text-white dark:text-black font-semibold rounded-md hover:bg-cust-blue transition dark:bg-cust-green dark:hover:bg-cust-green uppercase"
+          >
+            Modules
+          </Button>
+          <Button
             onClick={() => navigate('/permissions')}
             className="w-full mt-6 py-3 bg-cust-blue text-white dark:text-black font-semibold rounded-md hover:bg-cust-blue transition dark:bg-cust-green dark:hover:bg-cust-green uppercase"
           >
             Permissions
           </Button>
           <Button
-            onClick={() => navigate('/modules')}
+            onClick={() => navigate('/departments')}
             className="w-full mt-6 py-3 bg-cust-blue text-white dark:text-black font-semibold rounded-md hover:bg-cust-blue transition dark:bg-cust-green dark:hover:bg-cust-green uppercase"
           >
-            Modules
+            Departments
           </Button>
         </div>
       </div>
