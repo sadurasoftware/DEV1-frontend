@@ -9,12 +9,16 @@ import { useCreateModule } from '../hooks/useCreateModule'
 const Modules: React.FC = () => {
   const [moduleName, setModuleName] = useState<string>('')
   const [moduleId, setModuleId] = useState<number | null>(null)
-
+  const [isEditing, setIsEditing] = useState<boolean>(false)
   const [success, setSuccess] = useState<string>('')
-  const [errror, setError] = useState<string>('')
 
-  const { mutate, isPending, isError, isSuccess, error, data } =
-    useCreateModule()
+  const {
+    mutate,
+    isPending,
+    isError,
+    error: createError,
+    data,
+  } = useCreateModule()
   const { modulesLoading, modulesData, isModulesError, modulesError, refetch } =
     useFetchModules()
   const { module } = modulesData || {}
@@ -37,37 +41,46 @@ const Modules: React.FC = () => {
     const selectedModule = module?.find(mod => mod.id === id)
     if (selectedModule) {
       setModuleName(selectedModule.name)
+      setIsEditing(true)
     }
   }
 
   const moduleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    try {
-      if (moduleName.trim()) {
-        if (moduleId) {
-          console.log(moduleId, moduleName)
-          updateModule(
-            { id: moduleId, name: moduleName },
-            {
-              onSuccess: () => {
-                refetch()
-              },
-            }
-          )
-        } else {
-          mutate(
-            { name: moduleName },
-            {
-              onSuccess: () => {
-                refetch()
-                setSuccess(data?.message || '')
-              },
-            }
-          )
-        }
+    if (moduleName.trim()) {
+      if (moduleId) {
+        updateModule(
+          { id: moduleId, name: moduleName },
+          {
+            onSuccess: () => {
+              refetch()
+              setSuccess('')
+              setIsEditing(false)
+              setModuleId(null)
+              setModuleName('')
+            },
+            onError: error => {
+              console.log('Error updating module:', error)
+            },
+          }
+        )
+      } else {
+        mutate(
+          { name: moduleName },
+          {
+            onSuccess: () => {
+              refetch()
+              setSuccess(data?.message || 'Module created successfully!')
+              setModuleName('')
+            },
+            onError: error => {
+              console.log('Error creating module:', error)
+            },
+          }
+        )
       }
-    } catch (err) {
-      console.error('Error during module submission:', err)
+    } else {
+      console.log('Module name cannot be empty.')
     }
   }
 
@@ -80,14 +93,14 @@ const Modules: React.FC = () => {
   }
 
   return (
-    <div className="max-w-lg mx-auto p-6 rounded-lg shadow-md ">
+    <div className="max-w-lg mx-auto p-6 rounded-lg shadow-md">
       <h2 className="text-2xl font-semibold text-center mb-6">
         Manage Modules
       </h2>
 
       <form onSubmit={moduleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="moduleName" className="block ">
+          <label htmlFor="moduleName" className="block">
             Module Name
           </label>
           <input
@@ -100,22 +113,6 @@ const Modules: React.FC = () => {
             required
           />
         </div>
-
-        {isError && error && (
-          <div className="text-red-600 text-center mt-2">{error.message}</div>
-        )}
-
-        {isSuccess && data && (
-          <div className="text-green-600 text-center mt-2">
-            Module created successfully!
-          </div>
-        )}
-
-        {updateModuleSuccess && (
-          <div className="text-green-600 text-center mt-2">
-            Module updated successfully!
-          </div>
-        )}
 
         {isModuleUpdateError && updateModuleError && (
           <div className="text-red-600 text-center mt-2">
@@ -130,10 +127,10 @@ const Modules: React.FC = () => {
             disabled={isPending || updateModulePending}
           >
             {isPending || updateModulePending
-              ? moduleId
+              ? isEditing
                 ? 'Updating Module...'
                 : 'Creating Module...'
-              : moduleId
+              : isEditing
                 ? 'Update Module'
                 : 'Create Module'}
           </button>
@@ -186,6 +183,22 @@ const Modules: React.FC = () => {
           Back to Settings
         </Link>
       </div>
+
+      {isError && createError && (
+        <div className="text-red-600 text-center mt-2">
+          {createError.message}
+        </div>
+      )}
+
+      {updateModuleSuccess && (
+        <div className="text-green-600 text-center mt-2">
+          Module updated successfully!
+        </div>
+      )}
+
+      {success && (
+        <div className="text-green-600 text-center mt-2">{success}</div>
+      )}
     </div>
   )
 }

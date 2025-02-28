@@ -9,11 +9,16 @@ import { useCreateRole } from '../hooks/useCreateRole'
 const RolePage: React.FC = () => {
   const [roleName, setRoleName] = useState<string>('')
   const [roleId, setRoleId] = useState<number | null>(null)
+  const [isEditing, setIsEditing] = useState<boolean>(false)
+  const [success, setSuccess] = useState<string>('')
 
-  const [sucess, setSuccess] = useState<string>('')
-  const [errror, setError] = useState<string>('')
-
-  const { mutate, isPending, isError, isSuccess, error, data } = useCreateRole()
+  const {
+    mutate,
+    isPending,
+    isError,
+    error: createError,
+    data,
+  } = useCreateRole()
   const { rolesLoading, rolesData, isRolesError, rolesError, refetch } =
     useFetchRoles()
   const { roles } = rolesData || {}
@@ -36,37 +41,46 @@ const RolePage: React.FC = () => {
     const selectedRole = roles?.find(role => role.id === id)
     if (selectedRole) {
       setRoleName(selectedRole.name)
+      setIsEditing(true)
     }
   }
 
   const roleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    try {
-      if (roleName.trim()) {
-        if (roleId) {
-          console.log(roleId, roleName)
-          updateRole(
-            { id: roleId, name: roleName },
-            {
-              onSuccess: () => {
-                refetch()
-              },
-            }
-          )
-        } else {
-          mutate(
-            { name: roleName },
-            {
-              onSuccess: () => {
-                refetch()
-                setSuccess(data?.message || '')
-              },
-            }
-          )
-        }
+    if (roleName.trim()) {
+      if (roleId) {
+        updateRole(
+          { id: roleId, name: roleName },
+          {
+            onSuccess: () => {
+              refetch()
+              setSuccess('')
+              setIsEditing(false)
+              setRoleId(null)
+              setRoleName('')
+            },
+            onError: error => {
+              console.log('Error updating permission:', error)
+            },
+          }
+        )
+      } else {
+        mutate(
+          { name: roleName },
+          {
+            onSuccess: () => {
+              refetch()
+              setSuccess(data?.message || 'Role created successfully!')
+              setRoleName('')
+            },
+            onError: error => {
+              console.log('Error creating role:', error)
+            },
+          }
+        )
       }
-    } catch (err) {
-      console.error('Error during role submission:', err)
+    } else {
+      console.log('Role name cannot be empty.')
     }
   }
 
@@ -98,22 +112,6 @@ const RolePage: React.FC = () => {
           />
         </div>
 
-        {isError && error && (
-          <div className="text-red-600 text-center mt-2">{error.message}</div>
-        )}
-
-        {isSuccess && data && (
-          <div className="text-green-600 text-center mt-2">
-            Role created successfully!
-          </div>
-        )}
-
-        {updateRoleSuccess && (
-          <div className="text-green-600 text-center mt-2">
-            Role updated successfully!
-          </div>
-        )}
-
         {isRoleUpdateError && updateRoleError && (
           <div className="text-red-600 text-center mt-2">
             {updateRoleError.message}
@@ -127,10 +125,10 @@ const RolePage: React.FC = () => {
             disabled={isPending || updateRolePending}
           >
             {isPending || updateRolePending
-              ? roleId
+              ? isEditing
                 ? 'Updating Role...'
                 : 'Creating Role...'
-              : roleId
+              : isEditing
                 ? 'Update Role'
                 : 'Create Role'}
           </button>
@@ -183,6 +181,22 @@ const RolePage: React.FC = () => {
           Back to Settings
         </Link>
       </div>
+
+      {isError && createError && (
+        <div className="text-red-600 text-center mt-2">
+          {createError.message}
+        </div>
+      )}
+
+      {updateRoleSuccess && (
+        <div className="text-green-600 text-center mt-2">
+          Role updated successfully!
+        </div>
+      )}
+
+      {success && (
+        <div className="text-green-600 text-center mt-2">{success}</div>
+      )}
     </div>
   )
 }

@@ -116,6 +116,7 @@ const RegisterForm: React.FC = () => {
 
     try {
       registerValidation.parse(formData)
+      // throw new Error('Test error during registration')
       mutate(formData, {
         onSuccess: () => {
           setFormData({
