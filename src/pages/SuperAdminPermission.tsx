@@ -77,11 +77,12 @@ const SuperAdminPermission: React.FC = () => {
 
     try {
       mutate(payload)
-      if (isSuccess) {
-        setSuccess(data?.message)
+      if (isSuccess && data?.message) {
+        setSuccess({ message: data.message })
       }
     } catch (err) {
-      setApiError(`Failed to save permission`)
+      console.error(err)
+      setApiError('Failed to save permission')
     }
   }
 
@@ -265,7 +266,9 @@ const SuperAdminPermission: React.FC = () => {
           Back to Settings
         </Link>
       </div>
-      {success && <p className="text-green-500 text-center mt-4">{success}</p>}
+      {success && (
+        <p className="text-green-500 text-center mt-4">{success.message}</p>
+      )}
       {apiError && <p className="text-red-500 text-center mt-4">{apiError}</p>}
     </div>
   )

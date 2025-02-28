@@ -1,14 +1,17 @@
-import { createModulePermissionType } from '@/types/roleModulePermissionType'
+import {
+  createModulePermissionType,
+  successResponse,
+} from '@/types/roleModulePermissionType'
 import axios, { AxiosResponse } from 'axios'
 import { useLoginInfoStore } from '../store/useLoginInfoStore'
 
 export const RoleModulePermissionCreate = async (
   data: createModulePermissionType
-): Promise<createModulePermissionType> => {
+): Promise<successResponse> => {
   const token = useLoginInfoStore.getState().token
 
   try {
-    const res: AxiosResponse<createModulePermissionType> = await axios.post(
+    const res: AxiosResponse<successResponse> = await axios.post(
       'http://localhost:3000/api/role-module-permissions/create',
       data,
       {
