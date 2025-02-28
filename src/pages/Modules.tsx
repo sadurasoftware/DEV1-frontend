@@ -40,7 +40,7 @@ const Modules: React.FC = () => {
     }
   }
 
-  const moduleSubmit = async (e: React.FormEvent) => {
+  const moduleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     try {
       if (moduleName.trim()) {

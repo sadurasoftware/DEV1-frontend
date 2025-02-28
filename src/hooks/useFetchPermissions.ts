@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { fetchPermissions } from '../apis/permissionFetchAPI'
+import { fetchPermissions } from '../apis/permissionAPI'
 import { permissionsResponse } from '../types/permissionsTypes'
 
 export const useFetchPermissions = () => {
