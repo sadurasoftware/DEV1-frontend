@@ -48,7 +48,7 @@ export const Login = () => {
       //sending store data
       setLoginInfo(data?.token, data?.user)
       setError('')
-      setUser({ email: '', password: '' })
+      console.log(`RoleId:${data?.user?.roleId}`)
       if (data?.user?.roleId === 1) {
         navigate('/super-admin')
       } else if (data?.user?.roleId === 2) {
@@ -56,6 +56,7 @@ export const Login = () => {
       } else {
         navigate('/userdashboard')
       }
+      setUser({ email: '', password: '' })
     }
 
     if (isError && mutationError) {
