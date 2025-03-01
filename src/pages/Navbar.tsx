@@ -1,7 +1,6 @@
-import { Link, useNavigate } from 'react-router-dom'
 import { logout } from '@/apis/logoutApi'
-import { useLoginInfoStore } from '../store/useLoginInfoStore'
 import { ModeToggle } from '@/components/mode-toggle'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,7 +9,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Link, useNavigate } from 'react-router-dom'
+import { useLoginInfoStore } from '../store/useLoginInfoStore'
 
 export const Navbar: React.FC = () => {
   const { token, clearLoginInfo, user } = useLoginInfoStore()
