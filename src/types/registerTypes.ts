@@ -7,6 +7,7 @@ export type User = {
   confirmPassword: string
   terms: boolean
   role: 'superadmin' | 'admin' | 'user' | 'moderator' | 'viewer'
+  department: string
 }
 
 export type ApiResponse = {
