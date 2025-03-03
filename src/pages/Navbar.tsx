@@ -55,6 +55,11 @@ export const Navbar: React.FC = () => {
                       <Link to="/dashboard">Dashboard</Link>
                     </DropdownMenuItem>
                   )}
+                  {user?.roleId === 3 && (
+                    <DropdownMenuItem>
+                      <Link to="/create-ticket">Create New Ticket</Link>
+                    </DropdownMenuItem>
+                  )}
                   {user?.roleId === 1 && (
                     <>
                       <DropdownMenuItem>

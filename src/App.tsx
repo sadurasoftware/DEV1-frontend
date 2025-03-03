@@ -6,6 +6,7 @@ import Layout from './layouts/Layout'
 import ProtectedAuth from './layouts/ProtectedAuth'
 import { AdminDashboard } from './pages/AdminDashboard'
 import Admins from './pages/Admins'
+import CreateTicket from './pages/CreateTicket'
 import Departments from './pages/Departments'
 import { EditAdminProfile } from './pages/EditAdminProfile'
 import { EditForm } from './pages/EditForm'
@@ -65,6 +66,7 @@ const App: React.FC = () => {
                 path="/edit-profile/:userId"
                 element={<EditUserProfile />}
               />
+              <Route path="/create-ticket" element={<CreateTicket />} />
               <Route path="/admindashboard" element={<AdminDashboard />} />
               <Route
                 path="/edit-admin-profile/:userId"
