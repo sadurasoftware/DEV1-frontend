@@ -29,7 +29,7 @@ const RegisterForm: React.FC = () => {
     confirmPassword: '',
     terms: false,
     role: 'user',
-    department: '',
+    department: 'null',
   })
   const [passwordCondition, setPasswordCondition] = useState<PasswordType>({
     minLength: false,
@@ -101,6 +101,8 @@ const RegisterForm: React.FC = () => {
     e.preventDefault()
     setFormErrors({})
     setApiError(null)
+
+    console.log(formData.department)
 
     if (formData.password !== formData.confirmPassword) {
       setFormErrors(prevErrors => ({
