@@ -8,10 +8,11 @@ export const useFetchUsers = () => {
     data: users,
     isError: isUsersError,
     error: usersError,
+    refetch,
   } = useQuery<User[], Error>({
     queryKey: ['users'],
     queryFn: fetchUsers,
   })
 
-  return { usersLoading, users, isUsersError, usersError }
+  return { usersLoading, users, isUsersError, usersError, refetch }
 }
