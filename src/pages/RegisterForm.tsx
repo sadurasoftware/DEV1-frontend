@@ -29,7 +29,7 @@ const RegisterForm: React.FC = () => {
     confirmPassword: '',
     terms: false,
     role: 'user',
-    department: 'null',
+    department: null,
   })
   const [passwordCondition, setPasswordCondition] = useState<PasswordType>({
     minLength: false,
@@ -449,7 +449,7 @@ const RegisterForm: React.FC = () => {
                   <select
                     id="department"
                     name="department"
-                    value={formData.department}
+                    value={formData.department || ''}
                     onChange={handleChange}
                     className={`w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500`}
                   >

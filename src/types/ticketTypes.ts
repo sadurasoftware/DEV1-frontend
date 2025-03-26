@@ -13,17 +13,15 @@
 //   }
 
 export type Ticket = {
-  ticketName: string
+  ticketID: number
+  title: string
   description: string
-  attachments: string[]
+  attachment: string
   priority: 'Low' | 'Medium' | 'High'
-  category: 'Bug' | 'General' | 'Feedback'
-  status: 'Open' | 'In Progress' | 'On Hold' | 'Closed'
-  ticketID: string
-  createdBy: string
-  assignedTo: string
-  //   createdDate: Date
-  comments: Comment[]
+  categoryId: number
+  createdBy: number
+  assignedTo: number
+  status: 'Open' | 'Closed'
 }
 
 export type Comment = {

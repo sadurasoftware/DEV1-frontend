@@ -7,16 +7,15 @@ import { Ticket } from '../types/ticketTypes'
 
 const CreateTicket: React.FC = () => {
   const [ticketData, setTicketData] = useState<Ticket>({
-    ticketName: '',
+    ticketID: 0,
+    title: '',
     description: '',
-    attachments: [],
+    attachment: '',
     priority: 'Low',
-    category: 'Bug',
+    categoryId: 1,
+    createdBy: 0,
+    assignedTo: 0,
     status: 'Open',
-    ticketID: '',
-    createdBy: '',
-    assignedTo: '',
-    comments: [],
   })
 
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({})
@@ -62,14 +61,12 @@ const CreateTicket: React.FC = () => {
                 type="text"
                 id="ticketName"
                 name="ticketName"
-                value={ticketData.ticketName}
+                value={ticketData.title}
                 onChange={handleChange}
                 required
               />
-              {formErrors.ticketName && (
-                <p className="text-error-red text-sm">
-                  {formErrors.ticketName}
-                </p>
+              {formErrors.title && (
+                <p className="text-error-red text-sm">{formErrors.title}</p>
               )}
             </div>
 
