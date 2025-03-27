@@ -1,10 +1,10 @@
 import { useLoginInfoStore } from '@/store/useLoginInfoStore'
-import { moduleName, modulesResponse } from '@/types/moduleTypes'
+import { categoriesResponse, categoryName } from '@/types/categoryTypes'
 import axios, { AxiosResponse } from 'axios'
 
-export const fetchModules = async (): Promise<modulesResponse> => {
+export const fetchCategories = async (): Promise<categoriesResponse> => {
   const token = useLoginInfoStore.getState().token
-  const response = await axios.get('http://localhost:3000/api/modules/get', {
+  const response = await axios.get('http://localhost:3000/api/category/get', {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -12,14 +12,14 @@ export const fetchModules = async (): Promise<modulesResponse> => {
   return response.data
 }
 
-export const addModule = async (
-  module: moduleName
-): Promise<modulesResponse> => {
+export const addCategory = async (
+  category: categoryName
+): Promise<categoriesResponse> => {
   const token = useLoginInfoStore.getState().token
-  const res: AxiosResponse<modulesResponse> = await axios.post(
-    'http://localhost:3000/api/modules/create',
+  const res: AxiosResponse<categoriesResponse> = await axios.post(
+    'http://localhost:3000/api/category/create',
     {
-      name: module.name,
+      name: category.name,
     },
     {
       headers: {
@@ -35,13 +35,13 @@ export const addModule = async (
   return res.data
 }
 
-export const deleteModuleById = async (
-  moduleId: number
-): Promise<modulesResponse> => {
+export const deleteCategoryById = async (
+  id: number
+): Promise<categoriesResponse> => {
   const token = useLoginInfoStore.getState().token
-  console.log(`ModuleId:${moduleId}\tToken:${token}`)
-  const res: AxiosResponse<modulesResponse> = await axios.delete(
-    `http://localhost:3000/api/role-module-permissions/delete-module/${moduleId}`,
+  console.log(`Category Id:${id}\tToken:${token}`)
+  const res: AxiosResponse<categoriesResponse> = await axios.delete(
+    `http://localhost:3000/api/category/delete/${id}`,
     {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -54,13 +54,13 @@ export const deleteModuleById = async (
   return res.data
 }
 
-export const updateModule = async (
+export const updateCategory = async (
   id: number,
   name: string
-): Promise<modulesResponse> => {
+): Promise<categoriesResponse> => {
   const token = useLoginInfoStore.getState().token
   const response = await axios.put(
-    `http://localhost:3000/api/modules/update/${id}`,
+    `http://localhost:3000/api/category/update/${id}`,
     { name },
     {
       headers: {

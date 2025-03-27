@@ -1,23 +1,25 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { useFetchCategories } from '@/hooks/useFetchCategories'
 import React, { useState } from 'react'
 import { useCreateTicketMutation } from '../hooks/useCreateTicket'
 import { Ticket } from '../types/ticketTypes'
 
 const CreateTicket: React.FC = () => {
   const [ticketData, setTicketData] = useState<Ticket>({
-    ticketName: '',
+    ticketID: 0,
+    title: '',
     description: '',
-    attachments: [],
+    attachment: '',
     priority: 'Low',
-    category: 'Bug',
+    categoryId: 1,
+    createdBy: 0,
+    assignedTo: 0,
     status: 'Open',
-    ticketID: '',
-    createdBy: '',
-    assignedTo: '',
-    comments: [],
   })
+
+  const { categoriesLoading, categoriesData } = useFetchCategories()
 
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({})
   const { mutate, isPending, isError, isSuccess } = useCreateTicketMutation()
@@ -62,14 +64,12 @@ const CreateTicket: React.FC = () => {
                 type="text"
                 id="ticketName"
                 name="ticketName"
-                value={ticketData.ticketName}
+                value={ticketData.title}
                 onChange={handleChange}
                 required
               />
-              {formErrors.ticketName && (
-                <p className="text-error-red text-sm">
-                  {formErrors.ticketName}
-                </p>
+              {formErrors.title && (
+                <p className="text-error-red text-sm">{formErrors.title}</p>
               )}
             </div>
 
@@ -104,9 +104,17 @@ const CreateTicket: React.FC = () => {
                 onChange={handleChange}
                 className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
               >
-                <option value="Low">Low</option>
-                <option value="Medium">Medium</option>
-                <option value="High">High</option>
+                {!categoriesLoading ? (
+                  categoriesData?.map((category, index) => (
+                    <option key={index} value={category.name}>
+                      {category.name}
+                    </option>
+                  ))
+                ) : (
+                  <option value="" disabled>
+                    Loading categories...
+                  </option>
+                )}
               </select>
               {formErrors.priority && (
                 <p className="text-error-red text-sm">{formErrors.priority}</p>
