@@ -78,12 +78,12 @@ export const Navbar: React.FC = () => {
                       </DropdownMenuItem>
                     </>
                   )}
-                  {user?.roleId === 2 ||
-                    (user?.roleId === 3 && (
-                      <DropdownMenuItem>
-                        <Link to="/create-ticket">Raise ticket</Link>
-                      </DropdownMenuItem>
-                    ))}
+                  {user?.roleId === 2 || user?.roleId === 3 ? (
+                    <DropdownMenuItem>
+                      <Link to="/create-ticket">Raise ticket</Link>
+                    </DropdownMenuItem>
+                  ) : null}
+
                   <DropdownMenuItem>
                     <button onClick={handleLogout} aria-label="logout">
                       Logout

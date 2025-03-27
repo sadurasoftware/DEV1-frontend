@@ -29,7 +29,7 @@ const RegisterForm: React.FC = () => {
     confirmPassword: '',
     terms: false,
     role: 'user',
-    department: null,
+    department: 'general',
   })
   const [passwordCondition, setPasswordCondition] = useState<PasswordType>({
     minLength: false,
@@ -132,7 +132,7 @@ const RegisterForm: React.FC = () => {
             confirmPassword: '',
             terms: false,
             role: 'user',
-            department: '',
+            department: 'general',
           })
         },
         onError: err => {
@@ -441,37 +441,35 @@ const RegisterForm: React.FC = () => {
                 </div>
               )}
 
-              {isSuperAdmin && (
-                <div>
-                  <Label htmlFor="department" className="label">
-                    Department
-                  </Label>
-                  <select
-                    id="department"
-                    name="department"
-                    value={formData.department || ''}
-                    onChange={handleChange}
-                    className={`w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500`}
-                  >
-                    {!departmentsLoading ? (
-                      departments?.map((department, index) => (
-                        <option key={index} value={department.name}>
-                          {department.name}
-                        </option>
-                      ))
-                    ) : (
-                      <option value="" disabled>
-                        Loading departments...
+              <div>
+                <Label htmlFor="department" className="label">
+                  Department
+                </Label>
+                <select
+                  id="department"
+                  name="department"
+                  value={formData.department}
+                  onChange={handleChange}
+                  className={`w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500`}
+                >
+                  {!departmentsLoading ? (
+                    departments?.map((department, index) => (
+                      <option key={index} value={department.name}>
+                        {department.name}
                       </option>
-                    )}
-                  </select>
-                  {formErrors.department && (
-                    <p className="text-error-red text-sm">
-                      {formErrors.department}
-                    </p>
+                    ))
+                  ) : (
+                    <option value="" disabled>
+                      Loading departments...
+                    </option>
                   )}
-                </div>
-              )}
+                </select>
+                {formErrors.department && (
+                  <p className="text-error-red text-sm">
+                    {formErrors.department}
+                  </p>
+                )}
+              </div>
 
               <div className="flex gap-2 mt-4 items-center">
                 <Checkbox
