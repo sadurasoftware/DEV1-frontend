@@ -8,14 +8,11 @@ import { Ticket } from '../types/ticketTypes'
 
 const CreateTicket: React.FC = () => {
   const [ticketData, setTicketData] = useState<Ticket>({
-    ticketID: 0,
     title: '',
     description: '',
-    attachment: '',
+    attachment: null,
     priority: 'Low',
-    categoryId: 1,
-    createdBy: 0,
-    assignedTo: 0,
+    category: 'bug',
     status: 'Open',
   })
 
@@ -37,12 +34,42 @@ const CreateTicket: React.FC = () => {
     setFormErrors({})
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files
+    if (files && files[0]) {
+      setTicketData(prevData => ({
+        ...prevData,
+        attachment: files[0],
+      }))
+    }
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setFormErrors({})
 
+    const formData = new FormData()
+    formData.append('title', ticketData.title)
+    formData.append('description', ticketData.description)
+    formData.append('priority', ticketData.priority)
+    formData.append('category', ticketData.category)
+    formData.append('status', ticketData.status)
+
+    if (ticketData.attachment) {
+      console.log(ticketData.attachment)
+      formData.append('attachment', ticketData.attachment)
+    }
+
     try {
-      mutate(ticketData)
+      mutate(formData)
+      setTicketData({
+        title: '',
+        description: '',
+        attachment: null,
+        priority: 'Low',
+        category: 'bug',
+        status: 'Open',
+      })
     } catch (err) {
       setFormErrors({ submit: 'An error occurred while creating the ticket.' })
     }
@@ -54,7 +81,7 @@ const CreateTicket: React.FC = () => {
         <h2 className="text-2xl font-semibold mb-6 dark:text-cust-green">
           Create a New Ticket
         </h2>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} encType="multipart/form-data">
           <div className="space-y-4">
             <div>
               <Label htmlFor="ticketName" className="text-xs font-medium">
@@ -62,8 +89,8 @@ const CreateTicket: React.FC = () => {
               </Label>
               <Input
                 type="text"
-                id="ticketName"
-                name="ticketName"
+                id="title"
+                name="title"
                 value={ticketData.title}
                 onChange={handleChange}
                 required
@@ -104,17 +131,9 @@ const CreateTicket: React.FC = () => {
                 onChange={handleChange}
                 className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
               >
-                {!categoriesLoading ? (
-                  categoriesData?.map((category, index) => (
-                    <option key={index} value={category.name}>
-                      {category.name}
-                    </option>
-                  ))
-                ) : (
-                  <option value="" disabled>
-                    Loading categories...
-                  </option>
-                )}
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
               </select>
               {formErrors.priority && (
                 <p className="text-error-red text-sm">{formErrors.priority}</p>
@@ -132,9 +151,17 @@ const CreateTicket: React.FC = () => {
                 onChange={handleChange}
                 className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
               >
-                <option value="Bug">Bug</option>
-                <option value="General">General</option>
-                <option value="Feedback">Feedback</option>
+                {!categoriesLoading ? (
+                  categoriesData?.map((category, index) => (
+                    <option key={index} value={category.name}>
+                      {category.name}
+                    </option>
+                  ))
+                ) : (
+                  <option value="" disabled>
+                    Loading categories...
+                  </option>
+                )}
               </select>
               {formErrors.category && (
                 <p className="text-error-red text-sm">{formErrors.category}</p>
@@ -147,32 +174,10 @@ const CreateTicket: React.FC = () => {
               </Label>
               <input
                 type="file"
-                id="attachments"
-                name="attachments"
-                onChange={e => {
-                  const files = e.target.files
-                  if (files) {
-                    setTicketData(prevData => ({
-                      ...prevData,
-                      attachments: Array.from(files).map(file => file.name),
-                    }))
-                  }
-                }}
+                id="attachment"
+                name="attachment"
+                onChange={handleFileChange}
                 className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="assignedTo" className="text-xs font-medium">
-                Assign To
-              </Label>
-              <Input
-                type="text"
-                id="assignedTo"
-                name="assignedTo"
-                value={ticketData.assignedTo}
-                onChange={handleChange}
-                required
               />
             </div>
 
@@ -188,7 +193,10 @@ const CreateTicket: React.FC = () => {
                 className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
               >
                 <option value="Open">Open</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Resolved">Resolved</option>
                 <option value="Closed">Closed</option>
+                <option value="Pending">Pending</option>
               </select>
               {formErrors.status && (
                 <p className="text-error-red text-sm">{formErrors.status}</p>

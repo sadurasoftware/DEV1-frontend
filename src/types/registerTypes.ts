@@ -6,7 +6,7 @@ export type User = {
   password: string
   confirmPassword: string
   terms: boolean
-  role: 'superadmin' | 'admin' | 'user' | 'moderator' | 'viewer'
+  role: string
   department: string
 }
 

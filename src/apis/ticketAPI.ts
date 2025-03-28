@@ -1,8 +1,8 @@
 import axios from 'axios'
 import { useLoginInfoStore } from '../store/useLoginInfoStore'
-import { ApiResponse, Ticket } from '../types/ticketTypes'
+import { ApiResponse } from '../types/ticketTypes'
 
-export const createTicket = async (data: Ticket): Promise<ApiResponse> => {
+export const createTicket = async (data: FormData): Promise<ApiResponse> => {
   const token = useLoginInfoStore.getState().token
   const response = await axios.post<ApiResponse>(
     'http://localhost:3000/api/tickets/create',
@@ -10,6 +10,7 @@ export const createTicket = async (data: Ticket): Promise<ApiResponse> => {
     {
       headers: {
         Authorization: `Bearer ${token}`,
+        'Content-Type': 'multipart/form-data',
       },
     }
   )
