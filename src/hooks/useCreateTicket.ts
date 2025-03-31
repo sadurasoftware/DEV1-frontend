@@ -1,11 +1,11 @@
 import { useMutation } from '@tanstack/react-query'
 import axios, { AxiosError } from 'axios'
 import { createTicket } from '../apis/ticketAPI'
-import { ApiResponse, ErrorResponse, Ticket } from '../types/ticketTypes'
+import { ApiResponse, ErrorResponse } from '../types/ticketTypes'
 
 export const useCreateTicketMutation = () => {
   const { mutate, isPending, isError, isSuccess, error, data } = useMutation({
-    mutationFn: (data: Ticket) => createTicket(data),
+    mutationFn: (data: FormData) => createTicket(data),
     onSuccess: (data: ApiResponse) => {
       console.log('Ticket created:', data)
     },
