@@ -32,3 +32,36 @@ export type ApiResponse = {
 export type ErrorResponse = {
   message: string
 }
+
+export type ticketType = {
+  id: string;
+  title: string;
+  description: string;
+  attachment: string | null;
+  priority: 'High' | 'Medium' | 'Low';
+  categoryId: number;
+  status: string; 
+  createdBy: number;
+  assignedTo: number | null;
+  createdAt: string;
+  updatedAt: string;
+  category: {
+    id: number;
+    name: string;
+  };
+  user: {
+    id: number;
+    firstname: string;
+  };
+  assignedUser: {
+    id: number | null;
+    firstname: string | null;
+  } | null;
+};
+
+export type ticketResponse = {
+  total: number;
+  page: number;
+  totalPages: number;
+  tickets: ticketType[];
+};
