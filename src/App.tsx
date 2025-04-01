@@ -26,6 +26,7 @@ import SuperAdminPermission from './pages/SuperAdminPermission'
 import { UserDashboard } from './pages/UserDashboard'
 import Users from './pages/Users'
 import {TicketsListPage} from './pages/TicketsListPage'
+import { AssignTicket } from './pages/AssignTicket'
 
 
 // import Theme from './pages/Theme';
@@ -70,6 +71,7 @@ const App: React.FC = () => {
                 element={<EditUserProfile />}
               />
               <Route path="/create-ticket" element={<CreateTicket />} />
+              <Route path='/assign-ticket/:id' element={<AssignTicket/>}/>
               <Route path="/admindashboard" element={<AdminDashboard />} />
               <Route
                 path="/edit-admin-profile/:userId"
