@@ -24,6 +24,8 @@ export const SuperAdminDashboard = () => {
     navigate('/tickets')
   }
 
+
+
   return (
     <div className="min-h-screen  py-8 px-4">
       <div className="container mx-auto max-w-4xl  p-6 rounded-lg shadow-lg">
@@ -52,8 +54,9 @@ export const SuperAdminDashboard = () => {
             onClick={handleShowTickets}
             className="bg-green-500 text-white px-6 py-3 rounded-md hover:bg-green-600 transition duration-200"
           >
-            Tickets
+            Assign Tickets
           </button>
+
         </div>
       </div>
     </div>
