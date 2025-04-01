@@ -21,6 +21,10 @@ export const UserDashboard = () => {
     navigate(`/edit-profile/${userId}`)
   }
 
+  const handleShowTickets = () => {
+    navigate('/tickets')
+  }
+
   return (
     <div className="container mx-auto mt-8 px-4">
       <h1 className="text-center text-3xl font-semibold mb-6">
@@ -58,6 +62,12 @@ export const UserDashboard = () => {
                   onClick={handleEditClick}
                 >
                   Edit Profile
+                </button>
+                <button
+                  className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 focus:outline-none"
+                  onClick={handleShowTickets}
+                >
+                  Tickets
                 </button>
               </div>
             </div>

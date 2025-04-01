@@ -25,6 +25,8 @@ import { SuperAdminDashboard } from './pages/SuperAdminDashboard'
 import SuperAdminPermission from './pages/SuperAdminPermission'
 import { UserDashboard } from './pages/UserDashboard'
 import Users from './pages/Users'
+import {TicketsListPage} from './pages/TicketsListPage'
+
 
 // import Theme from './pages/Theme';
 // import  useThemeStore from './store/themeStore';
@@ -87,6 +89,7 @@ const App: React.FC = () => {
               <Route path="/edit/:id" element={<EditForm />} />
               <Route path="/modules" element={<Modules />} />
               <Route path="/category" element={<Category />} />
+              <Route path="/tickets" element={<TicketsListPage/>}/>
             </Route>
           </Route>
         </Routes>
