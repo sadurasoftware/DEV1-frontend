@@ -3,7 +3,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useGetSupportTeam } from "@/hooks/useGetSupportTeam";
 import { useAssignTicket } from '@/hooks/useAssignTicket';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { useFetchTicketById } from '@/hooks/useFetchTicketById';
 import { useFetchCategories } from '@/hooks/useFetchCategories'
 
@@ -11,6 +11,7 @@ export const AssignTicket = () => {
     const { id } = useParams<{ id?: string }>();
     const { usersLoading, usersData, isUsersError, usersError } = useGetSupportTeam();
     const { ticketData } = useFetchTicketById(id || '');
+    // console.log(ticketData.ticket)
     const { mutate, isPending, isError, isSuccess, error, data } = useAssignTicket();
     const [success, setSuccess] = useState<string>('');
     const [selectedUser, setSelectedUser] = useState<any>({
@@ -129,7 +130,7 @@ export const AssignTicket = () => {
                         <Label htmlFor="attachments" className="text-xs font-medium">
                             Attachments
                         </Label>
-                        <img src={`http://localhost:3000/uploads/${ticketData?.ticket?.attachment}`}/>
+                        <img src={`http://localhost:3000/uploads/${ticketData?.ticket?.attachment}`} alt="Attachment" />
                     </div>
 
                     <div>
@@ -183,12 +184,14 @@ export const AssignTicket = () => {
 
                 <button
                     onClick={handleAssignTicket}
-                    className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition duration-200"
+                    className="bg-green-500 text-white px-4 py-2 mx-3 rounded-md hover:bg-green-600 transition duration-200"
                     disabled={isPending || !selectedUser.id}
                 >
                     {isPending ? 'Assigning...' : 'Assign Ticket'}
                 </button>
-
+                <Link to="/tickets" className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-200">
+                                Back
+                            </Link>
 
                 {isSuccess && success && (
                     <div className="mt-4 p-4 bg-green-100 border border-green-400 text-green-800 rounded-md">
