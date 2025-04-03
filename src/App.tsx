@@ -28,6 +28,7 @@ import Users from './pages/Users'
 import {TicketsListPage} from './pages/TicketsListPage'
 import { AssignTicket } from './pages/AssignTicket'
 import { ViewTicket } from './pages/ViewTicket'
+import { EditTicket } from './pages/EditTicket'
 
 
 // import Theme from './pages/Theme';
@@ -94,6 +95,7 @@ const App: React.FC = () => {
               <Route path="/category" element={<Category />} />
               <Route path="/tickets" element={<TicketsListPage/>}/>
               <Route path="/view-ticket/:id" element={<ViewTicket/>}/>
+              <Route path="/edit-ticket/:id" element={<EditTicket/>}/>
             </Route>
           </Route>
         </Routes>

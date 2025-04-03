@@ -152,7 +152,7 @@ const CreateTicket: React.FC = () => {
                 className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
               >
                 {!categoriesLoading ? (
-                  categoriesData?.map((category, index) => (
+                  categoriesData?.map((category:any, index:number) => (
                     <option key={index} value={category.name}>
                       {category.name}
                     </option>

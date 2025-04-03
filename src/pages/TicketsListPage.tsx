@@ -19,7 +19,6 @@ export const TicketsListPage = () => {
         debounceValue, 
         filterData.page
     );
-    console.log(tickets)
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -29,13 +28,13 @@ export const TicketsListPage = () => {
         }));
     }, [filterData.status, filterData.priority, filterData.search]);
 
-    if (ticketsLoading) {
-        return (
-            <div className="flex justify-center items-center min-h-screen bg-gray-100">
-                <h4 className="text-xl font-semibold text-gray-500">Loading...</h4>
-            </div>
-        );
-    }
+    // if (ticketsLoading) {
+    //     return (
+    //         <div className="flex justify-center items-center min-h-screen bg-gray-100">
+    //             <h4 className="text-xl font-semibold text-gray-500">Loading...</h4>
+    //         </div>
+    //     );
+    // }
 
     if (isTicketsError) {
         return (
@@ -61,6 +60,10 @@ export const TicketsListPage = () => {
 
     const handleViewTicket = (id: string) => {
         navigate(`/view-ticket/${id}`);
+    };
+
+    const handleEditTicket = (id: string) => {
+        navigate(`/edit-ticket/${id}`);
     };
 
     const totalPages = tickets?.totalPages || 1;
@@ -147,7 +150,9 @@ export const TicketsListPage = () => {
                                         <th className="px-4 py-3 text-sm font-semibold text-gray-600">Priority</th>
                                         <th className="px-4 py-3 text-sm font-semibold text-gray-600">Status</th>
                                         <th className="px-4 py-3 text-sm font-semibold text-gray-600">Assigned To</th>
-                                        <th className="px-4 py-3 text-sm font-semibold text-gray-600">Actions</th>
+                                        <th className="px-4 py-3 text-sm font-semibold text-gray-600">View</th>
+                                        <th className="px-4 py-3 text-sm font-semibold text-gray-600">Edit</th>
+
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -175,6 +180,14 @@ export const TicketsListPage = () => {
                                                     className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-200"
                                                 >
                                                     View
+                                                </button>
+                                            </td>
+                                            <td className="px-4 py-3 text-sm">
+                                                <button
+                                                    onClick={() => handleEditTicket(ticket.id)}
+                                                    className="bg-yellow-400 text-white px-4 py-2 rounded-md hover:bg-yellow-600 transition duration-200"
+                                                >
+                                                    Edit
                                                 </button>
                                             </td>
                                         </tr>

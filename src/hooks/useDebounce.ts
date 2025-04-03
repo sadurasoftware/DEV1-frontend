@@ -7,12 +7,10 @@ export const useDebounce = (value:any, delay=500) => {
     useEffect(()=>{
 
         const id = setTimeout(()=>{
-            console.log("setting new timeout")
             setDebounce(value)
         },delay)
 
         return () =>{
-            console.log("clearing time out")
             clearTimeout(id)
         }
 
