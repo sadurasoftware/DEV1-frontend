@@ -1,43 +1,24 @@
 import { Link, useParams } from 'react-router-dom';
 import { useFetchTicketById } from '@/hooks/useFetchTicketById';
-import { useFetchCategories } from '@/hooks/useFetchCategories';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { useState, useEffect } from 'react';
-import { useUpdateTicket } from '@/hooks/useUpdateTicket';
-import { Button } from '@/components/ui/button';
+import { useFetchCategories } from '@/hooks/useFetchCategories'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { useEffect, useState } from 'react';
+import { useUpdateTicketStatus } from '@/hooks/useUpdateTicketStatus'; 
 
-export const EditTicket = () => {
+export const UpdateStatus = () => {
     const { id } = useParams<{ id?: string }>();
-    const { ticketData } = useFetchTicketById(id || ''); 
+    const { ticketData } = useFetchTicketById(id || '');
 
-    const [ticket, setTicket] = useState<any>({
-        title: '',
-        description: '',
-        priority: 'Low',
-        category: 'bug',
-    });
-
-    useEffect(() => {
-        if (ticketData?.ticket) {
-            setTicket({
-                title: ticketData.ticket.title,
-                description: ticketData.ticket.description,
-                priority: ticketData.ticket.priority,
-                category: ticketData.ticket.category,
-            });
-        }
-    }, [ticketData]); 
+     const { mutate, isPending, isError, isSuccess, error, data } = useUpdateTicketStatus();
 
     const {
         categoriesLoading,
         categoriesData,
-    } = useFetchCategories();
-
-    const { mutate, updateTicketPending } = useUpdateTicket();
+    } = useFetchCategories()
 
     const handleChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+        e: React.ChangeEvent<HTMLSelectElement>
     ) => {
         const { name, value } = e.target;
         setTicket((prevData: any) => ({
@@ -46,21 +27,35 @@ export const EditTicket = () => {
         }));
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!id) {
-            console.error("Ticket ID is missing.");
-            return;
+    const [ticket, setTicket] = useState<any>({
+        status: ticketData?.ticket?.status || 'Open', 
+    });
+
+    const handleUpdateStatus = () => {
+        console.log('Ticket:',ticket)
+        if(id && ticket)
+        {
+            mutate({id, status:ticket.status})
         }
-        console.log('Submitting ticket data:', ticket);
-        mutate({ id, ticket });
-    };
+       
+    }
+
+    useEffect(() => {
+        if (ticketData?.ticket) {
+            setTicket({
+                ...ticketData.ticket,
+                status: ticketData.ticket.status,
+            });
+        }
+    }, [ticketData]); 
+
+    
 
     return (
         <>
             <div className="min-h-screen bg-gray-100 py-8 px-6">
                 <div className="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-lg">
-                    <h1 className="text-3xl font-semibold text-center text-indigo-600 mb-6">Edit Ticket</h1>
+                    <h1 className="text-3xl font-semibold text-center text-indigo-600 mb-6">Update status</h1>
 
                     <div>
                         <div>
@@ -71,9 +66,8 @@ export const EditTicket = () => {
                                 type="text"
                                 id="title"
                                 name="title"
-                                value={ticket.title}
-                                onChange={handleChange}
-                                required
+                                value={ticketData?.ticket?.title || ''}
+                                readOnly
                             />
                         </div>
                         <div>
@@ -83,11 +77,10 @@ export const EditTicket = () => {
                             <textarea
                                 id="description"
                                 name="description"
-                                value={ticket.description}
-                                onChange={handleChange}
-                                required
                                 rows={4}
+                                value={ticketData?.ticket?.description || ''}
                                 className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                readOnly
                             />
                         </div>
                         <div>
@@ -97,14 +90,15 @@ export const EditTicket = () => {
                             <select
                                 id="priority"
                                 name="priority"
-                                value={ticket.priority}
-                                onChange={handleChange}
+                                value={ticketData?.ticket?.priority}
+                                disabled
                                 className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                             >
                                 <option value="Low">Low</option>
                                 <option value="Medium">Medium</option>
                                 <option value="High">High</option>
                             </select>
+
                         </div>
                         <div>
                             <Label htmlFor="category" className="text-xs font-medium">
@@ -113,8 +107,8 @@ export const EditTicket = () => {
                             <select
                                 id="category"
                                 name="category"
-                                value={ticket.category}
-                                onChange={handleChange}
+                                value={ticketData?.ticket?.category}
+                                disabled
                                 className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                             >
                                 {!categoriesLoading ? (
@@ -131,16 +125,42 @@ export const EditTicket = () => {
                             </select>
                         </div>
 
-                        <div className="flex gap-4 mt-6">
-                            <Button
-                                onClick={handleSubmit}
-                                className="bg-blue-500 text-white px-6 py-3 rounded-md hover:bg-blue-600 transition duration-300 ease-in-out shadow-lg"
-                                disabled={updateTicketPending}
-                            >
-                                {updateTicketPending ? 'Updating Ticket...' : 'Update Ticket'}
-                            </Button>
+                        <div>
+                            <Label htmlFor="attachments" className="text-xs font-medium">
+                                Attachments
+                            </Label>
+                            <img src={`http://localhost:3000/uploads/${ticketData?.ticket?.attachment}`} alt="Attachment" />
+                        </div>
 
-                            <Link to="/tickets" className="bg-gray-500 text-white px-6 py-2 rounded-md hover:bg-gray-600 transition duration-300 ease-in-out shadow-lg">
+                        <div>
+                            <Label htmlFor="status" className="text-xs font-medium">
+                                Status
+                            </Label>
+                            <select
+                                id="status"
+                                name="status"
+                                value={ticket?.status}
+                                onChange={handleChange}
+                                className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            >
+                                <option value="Open">Open</option>
+                                <option value="In Progress">In Progress</option>
+                                <option value="Resolved">Resolved</option>
+                                <option value="Closed">Closed</option>
+                                <option value="Pending">Pending</option>
+                            </select>
+
+                        </div>
+                         
+                        <div className='mt-5 text-center'>
+                        <button
+                    onClick={handleUpdateStatus}
+                    className="bg-green-500 text-white px-4 py-2 mx-3 rounded-md hover:bg-green-600 transition duration-200"
+                    disabled={isPending}
+                >
+                    {isPending ? 'Updating Status...' : 'Update Status'}
+                </button>
+                            <Link to="/tickets" className="bg-blue-500 text-white px-4 py-2  rounded-md hover:bg-blue-600 transition duration-200">
                                 Back
                             </Link>
                         </div>
@@ -149,5 +169,5 @@ export const EditTicket = () => {
                 </div>
             </div>
         </>
-    );
-};
+    )
+}

@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
 import { fetchCategories } from '../apis/categoryAPI'
-import { categoriesResponse } from '../types/categoryTypes'
 
 export const useFetchCategories = () => {
   const {
@@ -9,14 +8,14 @@ export const useFetchCategories = () => {
     isError: isCategoriesError,
     error: categoriesError,
     refetch,
-  } = useQuery<categoriesResponse>({
+  } = useQuery<any>({
     queryKey: ['category'],
     queryFn: fetchCategories,
   })
 
   return {
     categoriesLoading,
-    categoriesData,
+    categoriesData: categoriesData || [],
     isCategoriesError,
     categoriesError,
     refetch,

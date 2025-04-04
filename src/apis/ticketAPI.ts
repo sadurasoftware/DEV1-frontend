@@ -46,7 +46,7 @@ export const updateTicket = async (id: string, data: any) => {
       {
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data',
+          'Content-Type': 'application/json',
         },
       }
     )
@@ -55,4 +55,17 @@ export const updateTicket = async (id: string, data: any) => {
     console.error('Error updating Ticket:', error)
     throw error
   }
+}
+
+export const updateTicketStatus = async(id:string, status:string)  => {
+  const token = useLoginInfoStore.getState().token
+  console.log('status:',status )
+  const response = await axios.put(`http://localhost:3000/api/tickets/update-ticket-status/${id}`,
+     { status },
+     {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+  return response.data
 }
