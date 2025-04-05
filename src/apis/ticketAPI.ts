@@ -69,3 +69,8 @@ export const updateTicketStatus = async(id:string, status:string)  => {
     })
   return response.data
 }
+
+export const getTicketsByUserId = async(id:string) =>{
+  const response = await axios.get(`http://localhost:3000/api/tickets/user-tickets/${id}`)
+  return response.data
+}
