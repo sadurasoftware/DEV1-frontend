@@ -66,9 +66,9 @@ export const TicketsListPage = () => {
         navigate(`/view-ticket/${id}`);
     };
 
-    const handleEditTicket = (id: string) => {
-        navigate(`/edit-ticket/${id}`);
-    };
+    // const handleEditTicket = (id: string) => {
+    //     navigate(`/edit-ticket/${id}`);
+    // };
 
     const totalPages = tickets?.totalPages || 1;
 
@@ -157,7 +157,7 @@ export const TicketsListPage = () => {
                                         <th className="px-4 py-3 text-sm font-semibold text-gray-600">Update Status</th>
                                         <th className="px-4 py-3 text-sm font-semibold text-gray-600">Assigned To</th>
                                         <th className="px-4 py-3 text-sm font-semibold text-gray-600">View</th>
-                                        <th className="px-4 py-3 text-sm font-semibold text-gray-600">Edit</th>
+                                        {/* <th className="px-4 py-3 text-sm font-semibold text-gray-600">Edit</th> */}
 
                                     </tr>
                                 </thead>
@@ -194,14 +194,14 @@ export const TicketsListPage = () => {
                                                     View Details
                                                 </button>
                                             </td>
-                                            <td className="px-4 py-3 text-sm">
+                                            {/* <td className="px-4 py-3 text-sm">
                                                 <button
                                                     onClick={() => handleEditTicket(ticket.id)}
                                                     className="bg-yellow-400 text-white px-4 py-2 rounded-md hover:bg-yellow-600 transition duration-200"
                                                 >
                                                     Edit
                                                 </button>
-                                            </td>
+                                            </td> */}
                                         </tr>
                                     ))}
                                 </tbody>

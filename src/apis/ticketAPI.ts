@@ -74,3 +74,14 @@ export const getTicketsByUserId = async(id:string) =>{
   const response = await axios.get(`http://localhost:3000/api/tickets/user-tickets/${id}`)
   return response.data
 }
+
+export const deleteTicket = async(id:string)  => {
+  const token = useLoginInfoStore.getState().token
+  const response = await axios.delete(`http://localhost:3000/api/tickets/delete-ticket/${id}`,
+     {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+  return response.data
+}

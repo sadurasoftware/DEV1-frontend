@@ -82,7 +82,10 @@ export const Navbar: React.FC = () => {
                       <Link to="/create-ticket">Raise ticket</Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem>
-                      <Link to="/my-tickets/:id">My tickets</Link>
+                      <Link to={`/my-tickets/${user?.id}`}>My tickets</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Link to={`/my-profile/${user?.id}`}>My profile</Link>
                     </DropdownMenuItem>
                   <DropdownMenuItem>
                     <button onClick={handleLogout} aria-label="logout">
