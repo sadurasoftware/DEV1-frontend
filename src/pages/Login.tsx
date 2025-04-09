@@ -45,17 +45,13 @@ export const Login = () => {
   useEffect(() => {
     if (isSuccess && data) {
       setSuccess(data.user.firstname + ' ' + data.user.lastname)
-      //sending store data
+      
       setLoginInfo(data?.token, data?.user)
       setError('')
       console.log('Inside login page..')
       console.log(`RoleId:${data?.user?.roleId}`)
-      if (data?.user?.roleId === 3) {
-        navigate('/userdashboard');
-      } else if (data?.user?.roleId === 2) {
-        navigate('/admindashboard');
-      } else if (data?.user?.roleId === 1) {
-        navigate('/super-admin');
+      if (data?.user) {
+        navigate('/dashboard');
       } else {
         navigate('/login');
       }
