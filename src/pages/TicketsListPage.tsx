@@ -1,5 +1,5 @@
 import { useFetchAllTickets } from "@/hooks/useFetchAllTickets";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useState, useEffect } from "react";
@@ -19,7 +19,6 @@ export const TicketsListPage = () => {
         debounceValue, 
         filterData.page
     );
-    console.log(tickets)
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -59,9 +58,17 @@ export const TicketsListPage = () => {
         navigate(`/assign-ticket/${id}`);
     };
 
+    const handleUpdateStatus = (id: string) => {
+        navigate(`/update-status/${id}`);
+    };
+
     const handleViewTicket = (id: string) => {
         navigate(`/view-ticket/${id}`);
     };
+
+    // const handleEditTicket = (id: string) => {
+    //     navigate(`/edit-ticket/${id}`);
+    // };
 
     const totalPages = tickets?.totalPages || 1;
 
@@ -85,6 +92,7 @@ export const TicketsListPage = () => {
 
     return (
         <div className="min-h-screen bg-gray-50 py-2 px-4 sm:px-6 lg:px-8">
+            <Link to = '/super-admin'>Back</Link>
             <div className="max-w-7xl mx-auto">
                 <h2 className="text-3xl font-semibold text-center text-indigo-600 mb-8">Tickets List</h2>
 
@@ -146,8 +154,11 @@ export const TicketsListPage = () => {
                                         <th className="px-4 py-3 text-sm font-semibold text-gray-600">Description</th>
                                         <th className="px-4 py-3 text-sm font-semibold text-gray-600">Priority</th>
                                         <th className="px-4 py-3 text-sm font-semibold text-gray-600">Status</th>
+                                        <th className="px-4 py-3 text-sm font-semibold text-gray-600">Update Status</th>
                                         <th className="px-4 py-3 text-sm font-semibold text-gray-600">Assigned To</th>
-                                        <th className="px-4 py-3 text-sm font-semibold text-gray-600">Actions</th>
+                                        <th className="px-4 py-3 text-sm font-semibold text-gray-600">View</th>
+                                        {/* <th className="px-4 py-3 text-sm font-semibold text-gray-600">Edit</th> */}
+
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -157,6 +168,12 @@ export const TicketsListPage = () => {
                                             <td className="px-4 py-3 text-sm">{ticket.description}</td>
                                             <td className="px-4 py-3 text-sm">{ticket.priority}</td>
                                             <td className="px-4 py-3 text-sm">{ticket.status}</td>
+                                            <td className="px-4 py-3 text-sm"><button
+                                                        onClick={() => handleUpdateStatus(ticket.id)}
+                                                        className="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition duration-200"
+                                                    >
+                                                        Update Status
+                                                    </button></td>
                                             <td className="px-4 py-3 text-sm">
                                                 {ticket.assignedUser ? (
                                                     <span>{ticket.assignedUser.firstname}</span>
@@ -174,9 +191,17 @@ export const TicketsListPage = () => {
                                                     onClick={() => handleViewTicket(ticket.id)}
                                                     className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-200"
                                                 >
-                                                    View
+                                                    View Details
                                                 </button>
                                             </td>
+                                            {/* <td className="px-4 py-3 text-sm">
+                                                <button
+                                                    onClick={() => handleEditTicket(ticket.id)}
+                                                    className="bg-yellow-400 text-white px-4 py-2 rounded-md hover:bg-yellow-600 transition duration-200"
+                                                >
+                                                    Edit
+                                                </button>
+                                            </td> */}
                                         </tr>
                                     ))}
                                 </tbody>

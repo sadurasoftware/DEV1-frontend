@@ -28,6 +28,10 @@ import Users from './pages/Users'
 import {TicketsListPage} from './pages/TicketsListPage'
 import { AssignTicket } from './pages/AssignTicket'
 import { ViewTicket } from './pages/ViewTicket'
+import { EditTicket } from './pages/EditTicket'
+import { UpdateStatus } from './pages/UpdateStatus'
+import { MyTickets } from './pages/MyTickets'
+import { MyProfile } from './pages/MyProfile'
 
 
 // import Theme from './pages/Theme';
@@ -67,6 +71,7 @@ const App: React.FC = () => {
               />
               <Route path="/super-admin" element={<SuperAdminDashboard />} />
               <Route path="/userdashboard" element={<UserDashboard />} />
+              <Route path="/my-profile/:id" element={<MyProfile />} />
               <Route
                 path="/edit-profile/:userId"
                 element={<EditUserProfile />}
@@ -94,6 +99,9 @@ const App: React.FC = () => {
               <Route path="/category" element={<Category />} />
               <Route path="/tickets" element={<TicketsListPage/>}/>
               <Route path="/view-ticket/:id" element={<ViewTicket/>}/>
+              <Route path="/edit-ticket/:id" element={<EditTicket/>}/>
+              <Route path="/update-status/:id" element={<UpdateStatus/>}/>
+              <Route path="/my-tickets/:id" element={<MyTickets/>}/>
             </Route>
           </Route>
         </Routes>

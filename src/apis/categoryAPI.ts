@@ -2,7 +2,7 @@ import { useLoginInfoStore } from '@/store/useLoginInfoStore'
 import { categoriesResponse, categoryName } from '@/types/categoryTypes'
 import axios, { AxiosResponse } from 'axios'
 
-export const fetchCategories = async (): Promise<categoriesResponse> => {
+export const fetchCategories = async (): Promise<any> => {
   const token = useLoginInfoStore.getState().token
   const response = await axios.get('http://localhost:3000/api/category/get', {
     headers: {

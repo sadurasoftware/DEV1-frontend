@@ -48,14 +48,18 @@ export const Login = () => {
       //sending store data
       setLoginInfo(data?.token, data?.user)
       setError('')
+      console.log('Inside login page..')
       console.log(`RoleId:${data?.user?.roleId}`)
-      if (data?.user?.roleId === 1) {
-        navigate('/super-admin')
+      if (data?.user?.roleId === 3) {
+        navigate('/userdashboard');
       } else if (data?.user?.roleId === 2) {
-        navigate('/admindashboard')
+        navigate('/admindashboard');
+      } else if (data?.user?.roleId === 1) {
+        navigate('/super-admin');
       } else {
-        navigate('/userdashboard')
+        navigate('/login');
       }
+      
       setUser({ email: '', password: '' })
     }
 

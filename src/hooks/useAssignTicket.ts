@@ -8,7 +8,7 @@ export const useAssignTicket = () =>{
         onSuccess: data => {
             console.log('Ticket assigned successfully:', data)
           },
-          onError: (error: AxiosError) => {
+          onError: (error: any) => {
             if (axios.isAxiosError(error)) {
               console.error(
                 error.response?.data.message || 'An unexpected error occurred'

@@ -34,3 +34,54 @@ export const getTicketById = async(id:string) =>{
   return response.data
 }
 
+export const updateTicket = async (id: string, data: any) => {
+  console.log(`Id:${id}`)
+  console.log('data', data)
+  const token = useLoginInfoStore.getState().token
+  try {
+    const response = await axios.put(
+      `http://localhost:3000/api/tickets/update-ticket/${id}`,
+        data
+      ,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    )
+    return response.data
+  } catch (error) {
+    console.error('Error updating Ticket:', error)
+    throw error
+  }
+}
+
+export const updateTicketStatus = async(id:string, status:string)  => {
+  const token = useLoginInfoStore.getState().token
+  console.log('status:',status )
+  const response = await axios.put(`http://localhost:3000/api/tickets/update-ticket-status/${id}`,
+     { status },
+     {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+  return response.data
+}
+
+export const getTicketsByUserId = async(id:string) =>{
+  const response = await axios.get(`http://localhost:3000/api/tickets/user-tickets/${id}`)
+  return response.data
+}
+
+export const deleteTicket = async(id:string)  => {
+  const token = useLoginInfoStore.getState().token
+  const response = await axios.delete(`http://localhost:3000/api/tickets/delete-ticket/${id}`,
+     {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+  return response.data
+}
