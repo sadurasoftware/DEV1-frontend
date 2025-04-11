@@ -69,7 +69,7 @@ const App: React.FC = () => {
                 path="/"
                 element={<h1 className="flex justify-center">Dev Frontend</h1>}
               />
-              <Route path="/super-admin" element={<SuperAdminDashboard />} />
+              <Route path="/dashboard" element={<SuperAdminDashboard />} />
               <Route path="/userdashboard" element={<UserDashboard />} />
               <Route path="/my-profile/:id" element={<MyProfile />} />
               <Route

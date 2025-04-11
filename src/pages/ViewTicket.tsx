@@ -1,225 +1,264 @@
 import { Link, useParams } from 'react-router-dom';
 import { useFetchTicketById } from '@/hooks/useFetchTicketById';
 import { Label } from '@radix-ui/react-label';
+import { useState } from 'react';
+import { useCreateComment } from '@/hooks/useCreateComment';
+import { useUpdateTicketStatus } from '@/hooks/useUpdateTicketStatus';
 
 export const ViewTicket = () => {
-    const { id } = useParams<{ id?: string }>();
-    const { ticketData } = useFetchTicketById(id || '');
-    return (
-        <>
-            <div className="min-h-screen bg-gray-100 py-8 px-6">
-                <div className="max-w mx-auto bg-white p-6 rounded-lg shadow-lg">
-                    <h1 className="text-3xl font-semibold text-center text-indigo-600 mb-6">Ticket Details</h1>
-                    <div className=''>
-                        <table className="min-w-full table-auto border-t">
-                            <tbody className='border-t'>
-                                <tr className="border-t px-4 py-2 text-left  text-gray-600 bg-gray-100">
-                                    <th className="px-4 py-2">Title</th>
-                                    <td className="px-4 py-2">{ticketData?.ticket?.title}</td>
-                                    <th className="px-4 py-2">Creation Date</th>
-                                    <td className="px-4 py-2">{ticketData?.ticket?.createdAt}</td>
-                                </tr>
-                                <tr className="border-t px-4 py-2 text-left">
-                                    <th className="px-4 py-2">Email</th>
-                                    <td className="px-4 py-2">{ticketData?.ticket?.user.email}</td>
-                                    <th className="px-4 py-2">Ticket Category</th>
-                                    <td className="px-4 py-2">{ticketData?.ticket?.category.name}</td>
-                                </tr>
-                                <tr className="border-t px-4 py-2 text-left text-gray-600 bg-gray-100">
-                                    <th className="px-4 py-2">Priority</th>
-                                    <td className="px-4 py-2">{ticketData?.ticket?.priority}</td>
-                                    <th className="px-4 py-2">Ticket status</th>
-                                    <td className="px-4 py-2">{ticketData?.ticket?.status}</td>
-                                </tr>
-                                <tr className="border-t px-4 py-2 text-left">
-                                    <th className="px-4 py-2 ">Description</th>
-                                    <td className="px-4 py-2" colSpan={3}>{ticketData?.ticket?.description}</td>
+  const { id } = useParams<{ id?: string }>();
+  const [commentData, setCommentData] = useState<{
+    ticketId: string;
+    commentText: string;
+    attachment: File | null;
+    updatedBy: number;
+  }>({
+    ticketId: '',
+    commentText: '',
+    attachment: null,
+    updatedBy: 0,
+  });
 
-                                </tr>
-                                <tr className="border-t px-4 py-2 text-left text-gray-600 bg-gray-100">
-                                    <th className="px-4 py-2 ">Attachment</th>
-                                    <td className="px-4 py-2" colSpan={3}><a href="http://localhost:3000/uploads/${ticketData?.ticket?.attachment}">click here</a></td>
+  const { ticketData } = useFetchTicketById(id || '');
+  const { createCommentMutation, isPending, isError, isSuccess, error, data } = useCreateComment();
+  const { mutate } = useUpdateTicketStatus();
+  
+  const [ticket, setTicket] = useState<any>({
+    status: ticketData?.ticket?.status || 'Open',
+  });
+  const [imageURL, setImageURL] = useState<string>('');
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-                                </tr>
-                            </tbody>
-                        </table>
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setCommentData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setTicket((prevData: any) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleUpdateStatus = async () => {
+    if (id && ticket) {
+      await mutate({ id, status: ticket.status });
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!id) return;
+    setIsSubmitting(true);
+
+    try {
+     
+      await mutate({ id, status: ticket.status });
+
+      
+      const formData = new FormData();
+      formData.append('commentText', commentData.commentText);
+      formData.append('updatedBy', ticketData.ticket.updatedBy);
+
+      if (commentData.attachment) {
+        formData.append('attachment', commentData.attachment);
+      }
+
+      
+      await createCommentMutation({ ticketId: id, data: formData });
+      setCommentData(
+        {
+          ticketId: '',
+          commentText: '',
+          attachment: null,
+          updatedBy: 0,
+        }
+      )
+      console.log('Ticket status updated and comment submitted successfully.');
+    } catch (err) {
+      console.error('Something went wrong:', err);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleImageClick = () => {
+    if (ticketData?.ticket?.attachment) {
+      setImageURL(ticketData.ticket.attachment);
+      setIsModalOpen(true);
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files[0]) {
+      setCommentData((prevData) => ({
+        ...prevData,
+        attachment: files[0],
+      }));
+    }
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setImageURL('');
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-100 py-8 px-6">
+      <div className="max-w mx-auto bg-white p-6 rounded-lg shadow-lg">
+        <h1 className="text-3xl font-semibold text-center text-indigo-600 mb-6">
+          Ticket Details
+        </h1>
+
+        <div>
+          <table className="min-w-full table-auto border-t">
+            <tbody className="border-t">
+              <tr className="border-t px-4 py-2 text-left text-gray-600 bg-gray-100">
+                <th className="px-4 py-2">Title</th>
+                <td className="px-4 py-2">{ticketData?.ticket?.title}</td>
+                <th className="px-4 py-2">Creation Date</th>
+                <td className="px-4 py-2">{ticketData?.ticket?.createdAt}</td>
+              </tr>
+              <tr className="border-t px-4 py-2 text-left">
+                <th className="px-4 py-2">Email</th>
+                <td className="px-4 py-2">{ticketData?.ticket?.user.email}</td>
+                <th className="px-4 py-2">Ticket Category</th>
+                <td className="px-4 py-2">{ticketData?.ticket?.category.name}</td>
+              </tr>
+              <tr className="border-t px-4 py-2 text-left text-gray-600 bg-gray-100">
+                <th className="px-4 py-2">Priority</th>
+                <td className="px-4 py-2">{ticketData?.ticket?.priority}</td>
+                <th className="px-4 py-2">Ticket status</th>
+                <td className="px-4 py-2">{ticketData?.ticket?.status}</td>
+              </tr>
+              <tr className="border-t px-4 py-2 text-left">
+                <th className="px-4 py-2">Description</th>
+                <td className="px-4 py-2" colSpan={3}>
+                  {ticketData?.ticket?.description}
+                </td>
+              </tr>
+              <tr className="border-t px-4 py-2 text-left text-gray-600 bg-gray-100">
+                <th className="px-4 py-2">Attachment</th>
+                <td className="px-4 py-2" colSpan={3}>
+                  <button
+                    onClick={handleImageClick}
+                    className="text-blue-500 hover:underline"
+                  >
+                    Click here to view attachment
+                  </button>
+                  {isModalOpen && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                      <div className="bg-white p-4 rounded-lg max-w-lg relative">
+                        <button
+                          onClick={closeModal}
+                          className="absolute top-2 right-2 text-black font-bold text-lg"
+                        >
+                          X
+                        </button>
+                        <img
+                          src={imageURL}
+                          alt="Ticket Attachment"
+                          className="max-w-full max-h-screen object-contain"
+                        />
+                      </div>
                     </div>
-                    <div className='mt-4'>
-                        <table className="min-w-full table-auto border-t">
-                            <tbody className='border-t'>
-                                <tr className="border-t px-4 py-2 text-left  text-gray-600 bg-gray-100">
-                                    <th className="px-4 py-2">Ticket Comments</th>
-                                    <td className="px-4 py-2"><div>
-                                        <Label htmlFor="description" className="text-xs font-medium">
-                                        Comments
-                                        </Label>
-                                        <textarea
-                                            id="description"
-                                            name="description"
-                                            // value={ticket.description}
-                                            // onChange={handleChange}
-                                            readOnly
-                                            rows={4}
-                                            className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                        />
-                                    </div></td>
+                  )}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
-                                </tr>
-                                <tr className="border-t px-4 py-2 text-left">
-                                    <th className="px-4 py-2">Attachment</th>
-                                    <td className="px-4 py-2">
-                                        <div>
-                                            <Label htmlFor="attachments" className="text-xs font-medium">
-                                                Attachments
-                                            </Label>
-                                            <input
-                                                type="file"
-                                                id="attachment"
-                                                name="attachment"
-                                                // onChange={handleFileChange}
-                                                className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                            />
-                                        </div>
-                                    </td>
+        <div className="mt-4">
+          <table className="min-w-full table-auto border-t">
+            <tbody className="border-t">
+              <tr className="border-t px-4 py-2 text-left text-gray-600 bg-gray-100">
+                <th className="px-4 py-2">Ticket Comments</th>
+                <td className="px-4 py-2">
+                  <div>
+                    <Label htmlFor="description" className="text-xs font-medium">
+                      Comments
+                    </Label>
+                    <textarea
+                      id="commentText"
+                      name="commentText"
+                      onChange={handleChange}
+                      value={commentData.commentText}
+                      rows={4}
+                      className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    />
+                  </div>
+                </td>
+              </tr>
+              <tr className="border-t px-4 py-2 text-left">
+                <th className="px-4 py-2">Attachment</th>
+                <td className="px-4 py-2">
+                  <div>
+                    <Label htmlFor="attachments" className="text-xs font-medium">
+                      Attachments
+                    </Label>
+                    <input
+                      type="file"
+                      id="attachment"
+                      name="attachment"
+                      onChange={handleFileChange}
+                      className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    />
+                  </div>
+                </td>
+              </tr>
+              <tr className="border-t px-4 py-2 text-left text-gray-600 bg-gray-100">
+                <th className="px-4 py-2">Status</th>
+                <td className="px-4 py-2">
+                  <div>
+                    <Label htmlFor="status" className="text-xs font-medium">
+                      Status
+                    </Label>
+                    <select
+                      id="status"
+                      name="status"
+                      value={ticket.status}
+                      onChange={handleStatusChange}
+                      className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    >
+                      <option value="Open">Open</option>
+                      <option value="In Progress">In Progress</option>
+                      <option value="Resolved">Resolved</option>
+                      <option value="Closed">Closed</option>
+                      <option value="Pending">Pending</option>
+                    </select>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
-                                </tr>
-                                <tr className="border-t px-4 py-2 text-left text-gray-600 bg-gray-100">
-                                    <th className="px-4 py-2">Status</th>
-                                    <td className="px-4 py-2"> <div>
-                                        <Label htmlFor="status" className="text-xs font-medium">
-                                            Status
-                                        </Label>
-                                        <select
-                                            id="status"
-                                            name="status"
-                                            value={ticketData?.ticket?.status}
-                                            // onChange={handleChange}
-                                            className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                        >
-                                            <option value="Open">Open</option>
-                                            <option value="In Progress">In Progress</option>
-                                            <option value="Resolved">Resolved</option>
-                                            <option value="Closed">Closed</option>
-                                            <option value="Pending">Pending</option>
-                                        </select>
+        <button
+          onClick={handleSubmit}
+          className="bg-green-600 text-white px-4 py-2 mt-4 rounded hover:bg-green-700"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? 'Submitting...' : 'Submit'}
+        </button>
 
-                                    </div></td>
-
-                                </tr>
-
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div className='mt-5 text-center'>
-                        <Link to="/tickets" className="bg-blue-500 text-white px-4 py-2  rounded-md hover:bg-blue-600 transition duration-200">
-                            Back
-                        </Link>
-                    </div>
-
-                    {/* <div>
-                        <div>
-                            <Label htmlFor="ticketName" className="text-xs font-medium">
-                                Ticket Title
-                            </Label>
-                            <Input
-                                type="text"
-                                id="title"
-                                name="title"
-                                value={ticketData?.ticket?.title || ''}
-                                readOnly
-                            />
-                        </div>
-                        <div>
-                            <Label htmlFor="description" className="text-xs font-medium">
-                                Description
-                            </Label>
-                            <textarea
-                                id="description"
-                                name="description"
-                                rows={4}
-                                value={ticketData?.ticket?.description || ''}
-                                className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                readOnly
-                            />
-                        </div>
-                        <div>
-                            <Label htmlFor="priority" className="text-xs font-medium">
-                                Priority
-                            </Label>
-                            <select
-                                id="priority"
-                                name="priority"
-                                value={ticketData?.ticket?.priority}
-                                disabled
-                                className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                            >
-                                <option value="Low">Low</option>
-                                <option value="Medium">Medium</option>
-                                <option value="High">High</option>
-                            </select>
-
-                        </div>
-                        <div>
-                            <Label htmlFor="category" className="text-xs font-medium">
-                                Category
-                            </Label>
-                            <select
-                                id="category"
-                                name="category"
-                                value={ticketData?.ticket?.category}
-                                disabled
-                                className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                            >
-                                {!categoriesLoading ? (
-                                    categoriesData?.map((category: any, index: any) => (
-                                        <option key={index} value={category.name}>
-                                            {category.name}
-                                        </option>
-                                    ))
-                                ) : (
-                                    <option value="" disabled>
-                                        Loading categories...
-                                    </option>
-                                )}
-                            </select>
-                        </div>
-
-                        <div>
-                            <Label htmlFor="attachments" className="text-xs font-medium">
-                                Attachments
-                            </Label>
-                            <img src={`http://localhost:3000/uploads/${ticketData?.ticket?.attachment}`} alt="Attachment" />
-                        </div>
-
-                        <div>
-                            <Label htmlFor="status" className="text-xs font-medium">
-                                Status
-                            </Label>
-                            <select
-                                id="status"
-                                name="status"
-                                value={ticketData?.ticket?.status}
-                                disabled
-                                className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                            >
-                                <option value="Open">Open</option>
-                                <option value="In Progress">In Progress</option>
-                                <option value="Resolved">Resolved</option>
-                                <option value="Closed">Closed</option>
-                                <option value="Pending">Pending</option>
-                            </select>
-
-                        </div>
-                        <div className='mt-5 text-center'>
-                            <Link to="/tickets" className="bg-blue-500 text-white px-4 py-2  rounded-md hover:bg-blue-600 transition duration-200">
-                                Back
-                            </Link>
-                        </div>
-
-                    </div> */}
-                </div>
-            </div>
-        </>
-    )
-}
+        <div className="mt-5 text-center">
+          <Link
+            to="/tickets"
+            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-200"
+          >
+            Back
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+};

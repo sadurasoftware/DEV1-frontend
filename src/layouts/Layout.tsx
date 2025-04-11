@@ -6,7 +6,7 @@ const Layout = () => {
   const location = useLocation()
   console.log('Redirected from layout....')
   return token ? (
-    <Navigate to="/super-admin" state={{ from: location }} replace />
+    <Navigate to="/dashboard" state={{ from: location }} replace />
   ) : (
     <>
       <Outlet />

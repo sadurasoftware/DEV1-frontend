@@ -14,21 +14,26 @@ export const MyProfile = () => {
                     <table className="min-w-full table-auto border-t">
                         <tbody className='border-t'>
                             <tr className="border-t px-4 py-2 text-left  text-gray-600 bg-gray-100">
+                                <th className="px-4 py-2" colSpan={2}>User Details page</th>
+                                
+
+                            </tr>
+                            <tr className="border-t px-4 py-2 text-left">
                                 <th className="px-4 py-2">Name</th>
-                                <td className="px-4 py-2">{data.userData.firstname}{''}{user?.lastname}</td>
+                                <td className="px-4 py-2">{data.userData.firstname}{' '}{data.userData.lastname}</td>
 
                             </tr>
                             <tr className="border-t px-4 py-2 text-left">
                                 <th className="px-4 py-2">Email</th>
-                                <td className="px-4 py-2">{user?.email}</td>
+                                <td className="px-4 py-2">{data.userData.email}</td>
 
                             </tr>
                             <tr className="border-t px-4 py-2 text-left">
                                 <th className="px-4 py-2">Role</th>
                                 <td className="px-4 py-2">
-                                    {user?.roleId === 1 && 'SuperAdmin'}
-                                    {user?.roleId === 2 && 'Admin'}
-                                    {user?.roleId === 3 && 'User'}
+                                    {data.userData.roleId === 1 && 'SuperAdmin'}
+                                    {data.userData.roleId === 2 && 'Admin'}
+                                    {data.userData.roleId === 3 && 'User'}
                                 </td>
                             </tr>
 

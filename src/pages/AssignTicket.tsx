@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { useGetSupportTeam } from "@/hooks/useGetSupportTeam";
 import { useAssignTicket } from '@/hooks/useAssignTicket';
 import { Link, useParams } from 'react-router-dom';
 import { useFetchTicketById } from '@/hooks/useFetchTicketById';
-import { useFetchCategories } from '@/hooks/useFetchCategories'
+import { useFetchCategories } from '@/hooks/useFetchCategories';
 
 export const AssignTicket = () => {
     const { id } = useParams<{ id?: string }>();
+
     const { usersLoading, usersData, isUsersError, usersError } = useGetSupportTeam();
     const { ticketData } = useFetchTicketById(id || '');
-    // console.log(ticketData.ticket)
     const { mutate, isPending, isError, isSuccess, error, data } = useAssignTicket();
+
     const [success, setSuccess] = useState<string>('');
     const [selectedUser, setSelectedUser] = useState<any>({
         id: 0,
@@ -20,11 +21,8 @@ export const AssignTicket = () => {
         lastname: '',
         email: '',
     });
-    const {
-        categoriesLoading,
-        categoriesData,
-    } = useFetchCategories()
 
+    const { categoriesLoading, categoriesData } = useFetchCategories();
 
     const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedUserId = e.target.value;
@@ -39,19 +37,25 @@ export const AssignTicket = () => {
         }
     };
 
-
     const handleAssignTicket = () => {
         if (id && selectedUser.id) {
             mutate({ id, assignedTo: selectedUser.id });
         }
     };
 
-
     useEffect(() => {
         if (isSuccess && data?.message) {
             setSuccess(data.message);
         }
     }, [isSuccess, data]);
+
+    // if (isTicketLoading) {
+    //     return <div>Loading ticket data...</div>;
+    // }
+
+    // if (isTicketError || !ticketData?.ticket) {
+    //     return <div>Error loading ticket data: {usersError?.message || 'An unexpected error occurred'}</div>;
+    // }
 
     return (
         <div className="min-h-screen bg-gray-100 py-8 px-6">
@@ -99,7 +103,6 @@ export const AssignTicket = () => {
                             <option value="Medium">Medium</option>
                             <option value="High">High</option>
                         </select>
-
                     </div>
                     <div>
                         <Label htmlFor="category" className="text-xs font-medium">
@@ -130,7 +133,7 @@ export const AssignTicket = () => {
                         <Label htmlFor="attachments" className="text-xs font-medium">
                             Attachments
                         </Label>
-                        <img src={`http://localhost:3000/uploads/${ticketData?.ticket?.attachment}`} alt="Attachment" />
+                        <img src={ticketData?.ticket?.attachment} alt="Attachment" width={500} height={500}/>
                     </div>
 
                     <div>
@@ -150,12 +153,9 @@ export const AssignTicket = () => {
                             <option value="Closed">Closed</option>
                             <option value="Pending">Pending</option>
                         </select>
-
                     </div>
                     <div className="mb-4">
-
                         <Label htmlFor="users" className="text-xs font-medium">Select Support Team Member</Label>
-
                         <select
                             id="users"
                             name="users"
@@ -190,8 +190,8 @@ export const AssignTicket = () => {
                     {isPending ? 'Assigning...' : 'Assign Ticket'}
                 </button>
                 <Link to="/tickets" className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-200">
-                                Back
-                            </Link>
+                    Back
+                </Link>
 
                 {isSuccess && success && (
                     <div className="mt-4 p-4 bg-green-100 border border-green-400 text-green-800 rounded-md">

@@ -129,7 +129,7 @@ export const UpdateStatus = () => {
                             <Label htmlFor="attachments" className="text-xs font-medium">
                                 Attachments
                             </Label>
-                            <img src={`http://localhost:3000/uploads/${ticketData?.ticket?.attachment}`} alt="Attachment" />
+                            <img src={ticketData?.ticket?.attachment} alt="Attachment" width={500} height={500}/>
                         </div>
 
                         <div>

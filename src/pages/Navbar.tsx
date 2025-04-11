@@ -52,12 +52,12 @@ export const Navbar: React.FC = () => {
                   <DropdownMenuSeparator />
                   {user?.roleId === 3 && (
                     <DropdownMenuItem>
-                      <Link to="/userdashboard">Dashboard</Link>
+                      <Link to="/dashboard">Dashboard</Link>
                     </DropdownMenuItem>
                   )}
                   {user?.roleId === 2 && (
                     <DropdownMenuItem>
-                      <Link to="/admindashboard">Admin Dashboard</Link>
+                      <Link to="/dashboard">Admin Dashboard</Link>
                     </DropdownMenuItem>
                   )}
                   {/* {user?.roleId === 3 && (
@@ -71,7 +71,7 @@ export const Navbar: React.FC = () => {
                         <Link to="/register">Add User</Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem>
-                        <Link to="/super-admin">Super Admin Dashboard</Link>
+                        <Link to="/dashboard">Super Admin Dashboard</Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem>
                         <Link to="/settings">Settings</Link>
