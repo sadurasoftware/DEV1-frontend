@@ -34,9 +34,13 @@ export const SuperAdminDashboard = () => {
 
         {token && (
           <div>
-            <h1 className="text-xl font-medium text-gray-700 mb-6">
-              Welcome, {user?.firstname} {user?.roleId === 1 && <h2>Super admin</h2>}
+            <h1 className="text-xl font-medium text-gray-700 mb-2">
+              Welcome, {user?.firstname}
             </h1>
+            {user?.roleId === 1 && (
+              <h2 className="text-lg text-gray-600 mb-4">Super admin</h2>
+            )}
+
 
           </div>
 
@@ -50,13 +54,13 @@ export const SuperAdminDashboard = () => {
             Show Users
           </button>)}
 
-          {(user?.roleId === 1) && ( <button
+          {(user?.roleId === 1) && (<button
             onClick={handleShowAdmins}
             className="bg-green-500 text-white px-6 py-3 rounded-md hover:bg-green-600 transition duration-200"
           >
             Show Admins
           </button>)}
-         
+
           <button
             onClick={handleShowTickets}
             className="bg-green-500 text-white px-6 py-3 rounded-md hover:bg-green-600 transition duration-200"

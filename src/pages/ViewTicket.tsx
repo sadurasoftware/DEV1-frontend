@@ -65,7 +65,7 @@ export const ViewTicket = () => {
       
       const formData = new FormData();
       formData.append('commentText', commentData.commentText);
-      formData.append('updatedBy', String(commentData.updatedBy));
+      formData.append('updatedBy', ticketData.ticket.updatedBy);
 
       if (commentData.attachment) {
         formData.append('attachment', commentData.attachment);
@@ -73,7 +73,14 @@ export const ViewTicket = () => {
 
       
       await createCommentMutation({ ticketId: id, data: formData });
-
+      setCommentData(
+        {
+          ticketId: '',
+          commentText: '',
+          attachment: null,
+          updatedBy: 0,
+        }
+      )
       console.log('Ticket status updated and comment submitted successfully.');
     } catch (err) {
       console.error('Something went wrong:', err);
