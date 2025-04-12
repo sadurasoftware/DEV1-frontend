@@ -4,7 +4,7 @@ import { useDeleteTicket } from '@/hooks/useDeleteTicket';
 
 export const MyTickets = () => {
     const { id } = useParams();
-    const { ticketLoading, ticketData, isTicketError, ticketError, refetch } = useGetTicketsByUser(id);
+    const { ticketLoading, ticketData, isTicketError, ticketError, refetch } = useGetTicketsByUser(id || '');
     const navigate = useNavigate();
 
     const { ticketDelete, deleteTicketPending } = useDeleteTicket();

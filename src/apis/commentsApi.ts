@@ -16,7 +16,7 @@ export const createComment = async (data: FormData, ticketId:string): Promise<an
   return response.data
 }
 
-export const fetchCommentsByTicketId = async(id:string) => {
- const response = await axios.get(`http://localhost:3000/api/tickets/get-ticket/${id}`)
+export const fetchCommentsByTicketId = async(ticketId:string) => {
+ const response = await axios.get(`http://localhost:3000/api/comments/get/${ticketId}`)
   return response.data
 }
