@@ -4,9 +4,11 @@ import { Label } from '@radix-ui/react-label';
 import { useState } from 'react';
 import { useCreateComment } from '@/hooks/useCreateComment';
 import { useUpdateTicketStatus } from '@/hooks/useUpdateTicketStatus';
+import { useFetchCommentsByTicketId } from '@/hooks/useFetchCommentsByTicketId';
+import { useQueryClient } from '@tanstack/react-query';
 
 export const ViewTicket = () => {
-  const { id } = useParams<{ id?: string }>();
+  const { id } = useParams<{ id?: string }>()
   const [commentData, setCommentData] = useState<{
     ticketId: string;
     commentText: string;
@@ -19,60 +21,61 @@ export const ViewTicket = () => {
     updatedBy: 0,
   });
 
-  const { ticketData } = useFetchTicketById(id || '');
-  const { createCommentMutation, isPending, isError, isSuccess, error, data } = useCreateComment();
-  const { mutate } = useUpdateTicketStatus();
-  
+  const queryClient = useQueryClient()
+
+  const { ticketData } = useFetchTicketById(id || '')
+  const { createCommentMutation } = useCreateComment()
+  const { mutate } = useUpdateTicketStatus()
+  const { commentsLoading, commentsData, refetch } = useFetchCommentsByTicketId(id || '')
+  console.log(commentsData)
   const [ticket, setTicket] = useState<any>({
     status: ticketData?.ticket?.status || 'Open',
   });
-  const [imageURL, setImageURL] = useState<string>('');
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [imageURL, setImageURL] = useState<string>('')
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
-    const { name, value } = e.target;
+    const { name, value } = e.target
     setCommentData((prevData) => ({
       ...prevData,
       [name]: value,
-    }));
-  };
+    }))
+  }
 
   const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const { name, value } = e.target;
+    const { name, value } = e.target
     setTicket((prevData: any) => ({
       ...prevData,
       [name]: value,
-    }));
-  };
-
-  const handleUpdateStatus = async () => {
-    if (id && ticket) {
-      await mutate({ id, status: ticket.status });
-    }
-  };
+    }))
+  }
 
   const handleSubmit = async () => {
-    if (!id) return;
-    setIsSubmitting(true);
+    if (!id) return
+    setIsSubmitting(true)
 
     try {
-     
-      await mutate({ id, status: ticket.status });
 
-      
+      await mutate({ id, status: ticket.status })
+
+
       const formData = new FormData();
-      formData.append('commentText', commentData.commentText);
-      formData.append('updatedBy', ticketData.ticket.updatedBy);
+      formData.append('commentText', commentData.commentText)
+      formData.append('updatedBy', ticketData.ticket.updatedBy)
 
       if (commentData.attachment) {
-        formData.append('attachment', commentData.attachment);
+        formData.append('attachment', commentData.attachment)
       }
 
-      
-      await createCommentMutation({ ticketId: id, data: formData });
+
+      await createCommentMutation({ ticketId: id, data: formData })
+
+      await refetch()
+      // await queryClient.invalidateQueries({queryKey:['comments', id]});
+
       setCommentData(
         {
           ticketId: '',
@@ -81,23 +84,23 @@ export const ViewTicket = () => {
           updatedBy: 0,
         }
       )
-      console.log('Ticket status updated and comment submitted successfully.');
+      console.log('Ticket status updated and comment submitted successfully.')
     } catch (err) {
-      console.error('Something went wrong:', err);
+      console.error('Something went wrong:', err)
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false)
     }
   };
 
   const handleImageClick = () => {
     if (ticketData?.ticket?.attachment) {
-      setImageURL(ticketData.ticket.attachment);
-      setIsModalOpen(true);
+      setImageURL(ticketData.ticket.attachment)
+      setIsModalOpen(true)
     }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
+    const files = e.target.files
     if (files && files[0]) {
       setCommentData((prevData) => ({
         ...prevData,
@@ -107,8 +110,8 @@ export const ViewTicket = () => {
   };
 
   const closeModal = () => {
-    setIsModalOpen(false);
-    setImageURL('');
+    setIsModalOpen(false)
+    setImageURL('')
   };
 
   return (
@@ -176,7 +179,49 @@ export const ViewTicket = () => {
             </tbody>
           </table>
         </div>
+        <div>
+          <table className="min-w-full table-auto border-t mt-5">
+            <thead>
+              <th colSpan={5} className="px-4 py-2 text-gray-800 bg-gray-300">Ticket History</th>
+            </thead>
+            <tbody className='border-t'>
+              <tr className='border-t px-4 py-2 text-left text-gray-600 bg-gray-100'>
+                <th className="px-4 py-2">Ticket Updated Details</th>
+                <th className="px-4 py-2">Status</th>
+                <th className="px-4 py-2">Updated By</th>
+                <th className="px-4 py-2">Attachment</th>
+                <th className="px-4 py-2">Date</th>
+              </tr>
 
+              {!commentsLoading && commentsData?.comments?.length > 0 &&
+                commentsData.comments.map((comment: any) => (
+                  <tr key={comment.id} className='border-t px-4 py-2 text-left text-gray-500 bg-gray-50'>
+                    <td className="px-4 py-2">{comment.commentText}</td>
+                    <td className="px-4 py-2">{ticketData.ticket.status}</td>
+                    <td className="px-4 py-2">{comment.commenter?.firstname} {comment.commenter?.lastname}</td>
+                    <td className="px-4 py-2">
+                      {comment.attachment ? (
+                        <a
+                          href={comment.attachment}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-500 hover:underline"
+                        >
+                          View
+                        </a>
+                      ) : (
+                        'No Attachment'
+                      )}
+                    </td>
+                    <td className="px-4 py-2">{new Date(comment.updatedAt).toLocaleString()}</td>
+                  </tr>
+                ))
+              }
+
+
+            </tbody>
+          </table>
+        </div>
         <div className="mt-4">
           <table className="min-w-full table-auto border-t">
             <tbody className="border-t">
@@ -250,14 +295,14 @@ export const ViewTicket = () => {
           {isSubmitting ? 'Submitting...' : 'Submit'}
         </button>
 
-        <div className="mt-5 text-center">
+        
           <Link
             to="/tickets"
-            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-200"
+            className="bg-blue-500 text-white mx-3 px-4 py-2 rounded-md hover:bg-blue-600 transition duration-200"
           >
             Back
           </Link>
-        </div>
+        
       </div>
     </div>
   );
