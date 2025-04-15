@@ -20,3 +20,9 @@ export const fetchCommentsByTicketId = async(ticketId:string) => {
  const response = await axios.get(`http://localhost:3000/api/comments/get/${ticketId}`)
   return response.data
 }
+
+export const fetchCommentById = async(commentId:any) =>
+{
+  const response = await axios.get(`http://localhost:3000/api/comments/${commentId}`)
+  return response.data
+}

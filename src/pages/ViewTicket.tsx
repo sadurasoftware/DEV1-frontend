@@ -1,4 +1,4 @@
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useFetchTicketById } from '@/hooks/useFetchTicketById';
 import { Label } from '@radix-ui/react-label';
 import { useState } from 'react';
@@ -21,13 +21,14 @@ export const ViewTicket = () => {
     updatedBy: 0,
   });
 
-  const queryClient = useQueryClient()
+  // const queryClient = useQueryClient()
+  const navigate = useNavigate()
 
   const { ticketData } = useFetchTicketById(id || '')
   const { createCommentMutation } = useCreateComment()
   const { mutate } = useUpdateTicketStatus()
   const { commentsLoading, commentsData, refetch } = useFetchCommentsByTicketId(id || '')
-  console.log(commentsData)
+
   const [ticket, setTicket] = useState<any>({
     status: ticketData?.ticket?.status || 'Open',
   });
@@ -99,6 +100,14 @@ export const ViewTicket = () => {
     }
   };
 
+  const handleCommentImageClick = (attachmentUrl:string) => {
+    if(attachmentUrl)
+    {
+      setImageURL(attachmentUrl)
+      setIsModalOpen(true)
+    }
+  }
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
     if (files && files[0]) {
@@ -108,6 +117,10 @@ export const ViewTicket = () => {
       }));
     }
   };
+
+  const handleEdit = (id:string) => {
+    navigate(`/comments/${id}`)
+  }
 
   const closeModal = () => {
     setIsModalOpen(false)
@@ -182,39 +195,48 @@ export const ViewTicket = () => {
         <div>
           <table className="min-w-full table-auto border-t mt-5">
             <thead>
-              <th colSpan={5} className="px-4 py-2 text-gray-800 bg-gray-300">Ticket History</th>
+              <tr>
+              <td colSpan={5} className="px-4 py-2 text-gray-800 bg-gray-300">Ticket History</td>
+              </tr>
+              
             </thead>
             <tbody className='border-t'>
               <tr className='border-t px-4 py-2 text-left text-gray-600 bg-gray-100'>
                 <th className="px-4 py-2">Ticket Updated Details</th>
-                <th className="px-4 py-2">Status</th>
+                {/* <th className="px-4 py-2">Status</th> */}
                 <th className="px-4 py-2">Updated By</th>
                 <th className="px-4 py-2">Attachment</th>
-                <th className="px-4 py-2">Date</th>
+                {/* <th className="px-4 py-2">Date</th> */}
+                <th className="px-4 py-2">Edit</th>
               </tr>
 
               {!commentsLoading && commentsData?.comments?.length > 0 &&
                 commentsData.comments.map((comment: any) => (
                   <tr key={comment.id} className='border-t px-4 py-2 text-left text-gray-500 bg-gray-50'>
                     <td className="px-4 py-2">{comment.commentText}</td>
-                    <td className="px-4 py-2">{ticketData.ticket.status}</td>
+                    {/* <td className="px-4 py-2">{ticketData.ticket.status}</td> */}
                     <td className="px-4 py-2">{comment.commenter?.firstname} {comment.commenter?.lastname}</td>
                     <td className="px-4 py-2">
                       {comment.attachment ? (
-                        <a
-                          href={comment.attachment}
-                          target="_blank"
-                          rel="noopener noreferrer"
+                        <button
+                          onClick={()=> handleCommentImageClick(comment.attachment)}
                           className="text-blue-500 hover:underline"
                         >
                           View
-                        </a>
+                        </button>
                       ) : (
                         'No Attachment'
                       )}
                     </td>
-                    <td className="px-4 py-2">{new Date(comment.updatedAt).toLocaleString()}</td>
+                    {/* <td className="px-4 py-2">{new Date(comment.updatedAt).toLocaleString()}</td> */}
+                    <td className='px-4 py-2'>
+                      <button 
+                        className='bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-200'
+                        onClick={()=>handleEdit(comment.id)}
+                      >Edit
+                      </button></td>
                   </tr>
+                  
                 ))
               }
 
