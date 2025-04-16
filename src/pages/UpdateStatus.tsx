@@ -10,7 +10,7 @@ export const UpdateStatus = () => {
     const { id } = useParams<{ id?: string }>();
     const { ticketData } = useFetchTicketById(id || '');
 
-     const { mutate, isPending, isError, isSuccess, error, data } = useUpdateTicketStatus();
+     const { mutate, isPending } = useUpdateTicketStatus();
 
     const {
         categoriesLoading,

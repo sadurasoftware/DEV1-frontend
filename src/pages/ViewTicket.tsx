@@ -3,9 +3,9 @@ import { useFetchTicketById } from '@/hooks/useFetchTicketById';
 import { Label } from '@radix-ui/react-label';
 import { useState } from 'react';
 import { useCreateComment } from '@/hooks/useCreateComment';
-import { useUpdateTicketStatus } from '@/hooks/useUpdateTicketStatus';
+// import { useUpdateTicketStatus } from '@/hooks/useUpdateTicketStatus';
 import { useFetchCommentsByTicketId } from '@/hooks/useFetchCommentsByTicketId';
-import { useQueryClient } from '@tanstack/react-query';
+import { useDeleteComment } from '@/hooks/useDeleteComment';
 
 export const ViewTicket = () => {
   const { id } = useParams<{ id?: string }>()
@@ -21,17 +21,18 @@ export const ViewTicket = () => {
     updatedBy: 0,
   });
 
-  // const queryClient = useQueryClient()
+
   const navigate = useNavigate()
 
   const { ticketData } = useFetchTicketById(id || '')
   const { createCommentMutation } = useCreateComment()
-  const { mutate } = useUpdateTicketStatus()
-  const { commentsLoading, commentsData, refetch } = useFetchCommentsByTicketId(id || '')
+  // const { mutate } = useUpdateTicketStatus()
+  const { commentsLoading, commentsData } = useFetchCommentsByTicketId(id || '')
+  const { commentDelete, isCommentError, commentError, deleteSuccess } = useDeleteComment()
 
-  const [ticket, setTicket] = useState<any>({
-    status: ticketData?.ticket?.status || 'Open',
-  });
+  // const [ticket, setTicket] = useState<any>({
+  //   status: ticketData?.ticket?.status || 'Open',
+  // });
   const [imageURL, setImageURL] = useState<string>('')
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -46,13 +47,15 @@ export const ViewTicket = () => {
     }))
   }
 
-  const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const { name, value } = e.target
-    setTicket((prevData: any) => ({
-      ...prevData,
-      [name]: value,
-    }))
-  }
+  // const handleStatusChange = async(e: React.ChangeEvent<HTMLSelectElement>) => {
+  //   const { name, value } = e.target
+  //   setTicket((prevData: any) => ({
+  //     ...prevData,
+  //     [name]: value,
+  //   }))
+
+  //   await mutate({ id, status: ticket.status })
+  // }
 
   const handleSubmit = async () => {
     if (!id) return
@@ -60,7 +63,7 @@ export const ViewTicket = () => {
 
     try {
 
-      await mutate({ id, status: ticket.status })
+      // await mutate({ id, status: ticket.status })
 
 
       const formData = new FormData();
@@ -74,8 +77,8 @@ export const ViewTicket = () => {
 
       await createCommentMutation({ ticketId: id, data: formData })
 
-      await refetch()
-      // await queryClient.invalidateQueries({queryKey:['comments', id]});
+
+
 
       setCommentData(
         {
@@ -100,9 +103,8 @@ export const ViewTicket = () => {
     }
   };
 
-  const handleCommentImageClick = (attachmentUrl:string) => {
-    if(attachmentUrl)
-    {
+  const handleCommentImageClick = (attachmentUrl: string) => {
+    if (attachmentUrl) {
       setImageURL(attachmentUrl)
       setIsModalOpen(true)
     }
@@ -118,8 +120,12 @@ export const ViewTicket = () => {
     }
   };
 
-  const handleEdit = (id:string) => {
+  const handleEdit = (id: string) => {
     navigate(`/comments/${id}`)
+  }
+
+  const handleDelete = (id: any) => {
+    commentDelete(id)
   }
 
   const closeModal = () => {
@@ -196,9 +202,9 @@ export const ViewTicket = () => {
           <table className="min-w-full table-auto border-t mt-5">
             <thead>
               <tr>
-              <td colSpan={5} className="px-4 py-2 text-gray-800 bg-gray-300">Ticket History</td>
+                <td colSpan={5} className="px-4 py-2 text-gray-800 bg-gray-300">Ticket History</td>
               </tr>
-              
+
             </thead>
             <tbody className='border-t'>
               <tr className='border-t px-4 py-2 text-left text-gray-600 bg-gray-100'>
@@ -208,6 +214,7 @@ export const ViewTicket = () => {
                 <th className="px-4 py-2">Attachment</th>
                 {/* <th className="px-4 py-2">Date</th> */}
                 <th className="px-4 py-2">Edit</th>
+                <th className="px-4 py-2">Delete</th>
               </tr>
 
               {!commentsLoading && commentsData?.comments?.length > 0 &&
@@ -219,7 +226,7 @@ export const ViewTicket = () => {
                     <td className="px-4 py-2">
                       {comment.attachment ? (
                         <button
-                          onClick={()=> handleCommentImageClick(comment.attachment)}
+                          onClick={() => handleCommentImageClick(comment.attachment)}
                           className="text-blue-500 hover:underline"
                         >
                           View
@@ -230,19 +237,29 @@ export const ViewTicket = () => {
                     </td>
                     {/* <td className="px-4 py-2">{new Date(comment.updatedAt).toLocaleString()}</td> */}
                     <td className='px-4 py-2'>
-                      <button 
+                      <button
                         className='bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-200'
-                        onClick={()=>handleEdit(comment.id)}
+                        onClick={() => handleEdit(comment.id)}
                       >Edit
                       </button></td>
+                    <td className='px-4 py-2'>
+                      <button
+                        className='bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition duration-200'
+                        onClick={() => handleDelete(comment.id)}
+                      >Delete
+                      </button></td>
                   </tr>
-                  
+
                 ))
               }
 
 
             </tbody>
           </table>
+        </div>
+        <div>
+          {deleteSuccess && <h4>Comment deleted Successfully..!</h4>}
+
         </div>
         <div className="mt-4">
           <table className="min-w-full table-auto border-t">
@@ -282,7 +299,7 @@ export const ViewTicket = () => {
                   </div>
                 </td>
               </tr>
-              <tr className="border-t px-4 py-2 text-left text-gray-600 bg-gray-100">
+              {/* <tr className="border-t px-4 py-2 text-left text-gray-600 bg-gray-100">
                 <th className="px-4 py-2">Status</th>
                 <td className="px-4 py-2">
                   <div>
@@ -304,11 +321,11 @@ export const ViewTicket = () => {
                     </select>
                   </div>
                 </td>
-              </tr>
+              </tr> */}
             </tbody>
           </table>
         </div>
-
+        {isCommentError && <h4 className='text-center'>{commentError}</h4>}
         <button
           onClick={handleSubmit}
           className="bg-green-600 text-white px-4 py-2 mt-4 rounded hover:bg-green-700"
@@ -317,14 +334,14 @@ export const ViewTicket = () => {
           {isSubmitting ? 'Submitting...' : 'Submit'}
         </button>
 
-        
-          <Link
-            to="/tickets"
-            className="bg-blue-500 text-white mx-3 px-4 py-2 rounded-md hover:bg-blue-600 transition duration-200"
-          >
-            Back
-          </Link>
-        
+
+        <Link
+          to="/tickets"
+          className="bg-blue-500 text-white mx-3 px-4 py-2 rounded-md hover:bg-blue-600 transition duration-200"
+        >
+          Back
+        </Link>
+
       </div>
     </div>
   );

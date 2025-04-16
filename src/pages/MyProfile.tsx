@@ -43,7 +43,7 @@ export const MyProfile = () => {
                 </div>
                 }
                 <div className='text-center'>
-                <Link to="/super-admin" className="bg-blue-500 text-white px-4 py-2 mt-3   rounded-md hover:bg-blue-600 transition duration-200">
+                <Link to="/dashboard" className="bg-blue-500 text-white px-4 py-2 mt-3   rounded-md hover:bg-blue-600 transition duration-200">
                                 Back
                             </Link>
                 </div>
