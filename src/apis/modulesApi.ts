@@ -1,10 +1,11 @@
+import api from '@/lib/api'
 import { useLoginInfoStore } from '@/store/useLoginInfoStore'
 import { moduleName, modulesResponse } from '@/types/moduleTypes'
-import axios, { AxiosResponse } from 'axios'
+import { AxiosResponse } from 'axios'
 
 export const fetchModules = async (): Promise<modulesResponse> => {
   const token = useLoginInfoStore.getState().token
-  const response = await axios.get('http://localhost:3000/api/modules/get', {
+  const response = await api.get('/api/modules/get', {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -16,8 +17,8 @@ export const addModule = async (
   module: moduleName
 ): Promise<modulesResponse> => {
   const token = useLoginInfoStore.getState().token
-  const res: AxiosResponse<modulesResponse> = await axios.post(
-    'http://localhost:3000/api/modules/create',
+  const res: AxiosResponse<modulesResponse> = await api.post(
+    '/api/modules/create',
     {
       name: module.name,
     },
@@ -40,8 +41,8 @@ export const deleteModuleById = async (
 ): Promise<modulesResponse> => {
   const token = useLoginInfoStore.getState().token
   console.log(`ModuleId:${moduleId}\tToken:${token}`)
-  const res: AxiosResponse<modulesResponse> = await axios.delete(
-    `http://localhost:3000/api/role-module-permissions/delete-module/${moduleId}`,
+  const res: AxiosResponse<modulesResponse> = await api.delete(
+    `/api/role-module-permissions/delete-module/${moduleId}`,
     {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -59,8 +60,8 @@ export const updateModule = async (
   name: string
 ): Promise<modulesResponse> => {
   const token = useLoginInfoStore.getState().token
-  const response = await axios.put(
-    `http://localhost:3000/api/modules/update/${id}`,
+  const response = await api.put(
+    `/api/modules/update/${id}`,
     { name },
     {
       headers: {

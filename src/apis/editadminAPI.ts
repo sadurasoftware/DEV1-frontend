@@ -1,10 +1,9 @@
-import axios from 'axios'
 import { UpdateAdminData } from '../types/editadminTypes'
-
+import api from '@/lib/api'
 export const updateAdmin = async (userId: number, data: UpdateAdminData) => {
   try {
-    const response = await axios.put(
-      `http://localhost:3000/api/admin/${userId}`,
+    const response = await api.put(
+      `/api/admin/${userId}`,
       data
     )
     return response.data
