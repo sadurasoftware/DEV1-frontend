@@ -1,12 +1,13 @@
 import { createComment } from "@/apis/commentsApi";
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import axios, { AxiosError } from "axios";
 
 export const useCreateComment  = () => {
+  const queryClient = useQueryClient()
     const { mutate:createCommentMutation, isPending, isError, isSuccess, error, data } = useMutation({
       mutationFn: ({data, ticketId}:{data: FormData, ticketId:string}) => createComment(data, ticketId),
-      onSuccess: (data: any) => {
-        console.log('Comment created:', data)
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['comments'] })
       },
       onError: (error: any) => {
         if (axios.isAxiosError(error)) {

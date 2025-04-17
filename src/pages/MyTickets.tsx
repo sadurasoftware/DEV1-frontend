@@ -46,7 +46,7 @@ export const MyTickets = () => {
 
     return (
         <div className="min-h-screen bg-gray-50 py-2 px-4 sm:px-6 lg:px-8">
-            <Link to='/super-admin'>Back</Link>
+            <Link to='/dashboard'>Back</Link>
             <div className="max-w-7xl mx-auto">
                 <h2 className="text-3xl font-semibold text-center text-indigo-600 mb-8">Tickets List</h2>
 

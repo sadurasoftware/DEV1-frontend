@@ -14,9 +14,9 @@ export const TicketsListPage = () => {
     });
     const debounceValue = useDebounce(filterData.search, 1000);
     const { ticketsLoading, tickets, isTicketsError, ticketsError } = useFetchAllTickets(
-        filterData.status, 
-        filterData.priority, 
-        debounceValue, 
+        filterData.status,
+        filterData.priority,
+        debounceValue,
         filterData.page
     );
     const navigate = useNavigate();
@@ -24,7 +24,7 @@ export const TicketsListPage = () => {
     useEffect(() => {
         setFilterData(prevData => ({
             ...prevData,
-            page: 1, 
+            page: 1,
         }));
     }, [filterData.status, filterData.priority, filterData.search]);
 
@@ -90,10 +90,36 @@ export const TicketsListPage = () => {
         }
     };
 
+    const openCount = tickets?.tickets.filter(ticket => ticket.status === 'Open').length;
+    const pendingCount = tickets?.tickets.filter(ticket => ticket.status === 'Pending').length;
+    const resolvedCount = tickets?.tickets.filter(ticket => ticket.status === 'Resolved').length;
+    const unassignedCount = tickets?.tickets.filter(ticket => !ticket.assignedUser).length;
+
+
     return (
         <div className="min-h-screen bg-gray-50 py-2 px-4 sm:px-6 lg:px-8">
-            <Link to = '/super-admin'>Back</Link>
-            <div className="max-w-7xl mx-auto">
+            <Link to='/dashboard' className="text-left font-bold text-blue-500">Back</Link>
+
+            <div className="max-w-7xl mx-auto mt-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                    <div className="bg-white shadow rounded-lg p-4 border-l-4 border-blue-500">
+                        <h3 className="text-sm font-medium text-gray-500">Open Tickets</h3>
+                        <p className="text-2xl font-bold text-blue-600">{openCount}</p>
+                    </div>
+                    <div className="bg-white shadow rounded-lg p-4 border-l-4 border-yellow-500">
+                        <h3 className="text-sm font-medium text-gray-500">Pending Tickets</h3>
+                        <p className="text-2xl font-bold text-yellow-600">{pendingCount}</p>
+                    </div>
+                    <div className="bg-white shadow rounded-lg p-4 border-l-4 border-green-500">
+                        <h3 className="text-sm font-medium text-gray-500">Resolved Tickets</h3>
+                        <p className="text-2xl font-bold text-green-600">{resolvedCount}</p>
+                    </div>
+                    <div className="bg-white shadow rounded-lg p-4 border-l-4 border-red-500">
+                        <h3 className="text-sm font-medium text-gray-500">Unassigned Tickets</h3>
+                        <p className="text-2xl font-bold text-red-600">{unassignedCount}</p>
+                    </div>
+                </div>
+
                 <h2 className="text-3xl font-semibold text-center text-indigo-600 mb-8">Tickets List</h2>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
@@ -169,11 +195,11 @@ export const TicketsListPage = () => {
                                             <td className="px-4 py-3 text-sm">{ticket.priority}</td>
                                             <td className="px-4 py-3 text-sm">{ticket.status}</td>
                                             <td className="px-4 py-3 text-sm"><button
-                                                        onClick={() => handleUpdateStatus(ticket.id)}
-                                                        className="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition duration-200"
-                                                    >
-                                                        Update Status
-                                                    </button></td>
+                                                onClick={() => handleUpdateStatus(ticket.id)}
+                                                className="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition duration-200"
+                                            >
+                                                Update Status
+                                            </button></td>
                                             <td className="px-4 py-3 text-sm">
                                                 {ticket.assignedUser ? (
                                                     <span>{ticket.assignedUser.firstname}</span>
