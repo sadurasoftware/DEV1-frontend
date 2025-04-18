@@ -1,7 +1,7 @@
 import api from '@/lib/api'
 import { useLoginInfoStore } from '@/store/useLoginInfoStore'
 import { categoriesResponse, categoryName } from '@/types/categoryTypes'
-import axios, { AxiosResponse } from 'axios'
+import { AxiosResponse } from 'axios'
 
 export const fetchCategories = async (): Promise<any> => {
   const token = useLoginInfoStore.getState().token

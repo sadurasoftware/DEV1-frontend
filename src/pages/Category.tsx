@@ -36,7 +36,7 @@ const Category: React.FC = () => {
 
   const handleCategorySelect = (id: number) => {
     setCategoryId(id)
-    const selectedModule = categoriesData?.find(mod => mod.id === id)
+    const selectedModule = categoriesData?.find((mod: { id: number }) => mod.id === id)
     if (selectedModule) {
       setCategoryName(selectedModule.name)
       setIsEditing(true)

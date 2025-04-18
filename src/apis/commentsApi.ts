@@ -1,4 +1,3 @@
-import axios from 'axios'
 import { useLoginInfoStore } from '../store/useLoginInfoStore'
 import api from '@/lib/api'
 
