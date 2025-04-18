@@ -1,11 +1,11 @@
-import axios from 'axios'
+import api from '@/lib/api'
 import { User } from '../types/loginType'
 import { ApiResponse } from '../types/registerTypes'
 
 export const fetchUsers = async (): Promise<User[]> => {
   try {
-    const response = await axios.get(
-      'http://localhost:3000/api/super-admin/users'
+    const response = await api.get(
+      '/api/super-admin/users'
     )
     return response.data
   } catch (error) {
@@ -15,7 +15,7 @@ export const fetchUsers = async (): Promise<User[]> => {
 }
 
 export const deleteUser = async (userId: number): Promise<ApiResponse> => {
-  const response = await axios.delete(
+  const response = await api.delete(
     `http://localhost:3000/api/super-admin/users/${userId}`
   )
   return response.data

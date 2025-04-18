@@ -1,6 +1,7 @@
 import { RoleModulePermission } from '@/types/roleModulePermissionType'
-import axios, { AxiosResponse } from 'axios'
+import { AxiosResponse } from 'axios'
 import { useLoginInfoStore } from '../store/useLoginInfoStore'
+import api from '@/lib/api'
 
 export const RoleModulePermissionUpdate = async (
   data: RoleModulePermission,
@@ -9,8 +10,8 @@ export const RoleModulePermissionUpdate = async (
   const token = useLoginInfoStore.getState().token
 
   try {
-    const res: AxiosResponse<RoleModulePermission> = await axios.put(
-      `http://localhost:3000/api/role-module-permissions/update/${id}`,
+    const res: AxiosResponse<RoleModulePermission> = await api.put(
+      `/api/role-module-permissions/update/${id}`,
       data,
       {
         headers: {

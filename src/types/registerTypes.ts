@@ -1,10 +1,20 @@
 export type User = {
-  id: number
+  // id: number
   firstname: string
   lastname: string
   email: string
   password: string
   confirmPassword: string
+  terms: boolean
+  role: string
+  department: string
+}
+
+export type SendUser = {
+  firstname: string
+  lastname: string
+  email: string
+  password: string
   terms: boolean
   role: string
   department: string

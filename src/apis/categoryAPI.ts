@@ -1,10 +1,11 @@
+import api from '@/lib/api'
 import { useLoginInfoStore } from '@/store/useLoginInfoStore'
 import { categoriesResponse, categoryName } from '@/types/categoryTypes'
 import axios, { AxiosResponse } from 'axios'
 
 export const fetchCategories = async (): Promise<any> => {
   const token = useLoginInfoStore.getState().token
-  const response = await axios.get('http://localhost:3000/api/category/get', {
+  const response = await api.get('/api/category/get', {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -16,8 +17,8 @@ export const addCategory = async (
   category: categoryName
 ): Promise<categoriesResponse> => {
   const token = useLoginInfoStore.getState().token
-  const res: AxiosResponse<categoriesResponse> = await axios.post(
-    'http://localhost:3000/api/category/create',
+  const res: AxiosResponse<categoriesResponse> = await api.post(
+    '/api/category/create',
     {
       name: category.name,
     },
@@ -40,8 +41,8 @@ export const deleteCategoryById = async (
 ): Promise<categoriesResponse> => {
   const token = useLoginInfoStore.getState().token
   console.log(`Category Id:${id}\tToken:${token}`)
-  const res: AxiosResponse<categoriesResponse> = await axios.delete(
-    `http://localhost:3000/api/category/delete/${id}`,
+  const res: AxiosResponse<categoriesResponse> = await api.delete(
+    `/api/category/delete/${id}`,
     {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -59,8 +60,8 @@ export const updateCategory = async (
   name: string
 ): Promise<categoriesResponse> => {
   const token = useLoginInfoStore.getState().token
-  const response = await axios.put(
-    `http://localhost:3000/api/category/update/${id}`,
+  const response = await api.put(
+    `/api/category/update/${id}`,
     { name },
     {
       headers: {

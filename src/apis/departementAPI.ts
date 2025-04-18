@@ -1,10 +1,11 @@
 import { useLoginInfoStore } from '@/store/useLoginInfoStore'
 import { departmentName, departmentsResponse } from '@/types/departmentTypes'
 import axios, { AxiosResponse } from 'axios'
+import api from '@/lib/api'
 
 export const fetchDepartments = async (): Promise<departmentsResponse> => {
   const token = useLoginInfoStore.getState().token
-  const response = await axios.get('http://localhost:3000/api/department/get', {
+  const response = await api.get('/api/department/get', {
     headers: {
       Authorization: `Bearer ${token}`,
     },

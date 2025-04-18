@@ -1,12 +1,13 @@
+import api from '@/lib/api'
 import { useLoginInfoStore } from '@/store/useLoginInfoStore'
 import { permissionName, permissionsResponse } from '@/types/permissionsTypes'
-import axios, { AxiosResponse } from 'axios'
+import { AxiosResponse } from 'axios'
 
 export const fetchPermissions = async (): Promise<permissionsResponse> => {
   const token = useLoginInfoStore.getState().token
   try {
-    const response = await axios.get(
-      'http://localhost:3000/api/permissions/get',
+    const response = await api.get(
+      '/api/permissions/get',
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -24,8 +25,8 @@ export const addPermission = async (
   permission: permissionName
 ): Promise<permissionsResponse> => {
   const token = useLoginInfoStore.getState().token
-  const res: AxiosResponse<permissionsResponse> = await axios.post(
-    'http://localhost:3000/api/permissions/create',
+  const res: AxiosResponse<permissionsResponse> = await api.post(
+    '/api/permissions/create',
     {
       name: permission.name,
     },
@@ -47,8 +48,8 @@ export const deletePermissionById = async (
   permissionId: number
 ): Promise<permissionsResponse> => {
   const token = useLoginInfoStore.getState().token
-  const res: AxiosResponse<permissionsResponse> = await axios.delete(
-    `http://localhost:3000/api/role-module-permissions/delete-permission/${permissionId}`,
+  const res: AxiosResponse<permissionsResponse> = await api.delete(
+    `/api/role-module-permissions/delete-permission/${permissionId}`,
     {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -66,8 +67,8 @@ export const updatePermission = async (
   name: string
 ): Promise<permissionsResponse> => {
   const token = useLoginInfoStore.getState().token
-  const response = await axios.put(
-    `http://localhost:3000/api/permissions/update/${id}`,
+  const response = await api.put(
+    `/api/permissions/update/${id}`,
     { name },
     {
       headers: {

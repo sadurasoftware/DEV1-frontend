@@ -6,7 +6,7 @@ const Admins = () => {
   const navigate = useNavigate()
 
   const handleBack = () => {
-    navigate('/super-admin')
+    navigate('/dashboard')
   }
 
   return (

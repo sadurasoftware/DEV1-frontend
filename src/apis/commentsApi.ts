@@ -1,10 +1,11 @@
 import axios from 'axios'
 import { useLoginInfoStore } from '../store/useLoginInfoStore'
+import api from '@/lib/api'
 
 export const createComment = async (data: FormData, ticketId:string): Promise<any> => {
   const token = useLoginInfoStore.getState().token
-  const response = await axios.post<any>(
-    `http://localhost:3000/api/comments/${ticketId}`,
+  const response = await api.post<any>(
+    `/api/comments/${ticketId}`,
     data,
     {
       headers: {
@@ -17,23 +18,21 @@ export const createComment = async (data: FormData, ticketId:string): Promise<an
 }
 
 export const fetchCommentsByTicketId = async(ticketId:string) => {
- const response = await axios.get(`http://localhost:3000/api/comments/get/${ticketId}`)
+ const response = await api.get(`/api/comments/get/${ticketId}`)
   return response.data
 }
 
 export const fetchCommentById = async(commentId:any) =>
 {
-  const response = await axios.get(`http://localhost:3000/api/comments/${commentId}`)
+  const response = await api.get(`/api/comments/${commentId}`)
   return response.data
 }
 
 export const updateComment = async (id: any, commentText: any) => {
-  console.log(`Id:${id}`)
-  console.log(`commentText:${commentText}`)
   const token = useLoginInfoStore.getState().token
   try {
-    const response = await axios.put(
-      `http://localhost:3000/api/comments/update/${id}`,
+    const response = await api.put(
+      `/api/comments/update/${id}`,
       {commentText}
       ,
       {
@@ -52,7 +51,7 @@ export const updateComment = async (id: any, commentText: any) => {
 
 export const deleteComment = async(commentId:any)  => {
   const token = useLoginInfoStore.getState().token
-  const response = await axios.delete(`http://localhost:3000/api/comments/delete/${commentId}`,
+  const response = await api.delete(`/api/comments/delete/${commentId}`,
      {
       headers: {
         Authorization: `Bearer ${token}`,

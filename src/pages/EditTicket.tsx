@@ -140,7 +140,7 @@ export const EditTicket = () => {
                                 {updateTicketPending ? 'Updating Ticket...' : 'Update Ticket'}
                             </Button>
 
-                            <Link to="/tickets" className="bg-gray-500 text-white px-6 py-2 rounded-md hover:bg-gray-600 transition duration-300 ease-in-out shadow-lg">
+                            <Link to={`/my-tickets/${ticketData?.ticket?.user?.id}`} className="bg-gray-500 text-white px-6 py-2 rounded-md hover:bg-gray-600 transition duration-300 ease-in-out shadow-lg">
                                 Back
                             </Link>
                         </div>

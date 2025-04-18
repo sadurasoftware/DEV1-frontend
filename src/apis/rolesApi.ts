@@ -1,11 +1,12 @@
 import { useLoginInfoStore } from '@/store/useLoginInfoStore'
 import { roleName, rolesResponse } from '@/types/roleTypes'
 import axios, { AxiosResponse } from 'axios'
+import api from '@/lib/api'
 
 export const fetchRoles = async (): Promise<rolesResponse> => {
   const token = useLoginInfoStore.getState().token
   console.log(token)
-  const response = await axios.get('http://localhost:3000/api/roles/get', {
+  const response = await api.get('/api/roles/get', {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -15,8 +16,8 @@ export const fetchRoles = async (): Promise<rolesResponse> => {
 
 export const addRole = async (role: roleName): Promise<rolesResponse> => {
   const token = useLoginInfoStore.getState().token
-  const res: AxiosResponse<rolesResponse> = await axios.post(
-    'http://localhost:3000/api/roles/create',
+  const res: AxiosResponse<rolesResponse> = await api.post(
+    '/api/roles/create',
     {
       name: role.name,
     },
@@ -38,8 +39,8 @@ export const deleteRoleById = async (
 ): Promise<rolesResponse> => {
   const token = useLoginInfoStore.getState().token
   console.log('RoleId:${roleId}\tToken:${token}')
-  const res: AxiosResponse<rolesResponse> = await axios.delete(
-    `http://localhost:3000/api/role-module-permissions/delete-role/${roleId}`,
+  const res: AxiosResponse<rolesResponse> = await api.delete(
+    `/api/role-module-permissions/delete-role/${roleId}`,
     {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -57,8 +58,8 @@ export const updateRole = async (
   name: string
 ): Promise<rolesResponse> => {
   const token = useLoginInfoStore.getState().token
-  const response = await axios.put(
-    `http://localhost:3000/api/roles/update/${id}`,
+  const response = await api.put(
+    `/api/roles/update/${id}`,
     { name },
     {
       headers: {

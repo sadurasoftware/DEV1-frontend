@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query'
-import { User, ApiResponse, ErrorResponse } from '../types/registerTypes'
+import { ApiResponse, ErrorResponse, SendUser } from '../types/registerTypes'
 import { registerUser } from '../apis/registerAPI'
 import axios, { AxiosError } from 'axios'
 // import useThemeStore from '../store/themeStore';
@@ -8,7 +8,7 @@ import axios, { AxiosError } from 'axios'
 export const useRegisterMutation = () => {
   // const { setTheme } = useThemeStore();
   const { mutate, isPending, isError, isSuccess, error, data } = useMutation({
-    mutationFn: (user: User) => registerUser(user),
+    mutationFn: (user: SendUser) => registerUser(user),
     onSuccess: (data: ApiResponse) => {
       console.log('User Registered:', data)
 

@@ -1,10 +1,10 @@
-import axios from 'axios'
 import { User } from '../types/loginType'
+import api from '@/lib/api'
 
 export const fetchAdmins = async (): Promise<User[]> => {
   try {
-    const response = await axios.get(
-      'http://localhost:3000/api/super-admin/admins'
+    const response = await api.get(
+      '/api/super-admin/admins'
     )
     return response.data
   } catch (error) {

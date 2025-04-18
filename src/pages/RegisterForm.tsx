@@ -21,7 +21,7 @@ const RegisterForm: React.FC = () => {
   const { theme } = useThemeStore()
   const { user } = useLoginInfoStore()
   const [formData, setFormData] = useState<User>({
-    id: 0,
+    // id: 0,
     firstname: '',
     lastname: '',
     email: '',
@@ -53,7 +53,7 @@ const RegisterForm: React.FC = () => {
       })
     } else {
       setPasswordCondition({
-        minLength: password.length >= 6,
+        minLength: password.length >= 8,
         maxLength: password.length <= 20,
         hasUpperCase: /[A-Z]/.test(password),
         hasNumber: /[0-9]/.test(password),
@@ -118,13 +118,21 @@ const RegisterForm: React.FC = () => {
         role: 'user',
       }))
     }
-
+     const newFormData = {
+      firstname: formData.firstname,
+            lastname: formData.lastname,
+            email: formData.email,
+            password: formData.password,
+            terms: formData.terms,
+            role: formData.role,
+            department: formData.department,
+     }
     try {
       registerValidation.parse(formData)
-      mutate(formData, {
+      mutate(newFormData, {
         onSuccess: () => {
           setFormData({
-            id: 0,
+            // id: 0,
             firstname: '',
             lastname: '',
             email: '',

@@ -9,7 +9,7 @@ const Users = () => {
   const navigate = useNavigate()
 
   const handleBack = () => {
-    navigate('/super-admin')
+    navigate('/dashboard')
   }
 
   // const handleDelete = async (userId: number) => {
@@ -40,7 +40,6 @@ const Users = () => {
           Back to Dashboard
         </button>
 
-        {/* Users Table */}
         {usersLoading && <p className="text-gray-500">Loading users...</p>}
         {isUsersError && (
           <p className="text-red-600">

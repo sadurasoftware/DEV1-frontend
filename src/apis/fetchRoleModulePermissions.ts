@@ -1,14 +1,15 @@
 import { RoleModulePermission } from '@/types/roleModulePermissionType'
-import axios, { AxiosResponse } from 'axios'
+import { AxiosResponse } from 'axios'
 import { useLoginInfoStore } from '../store/useLoginInfoStore'
+import api from '@/lib/api'
 
 export const RoleModulePermissionFetch = async (
   roleId: number
 ): Promise<RoleModulePermission> => {
   const token = useLoginInfoStore.getState().token
   try {
-    const res: AxiosResponse<RoleModulePermission> = await axios.get(
-      `http://localhost:3000/api/role-module-permissions/modulespermissionsByRole`,
+    const res: AxiosResponse<RoleModulePermission> = await api.get(
+      `/api/role-module-permissions/modulespermissionsByRole`,
       {
         params: { roleId },
         headers: {
