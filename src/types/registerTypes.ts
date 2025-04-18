@@ -36,3 +36,22 @@ export type PasswordType = {
   hasSpecialChar: boolean
   hasNumber: boolean
 }
+
+export type userArray = {
+  id: number,
+  firstname: string,
+  lastname: string,
+  email: string,
+  department: {
+    id: number,
+    name: string
+  }
+}
+
+export type usersResponse = {
+  message: string,
+  totalUsers: number;
+  currentPage: number;
+  totalPages: number;
+  users: userArray[];
+};

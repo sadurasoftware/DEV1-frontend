@@ -1,7 +1,9 @@
 import { z } from 'zod'
 
 export const registerValidation = z.object({
-  firstname: z.string().min(1, 'First Name is required'),
+  firstname: z.string()
+  .min(3, 'First name must be atleast 3 characters.')
+    .min(1, 'First Name is required'),
   lastname: z.string().min(1, 'Last Name is required'),
   email: z.string().email('Please enter a valid email'),
   password: z

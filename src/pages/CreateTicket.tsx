@@ -5,6 +5,7 @@ import { useFetchCategories } from '@/hooks/useFetchCategories'
 import React, { useState } from 'react'
 import { useCreateTicketMutation } from '../hooks/useCreateTicket'
 import { Ticket } from '../types/ticketTypes'
+import { Link } from 'react-router-dom'
 
 const CreateTicket: React.FC = () => {
   const [ticketData, setTicketData] = useState<Ticket>({
@@ -211,7 +212,15 @@ const CreateTicket: React.FC = () => {
               >
                 {isPending ? 'Creating Ticket...' : 'Create Ticket'}
               </Button>
+             
             </div>
+            <div className="flex gap-2 mt-4">
+            <Link 
+                className="w-full py-3 bg-cust-blue text-white dark:text-black font-semibold rounded-md hover:bg-gray transition dark:bg-gary dark:hover:bg-cust-green uppercase text-center"
+                to='/dashboard'>Back
+              </Link>
+            </div>
+            
           </div>
         </form>
 

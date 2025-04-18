@@ -6,6 +6,7 @@ import { useCreateComment } from '@/hooks/useCreateComment';
 // import { useUpdateTicketStatus } from '@/hooks/useUpdateTicketStatus';
 import { useFetchCommentsByTicketId } from '@/hooks/useFetchCommentsByTicketId';
 import { useDeleteComment } from '@/hooks/useDeleteComment';
+import { viewBackStore } from '@/store/viewBackStore';
 
 export const ViewTicket = () => {
   const { id } = useParams<{ id?: string }>()
@@ -23,7 +24,7 @@ export const ViewTicket = () => {
 
 
   const navigate = useNavigate()
-
+  const { backRoutes } = viewBackStore();
   const { ticketData } = useFetchTicketById(id || '')
   const { createCommentMutation } = useCreateComment()
   // const { mutate } = useUpdateTicketStatus()
@@ -336,7 +337,7 @@ export const ViewTicket = () => {
 
 
         <Link
-          to="/tickets"
+          to={backRoutes}
           className="bg-blue-500 text-white mx-3 px-4 py-2 rounded-md hover:bg-blue-600 transition duration-200"
         >
           Back

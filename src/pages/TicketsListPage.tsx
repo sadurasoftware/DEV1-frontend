@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useState, useEffect } from "react";
 import { useDebounce } from "@/hooks/useDebounce";
+import { viewBackStore } from "@/store/viewBackStore";
 
 export const TicketsListPage = () => {
     const [filterData, setFilterData] = useState({
@@ -20,6 +21,7 @@ export const TicketsListPage = () => {
         filterData.page
     );
     const navigate = useNavigate();
+    const {setBackRoutes} =  viewBackStore()
 
     useEffect(() => {
         setFilterData(prevData => ({
@@ -63,6 +65,7 @@ export const TicketsListPage = () => {
     };
 
     const handleViewTicket = (id: string) => {
+        setBackRoutes('/tickets'); 
         navigate(`/view-ticket/${id}`);
     };
 

@@ -4,14 +4,26 @@ import { Label } from '@/components/ui/label'
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useForgotPasswordMutation } from '../hooks/useForgotPassword'
+import { emailValidation } from '@/validation/emailValidation'
+import { z } from 'zod'
 
 export const ForgotPassword = () => {
   const [email, setEmail] = useState<string>('')
   const { mutate, isError, error, successMessage } = useForgotPasswordMutation()
+  const [ emailError, setEmailError] = useState<string>('')
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    mutate(email)
+     try {
+      emailValidation.parse({ email })
+      setEmailError('')
+      mutate(email)
+          } catch (err) {
+            if (err instanceof z.ZodError) {
+              setEmailError(err.errors[0]?.message || 'Invalid input')
+            }
+          }
+
   }
 
   return (
@@ -21,7 +33,7 @@ export const ForgotPassword = () => {
           Forgot Password
         </h2>
         <div className="space-y-4">
-          <form onSubmit={handleSubmit} className="space-y-4">
+         
             <div>
               <Label htmlFor="email" className="label">
                 Email
@@ -33,7 +45,6 @@ export const ForgotPassword = () => {
                 placeholder="Enter your email"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
-                required
               />
             </div>
             {/* <div>
@@ -54,13 +65,16 @@ export const ForgotPassword = () => {
                 {successMessage}
               </p>
             )}
+            {emailError && (
+              <p className="text-error-red text-xs mt-4 ">{emailError}</p>
+            )}
             <Button
-              type="submit"
+              onClick={handleSubmit}
               className="w-full mt-6 py-3 bg-cust-blue text-white dark:text-black font-semibold rounded-md hover:bg-cust-blue transition dark:bg-cust-green dark:hover:bg-cust-green uppercase"
             >
               Send Reset Link
             </Button>
-          </form>
+        
           <div className="pt-5 text-xs">
             <Link to="/login">
               Remember your password?
