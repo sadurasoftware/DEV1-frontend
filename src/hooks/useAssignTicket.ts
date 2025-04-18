@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { assignTicket } from "@/apis/ticketAPI";
-import axios,{AxiosError} from "axios";
+import axios from "axios";
 
 export const useAssignTicket = () =>{
     const {mutate, isPending, isError, isSuccess, error, data} = useMutation({

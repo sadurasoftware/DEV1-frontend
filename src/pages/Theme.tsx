@@ -1,7 +1,7 @@
 import useThemeStore from '../store/themeStore'
 
 const Theme: React.FC = () => {
-  const { theme, setTheme } = useThemeStore()
+  const { setTheme } = useThemeStore()
 
   const handleSetTheme = (newTheme: string) => {
     setTheme(newTheme)

@@ -1,10 +1,8 @@
 import { Link, useParams } from 'react-router-dom'
-import { useLoginInfoStore } from '../store/useLoginInfoStore'
 import { useViewUser } from '@/hooks/useViewUser'
 export const MyProfile = () => {
     const {id} = useParams();
-    const { user } = useLoginInfoStore()
-    const {isLoading, data, isError, error} = useViewUser(id);
+    const {data} = useViewUser(id);
     return (
         <>
             <div className="max-w-7xl mx-auto my-8">
