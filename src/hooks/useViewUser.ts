@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { getUser } from '../apis/viewUserApi'
 
-export const useViewUser = (id: number) => {
+export const useViewUser = (id: any) => {
   const { isLoading, data, isError, error } = useQuery<any>({
     queryKey: ['user', id],
     queryFn: () => getUser(id),

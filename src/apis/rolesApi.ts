@@ -1,6 +1,6 @@
 import { useLoginInfoStore } from '@/store/useLoginInfoStore'
 import { roleName, rolesResponse } from '@/types/roleTypes'
-import axios, { AxiosResponse } from 'axios'
+import { AxiosResponse } from 'axios'
 import api from '@/lib/api'
 
 export const fetchRoles = async (): Promise<rolesResponse> => {
