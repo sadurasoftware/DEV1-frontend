@@ -1,0 +1,16 @@
+body.light {
+  background-color: #fff;
+  color: #000;
+}
+
+body.dark {
+  background-color: #333;
+  color: #fff;
+}
+
+.switch {
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
