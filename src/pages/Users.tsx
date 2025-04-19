@@ -4,6 +4,7 @@ import { Label } from '@radix-ui/react-label'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useFetchDepartments } from '../hooks/useFetchDepartments'
+import { useDebounce } from "@/hooks/useDebounce";
 
 const Users = () => {
 
@@ -12,10 +13,11 @@ const Users = () => {
         search: '',
         departmentName: ''
     })
+    const debounceValue = useDebounce(filterData.search, 1000);
     const { departmentsLoading, departmentsData } = useFetchDepartments()
     const { usersLoading, usersData, isUsersError, usersError } = useFetchUsers(
         filterData.page,
-        filterData.search,
+        debounceValue,
         filterData.departmentName,
     )
 
@@ -25,6 +27,7 @@ const Users = () => {
             page: 1,
         }));
     }, [filterData.search, filterData.departmentName]);
+
 
     if (usersLoading) {
         return (
@@ -42,6 +45,18 @@ const Users = () => {
         );
     }
 
+    // const handleChange = (
+    //     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+    // ) => {
+    //     const { name, value } = e.target;
+    //     setFilterData(prevData => ({
+    //         ...prevData,
+    //         [name]: value,
+    //     }));
+    // };
+
+    // 
+    
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
     ) => {
@@ -88,12 +103,13 @@ const Users = () => {
                             Department
                         </Label>
                         <select
-                            id="department"
-                            name="department"
+                            id="departmentName"
+                            name="departmentName"
                             value={filterData.departmentName}
                             onChange={handleChange}
                             className={`w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500`}
                         >
+                            <option value="">All</option>
                             {!departmentsLoading ? (
                                 departmentsData?.departments.map((department, index) => (
                                     <option key={index} value={department.name}>
@@ -116,7 +132,7 @@ const Users = () => {
                             value={filterData.search}
                             onChange={handleChange}
                             className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                            placeholder="Search tickets..."
+                            placeholder="Search users..."
                         />
                     </div>
                 </div>
