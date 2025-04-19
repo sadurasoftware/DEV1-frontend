@@ -18,10 +18,7 @@ export const ResetPassword = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    console.log(token)
-    console.log(password)
     if (token && password) {
-      console.log('inside if')
       try {
         passwordValidation.parse({ password })
         setPasswordError('')
@@ -55,7 +52,7 @@ export const ResetPassword = () => {
                 placeholder="Enter your new password"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
-                required
+              
               />
               <span
                 className="absolute right-3 top-10 cursor-pointer"

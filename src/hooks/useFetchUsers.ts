@@ -1,18 +1,18 @@
 import { useQuery } from '@tanstack/react-query'
 import { fetchUsers } from '../apis/usersFetchApi'
-import { User } from '../types/loginType'
+import { usersResponse } from '../types/registerTypes'
 
-export const useFetchUsers = () => {
+export const useFetchUsers = (page:number, search:string, departmentName:string) => {
   const {
     isLoading: usersLoading,
-    data: users,
+    data: usersData,
     isError: isUsersError,
     error: usersError,
     refetch,
-  } = useQuery<User[], Error>({
+  } = useQuery<usersResponse, Error>({
     queryKey: ['users'],
-    queryFn: fetchUsers,
+    queryFn: ()=>fetchUsers(page, search, departmentName),
   })
 
-  return { usersLoading, users, isUsersError, usersError, refetch }
+  return { usersLoading, usersData, isUsersError, usersError, refetch }
 }
