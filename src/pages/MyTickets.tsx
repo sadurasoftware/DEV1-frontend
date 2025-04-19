@@ -1,16 +1,23 @@
 import { useGetTicketsByUser } from "@/hooks/useGetTicketsByUser";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useDeleteTicket } from '@/hooks/useDeleteTicket'; 
+import { viewBackStore } from "@/store/viewBackStore";
+import { useLoginInfoStore } from "@/store/useLoginInfoStore";
 
 export const MyTickets = () => {
     const { id } = useParams();
     const { ticketLoading, ticketData, isTicketError, ticketError, refetch } = useGetTicketsByUser(id || '');
     const navigate = useNavigate();
-
+    const {setBackRoutes} = viewBackStore()
     const { ticketDelete, deleteTicketPending } = useDeleteTicket();
 
+    const {user} = useLoginInfoStore();
+    console.log(`User in Store:`, user)
+
+    const userId = user?.id
     const handleViewTicket = (id: string) => {
-        navigate(`/view-ticket/${id}`)
+        setBackRoutes(`/my-tickets/${userId}`); 
+        navigate(`/view-ticket/${id}`);
     };
 
     const handleEditTicket = (id: string) => {
