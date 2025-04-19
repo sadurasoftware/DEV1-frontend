@@ -10,7 +10,7 @@ export const useFetchUsers = (page:number, search:string, departmentName:string)
     error: usersError,
     refetch,
   } = useQuery<usersResponse, Error>({
-    queryKey: ['users'],
+    queryKey: ['users', page, search, departmentName],
     queryFn: ()=>fetchUsers(page, search, departmentName),
   })
 
