@@ -134,11 +134,11 @@ const Departments: React.FC = () => {
           >
             {isPending || updateDepartmentPending
               ? isEditing
-                ? 'Updating Departemnt...'
-                : 'Creating Departemnt...'
+                ? 'Updating Department...'
+                : 'Creating Department...'
               : isEditing
-                ? 'Update Departemnt'
-                : 'Create Departemnt'}
+                ? 'Update Department'
+                : 'Create Department'}
           </button>
         </div>
       </form>

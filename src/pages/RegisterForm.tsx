@@ -29,7 +29,7 @@ const RegisterForm: React.FC = () => {
     confirmPassword: '',
     terms: false,
     role: 'user',
-    department: 'general',
+    department: 'General department',
   })
   const [passwordCondition, setPasswordCondition] = useState<PasswordType>({
     minLength: false,
