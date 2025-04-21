@@ -27,11 +27,11 @@ export const fetchCommentById = async(commentId:any) =>
   return response.data
 }
 
-export const updateComment = async (id: any, commentText: any) => {
+export const updateComment = async (ticketId: any,  commentId:any, commentText: any) => {
   const token = useLoginInfoStore.getState().token
   try {
     const response = await api.put(
-      `/api/comments/update/${id}`,
+      `/api/comments/update/${ticketId}/${commentId}`,
       {commentText}
       ,
       {

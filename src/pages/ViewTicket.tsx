@@ -14,12 +14,10 @@ export const ViewTicket = () => {
     ticketId: string;
     commentText: string;
     attachment: File | null;
-    updatedBy: number;
   }>({
     ticketId: '',
     commentText: '',
     attachment: null,
-    updatedBy: 0,
   });
 
 
@@ -69,7 +67,7 @@ export const ViewTicket = () => {
 
       const formData = new FormData();
       formData.append('commentText', commentData.commentText)
-      formData.append('updatedBy', ticketData.ticket.updatedBy)
+   
 
       if (commentData.attachment) {
         formData.append('attachment', commentData.attachment)
@@ -86,7 +84,6 @@ export const ViewTicket = () => {
           ticketId: '',
           commentText: '',
           attachment: null,
-          updatedBy: 0,
         }
       )
       console.log('Ticket status updated and comment submitted successfully.')
@@ -121,8 +118,8 @@ export const ViewTicket = () => {
     }
   };
 
-  const handleEdit = (id: string) => {
-    navigate(`/comments/${id}`)
+  const handleEdit = (commentId: string) => {
+    navigate(`/comments/${id}/${commentId}`)
   }
 
   const handleDelete = (id: any) => {
