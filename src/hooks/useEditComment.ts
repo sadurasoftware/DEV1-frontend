@@ -10,7 +10,7 @@ export const useEditComment = () => {
     error: updateCommentError,
     isSuccess: updateCommentSuccess,
   } = useMutation({
-    mutationFn: ({ id, commentText }: { id:any, commentText:any }) => updateComment(id, commentText),
+    mutationFn: ({ ticketId, commentId, commentText }: { ticketId:any, commentId:any, commentText:any }) => updateComment(ticketId, commentId, commentText),
     onSuccess: commentText => {
       console.log('comment data updated:', commentText)
     },
