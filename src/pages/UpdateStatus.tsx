@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useEffect, useState } from 'react';
 import { useUpdateTicketStatus } from '@/hooks/useUpdateTicketStatus';
+import axios from 'axios';
 
 export const UpdateStatus = () => {
     const { id } = useParams<{ id?: string }>();
@@ -160,7 +161,15 @@ export const UpdateStatus = () => {
 
                         {isSuccess && <h3>Ticket status updated successfully..!</h3>}
 
-                        {isError && <h3 className='text-red font-bold'>{error}</h3>}
+                        {isError && (
+                            <h3 className="text-red font-bold">
+                                {axios.isAxiosError(error)
+                                    ? error.response?.data?.message || "Something went wrong"
+                                    : "Something went wrong"}
+                            </h3>
+                        )}
+
+
 
                         <div className='mt-5 text-center'>
                             <button

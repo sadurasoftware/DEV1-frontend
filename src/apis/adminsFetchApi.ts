@@ -1,10 +1,10 @@
-import { User } from '../types/loginType'
 import api from '@/lib/api'
+import { adminsResponse } from '@/types/registerTypes'
 
-export const fetchAdmins = async (): Promise<User[]> => {
+export const fetchAdmins = async (page:number, search:string, departmentName:string): Promise<adminsResponse> => {
   try {
     const response = await api.get(
-      '/api/super-admin/admins'
+      `/api/user/admins?page=${page}&search=${search}&departmentName=${departmentName}`
     )
     return response.data
   } catch (error) {
