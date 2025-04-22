@@ -9,13 +9,13 @@ import { Button } from '@/components/ui/button';
 
 export const EditTicket = () => {
     const { id } = useParams<{ id?: string }>();
-    const { ticketData } = useFetchTicketById(id || ''); 
+    const { ticketData } = useFetchTicketById(id || '');
 
     const [ticket, setTicket] = useState<any>({
         title: '',
         description: '',
         priority: 'Low',
-        category: 'bug',
+        category: '',
     });
 
     useEffect(() => {
@@ -27,14 +27,14 @@ export const EditTicket = () => {
                 category: ticketData.ticket.category,
             });
         }
-    }, [ticketData]); 
+    }, [ticketData]);
 
     const {
         categoriesLoading,
         categoriesData,
     } = useFetchCategories();
 
-    const { mutate, updateTicketPending } = useUpdateTicket();
+    const { mutate, updateTicketPending, updateTicketSuccess, isTicketUpdateError, updateTicketError } = useUpdateTicket();
 
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -113,7 +113,7 @@ export const EditTicket = () => {
                             <select
                                 id="category"
                                 name="category"
-                                value={ticket.category}
+                                value={ticket.category.name}
                                 onChange={handleChange}
                                 className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                             >
@@ -130,6 +130,15 @@ export const EditTicket = () => {
                                 )}
                             </select>
                         </div>
+
+
+                        {updateTicketSuccess && <h3>Ticket updated Successfully.</h3>}
+
+                        {isTicketUpdateError && updateTicketError && (
+                            <p className='text-error-red text-center mt-4'>
+                                {(updateTicketError as Error).message}
+                            </p>
+                        )}
 
                         <div className="flex gap-4 mt-6">
                             <Button

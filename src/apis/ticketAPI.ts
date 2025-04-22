@@ -68,8 +68,8 @@ export const updateTicketStatus = async(id:string, status:string)  => {
   return response.data
 }
 
-export const getTicketsByUserId = async(id:string) =>{
-  const response = await api.get(`/api/tickets/user-tickets/${id}`)
+export const getTicketsByUserId = async(userId:string) =>{
+  const response = await api.get(`/api/tickets/user-tickets/${userId}`)
   return response.data
 }
 

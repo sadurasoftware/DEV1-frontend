@@ -6,9 +6,9 @@ import { useState, useEffect } from 'react';
 import { useEditComment } from '@/hooks/useEditComment';
 
 export const EditComment = () => {
-  const { commentId } = useParams();
+  const { ticketId, commentId } = useParams();
   const { commentLoading, commentData, isCommentError, commentError } = useFetchCommentById(commentId);
-  const { mutate, updateCommentSuccess } = useEditComment();
+  const { mutate, updateCommentSuccess, isCommentUpdateError, updateCommentError } = useEditComment();
     console.log('commentId:', commentId)
   const [comment, setComment] = useState<any>({
     id: '',
@@ -41,13 +41,24 @@ export const EditComment = () => {
     }));
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const files = e.target.files
+      if (files && files[0]) {
+        setComment((prevData: any) => ({
+          ...prevData,
+          attachment: files[0],
+        }))
+      }
+    }
+
   const handleSubmit = () => {
     if (!commentId) {
         console.error("Comment ID is missing.");
         return;
     }
     console.log('Submitting comment data:', comment.commentText);
-    mutate({ id:commentId, commentText: comment.commentText });
+    console.log('ticket id', ticketId)
+    mutate({ ticketId:ticketId, commentId:commentId, commentText: comment.commentText });
 };
 
   return (
@@ -83,13 +94,23 @@ export const EditComment = () => {
           />
         </div>
 
+        
+
         <div>
           <Label htmlFor="attachment" className="text-xs font-medium text-gray-700">
             Attachment
           </Label>
           {comment.attachment === null ? (<h4>No attachment</h4>) : (<img src={comment.attachment} alt="Attachment" height={400}/>)}
-          
+          <input
+                type="file"
+                id="attachment"
+                name="attachment"
+                onChange={handleFileChange}
+                className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
         </div>
+
+        {isCommentUpdateError && <h3 className='text-red font-bold'>{updateCommentError}</h3>}
 
         {updateCommentSuccess && <h2 className='text-center'>Comment updated successfully..!</h2>}
         <div className="pt-4 text-left">

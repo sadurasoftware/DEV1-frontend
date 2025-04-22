@@ -14,7 +14,7 @@ export type Ticket = {
   description: string
   priority: 'Low' | 'Medium' | 'High'
   category: string
-  status: 'Open' | 'Closed' | 'In Progress' | 'Resolved' | 'Pending'
+  // status: 'Open' | 'Closed' | 'In Progress' | 'Resolved' | 'Pending'
   attachment: string | File | null
 }
 

@@ -1,17 +1,17 @@
 import { useQuery } from '@tanstack/react-query'
 import { fetchAdmins } from '../apis/adminsFetchApi'
-import { User } from '../types/loginType'
+import { adminsResponse } from '@/types/registerTypes'
 
-export const useFetchAdmins = () => {
+export const useFetchAdmins = (page: number, search: string, departmentName: string) => {
   const {
     isLoading: adminLoading,
-    data: admins,
+    data: adminsData,
     isError: isAdminsError,
     error: adminsError,
-  } = useQuery<User[], Error>({
-    queryKey: ['users'],
-    queryFn: fetchAdmins,
+  } = useQuery<adminsResponse, Error>({
+    queryKey: ['admins', page, search, departmentName],
+    queryFn: () => fetchAdmins(page, search, departmentName),
   })
 
-  return { adminLoading, admins, isAdminsError, adminsError }
+  return { adminLoading, adminsData, isAdminsError, adminsError }
 }

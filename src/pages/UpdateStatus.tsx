@@ -4,13 +4,14 @@ import { useFetchCategories } from '@/hooks/useFetchCategories'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useEffect, useState } from 'react';
-import { useUpdateTicketStatus } from '@/hooks/useUpdateTicketStatus'; 
+import { useUpdateTicketStatus } from '@/hooks/useUpdateTicketStatus';
+import axios from 'axios';
 
 export const UpdateStatus = () => {
     const { id } = useParams<{ id?: string }>();
-    const { ticketData } = useFetchTicketById(id || '');
+    const { ticketData, isTicketError, ticketError } = useFetchTicketById(id || '');
 
-     const { mutate, isPending } = useUpdateTicketStatus();
+    const { mutate, isPending, isError, isSuccess, error } = useUpdateTicketStatus();
 
     const {
         categoriesLoading,
@@ -28,16 +29,15 @@ export const UpdateStatus = () => {
     };
 
     const [ticket, setTicket] = useState<any>({
-        status: ticketData?.ticket?.status || 'Open', 
+        status: ticketData?.ticket?.status || 'Open',
     });
 
     const handleUpdateStatus = () => {
-        console.log('Ticket:',ticket)
-        if(id && ticket)
-        {
-            mutate({id, status:ticket.status})
+        console.log('Ticket:', ticket)
+        if (id && ticket) {
+            mutate({ id, status: ticket.status })
         }
-       
+
     }
 
     useEffect(() => {
@@ -47,9 +47,9 @@ export const UpdateStatus = () => {
                 status: ticketData.ticket.status,
             });
         }
-    }, [ticketData]); 
+    }, [ticketData]);
 
-    
+
 
     return (
         <>
@@ -129,7 +129,7 @@ export const UpdateStatus = () => {
                             <Label htmlFor="attachments" className="text-xs font-medium">
                                 Attachments
                             </Label>
-                            <img src={ticketData?.ticket?.attachment} alt="Attachment" width={500} height={500}/>
+                            <img src={ticketData?.ticket?.attachment} alt="Attachment" width={500} height={500} />
                         </div>
 
                         <div>
@@ -151,15 +151,34 @@ export const UpdateStatus = () => {
                             </select>
 
                         </div>
-                         
+
+                        {isTicketError && ticketError && (
+                            <p className='text-error-red text-center mt-4'>
+                                {(ticketError as Error).message}
+                            </p>
+                        )}
+
+
+                        {isSuccess && <h3>Ticket status updated successfully..!</h3>}
+
+                        {isError && (
+                            <h3 className="text-red font-bold">
+                                {axios.isAxiosError(error)
+                                    ? error.response?.data?.message || "Something went wrong"
+                                    : "Something went wrong"}
+                            </h3>
+                        )}
+
+
+
                         <div className='mt-5 text-center'>
-                        <button
-                    onClick={handleUpdateStatus}
-                    className="bg-green-500 text-white px-4 py-2 mx-3 rounded-md hover:bg-green-600 transition duration-200"
-                    disabled={isPending}
-                >
-                    {isPending ? 'Updating Status...' : 'Update Status'}
-                </button>
+                            <button
+                                onClick={handleUpdateStatus}
+                                className="bg-green-500 text-white px-4 py-2 mx-3 rounded-md hover:bg-green-600 transition duration-200"
+                                disabled={isPending}
+                            >
+                                {isPending ? 'Updating Status...' : 'Update Status'}
+                            </button>
                             <Link to="/tickets" className="bg-blue-500 text-white px-4 py-2  rounded-md hover:bg-blue-600 transition duration-200">
                                 Back
                             </Link>

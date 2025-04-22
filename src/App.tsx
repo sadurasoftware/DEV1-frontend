@@ -102,8 +102,8 @@ const App: React.FC = () => {
               <Route path="/view-ticket/:id" element={<ViewTicket/>}/>
               <Route path="/edit-ticket/:id" element={<EditTicket/>}/>
               <Route path="/update-status/:id" element={<UpdateStatus/>}/>
-              <Route path="/my-tickets/:id" element={<MyTickets/>}/>
-              <Route path="/comments/:commentId" element={<EditComment/>}/>
+              <Route path="/my-tickets/:userId" element={<MyTickets/>}/>
+              <Route path="/comments/:ticketId/:commentId" element={<EditComment/>}/>
             </Route>
           </Route>
         </Routes>

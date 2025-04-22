@@ -55,3 +55,22 @@ export type usersResponse = {
   totalPages: number;
   users: userArray[];
 };
+
+export type adminArray = {
+  id: number,
+  firstname: string,
+  lastname: string,
+  email: string,
+  department: {
+    id: number,
+    name: string
+  }
+}
+
+export type adminsResponse = {
+  message: string,
+  totalUsers: number;
+  currentPage: number;
+  totalPages: number;
+  admins: adminArray[];
+};
