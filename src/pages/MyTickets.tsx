@@ -9,7 +9,7 @@ export const MyTickets = () => {
     const { ticketLoading, ticketData, isTicketError, ticketError, refetch } = useGetTicketsByUser(userId || '');
     const navigate = useNavigate();
     const {setBackRoutes} = viewBackStore()
-    const { ticketDelete, deleteTicketPending } = useDeleteTicket();
+    const { ticketDelete } = useDeleteTicket();
 
     const {user} = useLoginInfoStore();
     console.log(`User in Store:`, user)
@@ -32,15 +32,6 @@ export const MyTickets = () => {
             console.error("Error deleting ticket:", error);
         }
     };
-
-   
-    if (ticketLoading) {
-        return (
-            <div className="flex justify-center items-center min-h-screen bg-gray-100">
-                <h4 className="text-xl font-semibold text-gray-500">Loading...</h4>
-            </div>
-        );
-    }
 
 
     if (isTicketError) {
@@ -73,7 +64,7 @@ export const MyTickets = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {ticketData.tickets.map((ticket: any) => (
+                                {!ticketLoading && ticketData.tickets.map((ticket: any) => (
                                     <tr key={ticket.id} className="border-b hover:bg-indigo-50">
                                         <td className="px-4 py-3 text-sm">{ticket.title}</td>
                                         <td className="px-4 py-3 text-sm">{ticket.description}</td>
@@ -107,7 +98,7 @@ export const MyTickets = () => {
                                                 onClick={() => handleDeleteTicket(ticket.id)}
                                                 className="bg-red-400 text-white px-4 py-2 rounded-md hover:bg-red-600 transition duration-200"
                                             >
-                                                {deleteTicketPending ? "Deleting" : "Delete"}
+                                                Delete
                                             </button>
                                         </td>
                                     </tr>

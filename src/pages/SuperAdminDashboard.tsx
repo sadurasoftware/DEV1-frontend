@@ -14,15 +14,15 @@ export const SuperAdminDashboard = () => {
   }, [token, navigate])
 
   const handleShowUsers = () => {
-    navigate('/users')
+    navigate('/users/1')
   }
 
   const handleShowAdmins = () => {
-    navigate('/admins')
+    navigate('/admins/1')
   }
 
   const handleShowTickets = () => {
-    navigate('/tickets')
+    navigate(`/tickets/1`)
   }
 
 

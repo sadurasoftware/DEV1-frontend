@@ -1,5 +1,5 @@
 import { useFetchAllTickets } from "@/hooks/useFetchAllTickets";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useState, useEffect } from "react";
@@ -7,12 +7,17 @@ import { useDebounce } from "@/hooks/useDebounce";
 import { viewBackStore } from "@/store/viewBackStore";
 
 export const TicketsListPage = () => {
+    const { pageno } = useParams();
     const [filterData, setFilterData] = useState({
         status: '',
         priority: '',
         search: '',
-        page: 1
+        page: Number(pageno) || 1
     });
+    useEffect(() => {
+        setFilterData(prev => ({ ...prev, page: Number(pageno) || 1 }));
+      }, [pageno]);
+      
     const debounceValue = useDebounce(filterData.search, 1000);
     const { ticketsLoading, tickets, isTicketsError, ticketsError } = useFetchAllTickets(
         filterData.status,
@@ -21,7 +26,7 @@ export const TicketsListPage = () => {
         filterData.page
     );
     const navigate = useNavigate();
-    const {setBackRoutes} =  viewBackStore()
+    const { setBackRoutes } = viewBackStore()
 
     useEffect(() => {
         setFilterData(prevData => ({
@@ -30,13 +35,7 @@ export const TicketsListPage = () => {
         }));
     }, [filterData.status, filterData.priority, filterData.search]);
 
-    if (ticketsLoading) {
-        return (
-            <div className="flex justify-center items-center min-h-screen bg-gray-100">
-                <h4 className="text-xl font-semibold text-gray-500">Loading...</h4>
-            </div>
-        );
-    }
+   
 
     if (isTicketsError) {
         return (
@@ -65,33 +64,25 @@ export const TicketsListPage = () => {
     };
 
     const handleViewTicket = (id: string) => {
-        setBackRoutes('/tickets'); 
+        setBackRoutes('/tickets/1');
         navigate(`/view-ticket/${id}`);
     };
-
-    // const handleEditTicket = (id: string) => {
-    //     navigate(`/edit-ticket/${id}`);
-    // };
 
     const totalPages = tickets?.totalPages || 1;
 
     const handleNextPage = () => {
         if (filterData.page < totalPages) {
-            setFilterData(prevData => ({
-                ...prevData,
-                page: prevData.page + 1,
-            }));
+          navigate(`/tickets/${filterData.page + 1}`);
         }
-    };
-
-    const handlePreviousPage = () => {
+      };
+      
+      const handlePreviousPage = () => {
         if (filterData.page > 1) {
-            setFilterData(prevData => ({
-                ...prevData,
-                page: prevData.page - 1,
-            }));
+          navigate(`/tickets/${filterData.page - 1}`);
         }
-    };
+      };
+      
+      
 
     const openCount = tickets?.tickets.filter(ticket => ticket.status === 'Open').length;
     const pendingCount = tickets?.tickets.filter(ticket => ticket.status === 'Pending').length;
@@ -173,7 +164,16 @@ export const TicketsListPage = () => {
                     </div>
                 </div>
 
-                {tickets && tickets.tickets.length > 0 ? (
+                {/* if (ticketsLoading) {
+        return (
+                <div className="flex justify-center items-center min-h-screen bg-gray-100">
+                    <h4 className="text-xl font-semibold text-gray-500">Loading...</h4>
+                </div>
+                ); */}
+    {/* } */}
+
+    
+                { !ticketsLoading && tickets && tickets.tickets.length > 0 ? (
                     <>
                         <div className="overflow-x-auto bg-white shadow-lg rounded-lg">
                             <table className="min-w-full table-auto">
