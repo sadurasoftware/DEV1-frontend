@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { useState, useEffect } from "react";
 import { useDebounce } from "@/hooks/useDebounce";
 import { viewBackStore } from "@/store/viewBackStore";
+import { useFetchTicketsCount } from "@/hooks/useFetchTicketsCount";
 
 export const TicketsListPage = () => {
     const { pageno } = useParams();
@@ -25,6 +26,10 @@ export const TicketsListPage = () => {
         debounceValue,
         filterData.page
     );
+
+    const{ ticketsCountData, isTicketsCountError, ticketsCountError} =  useFetchTicketsCount()
+
+    
     const navigate = useNavigate();
     const { setBackRoutes } = viewBackStore()
 
@@ -84,34 +89,36 @@ export const TicketsListPage = () => {
       
       
 
-    const openCount = tickets?.tickets.filter(ticket => ticket.status === 'Open').length;
-    const pendingCount = tickets?.tickets.filter(ticket => ticket.status === 'Pending').length;
-    const resolvedCount = tickets?.tickets.filter(ticket => ticket.status === 'Resolved').length;
-    const unassignedCount = tickets?.tickets.filter(ticket => !ticket.assignedUser).length;
+    // const openCount = tickets?.tickets.filter(ticket => ticket.status === 'Open').length;
+    // const pendingCount = tickets?.tickets.filter(ticket => ticket.status === 'Pending').length;
+    // const resolvedCount = tickets?.tickets.filter(ticket => ticket.status === 'Resolved').length;
+    // const unassignedCount = tickets?.tickets.filter(ticket => !ticket.assignedUser).length;
 
 
     return (
         <div className="min-h-screen bg-gray-50 py-2 px-4 sm:px-6 lg:px-8">
             <Link to='/dashboard' className="text-left font-bold text-blue-500">Back</Link>
-
+            
             <div className="max-w-7xl mx-auto mt-4">
+               
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                     <div className="bg-white shadow rounded-lg p-4 border-l-4 border-blue-500">
                         <h3 className="text-sm font-medium text-gray-500">Open Tickets</h3>
-                        <p className="text-2xl font-bold text-blue-600">{openCount}</p>
+                        <p className="text-2xl font-bold text-blue-600">{ticketsCountData?.openTickets}</p>
+                    </div>
+                    <div className="bg-white shadow rounded-lg p-4 border-l-4 border-red-500">
+                        <h3 className="text-sm font-medium text-gray-500">InProgress Tickets</h3>
+                        <p className="text-2xl font-bold text-red-600">{ticketsCountData?.inProgressTickets}</p>
                     </div>
                     <div className="bg-white shadow rounded-lg p-4 border-l-4 border-yellow-500">
                         <h3 className="text-sm font-medium text-gray-500">Pending Tickets</h3>
-                        <p className="text-2xl font-bold text-yellow-600">{pendingCount}</p>
+                        <p className="text-2xl font-bold text-yellow-600">{ticketsCountData?.pendingTickets}</p>
                     </div>
                     <div className="bg-white shadow rounded-lg p-4 border-l-4 border-green-500">
                         <h3 className="text-sm font-medium text-gray-500">Resolved Tickets</h3>
-                        <p className="text-2xl font-bold text-green-600">{resolvedCount}</p>
+                        <p className="text-2xl font-bold text-green-600">{ticketsCountData?.resolvedTickets}</p>
                     </div>
-                    <div className="bg-white shadow rounded-lg p-4 border-l-4 border-red-500">
-                        <h3 className="text-sm font-medium text-gray-500">Unassigned Tickets</h3>
-                        <p className="text-2xl font-bold text-red-600">{unassignedCount}</p>
-                    </div>
+                    
                 </div>
 
                 <h2 className="text-3xl font-semibold text-center text-indigo-600 mb-8">Tickets List</h2>
@@ -163,15 +170,6 @@ export const TicketsListPage = () => {
                         />
                     </div>
                 </div>
-
-                {/* if (ticketsLoading) {
-        return (
-                <div className="flex justify-center items-center min-h-screen bg-gray-100">
-                    <h4 className="text-xl font-semibold text-gray-500">Loading...</h4>
-                </div>
-                ); */}
-    {/* } */}
-
     
                 { !ticketsLoading && tickets && tickets.tickets.length > 0 ? (
                     <>
@@ -186,8 +184,6 @@ export const TicketsListPage = () => {
                                         <th className="px-4 py-3 text-sm font-semibold text-gray-600">Update Status</th>
                                         <th className="px-4 py-3 text-sm font-semibold text-gray-600">Assigned To</th>
                                         <th className="px-4 py-3 text-sm font-semibold text-gray-600">View</th>
-                                        {/* <th className="px-4 py-3 text-sm font-semibold text-gray-600">Edit</th> */}
-
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -223,14 +219,6 @@ export const TicketsListPage = () => {
                                                     View Details
                                                 </button>
                                             </td>
-                                            {/* <td className="px-4 py-3 text-sm">
-                                                <button
-                                                    onClick={() => handleEditTicket(ticket.id)}
-                                                    className="bg-yellow-400 text-white px-4 py-2 rounded-md hover:bg-yellow-600 transition duration-200"
-                                                >
-                                                    Edit
-                                                </button>
-                                            </td> */}
                                         </tr>
                                     ))}
                                 </tbody>
@@ -258,6 +246,7 @@ export const TicketsListPage = () => {
                     <div className="text-center text-lg text-gray-600 mt-6">No tickets available</div>
                 )}
             </div>
+            {isTicketsCountError && <p>{ticketsCountError?.message}</p>}
         </div>
     );
 };

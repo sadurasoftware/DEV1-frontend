@@ -30,6 +30,7 @@ export const ViewTicket = () => {
   const { commentDelete, isCommentError, commentError, deleteSuccess } = useDeleteComment()
 
   const [imageURL, setImageURL] = useState<string>('')
+  const [imageURLs, setImageURLs] = useState<string[]>([])
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -51,7 +52,7 @@ export const ViewTicket = () => {
 
       const formData = new FormData();
       formData.append('commentText', commentData.commentText)
-   
+
 
       if (commentData.attachment) {
         formData.append('attachment', commentData.attachment)
@@ -79,11 +80,12 @@ export const ViewTicket = () => {
   };
 
   const handleImageClick = () => {
-    if (ticketData?.ticket?.attachment) {
-      setImageURL(ticketData.ticket.attachment)
+    if (ticketData?.ticket?.attachments?.length) {
+      const urls = ticketData.ticket.attachments.map((att: { url: any; }) => att.url)
+      setImageURLs(urls)
       setIsModalOpen(true)
     }
-  };
+  }
 
   const handleCommentImageClick = (attachmentUrl: string) => {
     if (attachmentUrl) {
@@ -158,7 +160,7 @@ export const ViewTicket = () => {
                   >
                     Click here to view attachment
                   </button>
-                  {isModalOpen && (
+                  {/* {isModalOpen && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
                       <div className="bg-white p-4 rounded-lg max-w-lg relative">
                         <button
@@ -174,7 +176,26 @@ export const ViewTicket = () => {
                         />
                       </div>
                     </div>
+                  )} */}
+                  {ticketData?.ticket?.attachments.length > 0 ? (
+                    isModalOpen && (
+                      <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                        <div className="bg-white p-4 rounded-lg max-w-4xl w-full relative overflow-y-auto max-h-screen">
+                          <button onClick={closeModal} className="absolute top-2 right-2 text-black font-bold text-lg">X</button>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                            {imageURLs.map((url, index) => (
+                              <img key={index} src={url} alt={`Attachment ${index + 1}`} className="w-full h-auto border rounded shadow object-contain" />
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  ) : (
+                    "No Attachments"
                   )}
+
+
+
                 </td>
               </tr>
             </tbody>

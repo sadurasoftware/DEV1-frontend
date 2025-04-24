@@ -1,5 +1,5 @@
 import ErrorBoundary from '@/components/ErrorBoundary'
-import { Route, BrowserRouter as Router, Routes } from 'react-router-dom'
+import { Route, BrowserRouter as Router, Routes, useNavigate } from 'react-router-dom'
 import './App.css'
 import AuthentictedLayout from './layouts/AuthentictedLayout'
 import Layout from './layouts/Layout'
@@ -33,6 +33,8 @@ import { UpdateStatus } from './pages/UpdateStatus'
 import { MyTickets } from './pages/MyTickets'
 import { MyProfile } from './pages/MyProfile'
 import { EditComment } from './pages/EditComment'
+import { useLoginInfoStore } from './store/useLoginInfoStore'
+import { useEffect } from 'react'
 
 
 // import Theme from './pages/Theme';
@@ -46,6 +48,8 @@ const App: React.FC = () => {
   // useEffect(() => {
   //   document.body.className = theme ;
   // }, [theme]);
+
+ 
 
   return (
     <Router>
