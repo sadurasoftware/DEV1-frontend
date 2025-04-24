@@ -2,19 +2,27 @@ import { Input } from '@/components/ui/input'
 import { useFetchUsers } from '@/hooks/useFetchUsers'
 import { Label } from '@radix-ui/react-label'
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useFetchDepartments } from '../hooks/useFetchDepartments'
 import { useDebounce } from "@/hooks/useDebounce";
 
 const Users = () => {
-
+    const { pageno } = useParams();
     const [filterData, setFilterData] = useState({
-        page: 1,
+        page: Number(pageno) || 1,
         search: '',
         departmentName: ''
     })
+
+    const navigate = useNavigate()
+    
     const debounceValue = useDebounce(filterData.search, 1000);
     const { departmentsLoading, departmentsData } = useFetchDepartments()
+
+    useEffect(() => {
+            setFilterData(prev => ({ ...prev, page: Number(pageno) || 1 }));
+          }, [pageno]);
+
     const { usersLoading, usersData, isUsersError, usersError } = useFetchUsers(
         filterData.page,
         debounceValue,
@@ -29,13 +37,7 @@ const Users = () => {
     }, [filterData.search, filterData.departmentName]);
 
 
-    if (usersLoading) {
-        return (
-            <div className="flex justify-center items-center min-h-screen bg-gray-100">
-                <h4 className="text-xl font-semibold text-gray-500">Loading...</h4>
-            </div>
-        );
-    }
+   
 
     if (isUsersError) {
         return (
@@ -45,17 +47,6 @@ const Users = () => {
         );
     }
 
-    // const handleChange = (
-    //     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
-    // ) => {
-    //     const { name, value } = e.target;
-    //     setFilterData(prevData => ({
-    //         ...prevData,
-    //         [name]: value,
-    //     }));
-    // };
-
-    // 
     
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -71,21 +62,16 @@ const Users = () => {
 
     const handleNextPage = () => {
         if (filterData.page < totalPages) {
-            setFilterData(prevData => ({
-                ...prevData,
-                page: prevData.page + 1,
-            }));
+          navigate(`/users/${filterData.page + 1}`);
         }
-    };
-
-    const handlePreviousPage = () => {
+      };
+      
+      const handlePreviousPage = () => {
         if (filterData.page > 1) {
-            setFilterData(prevData => ({
-                ...prevData,
-                page: prevData.page - 1,
-            }));
+          navigate(`/users/${filterData.page - 1}`);
         }
-    };
+      };
+      
 
 
 
@@ -137,7 +123,7 @@ const Users = () => {
                     </div>
                 </div>
 
-                {usersData && usersData.users.length > 0 ? (
+                {!usersLoading && usersData && usersData.users.length > 0 ? (
                     <>
                         <div className="overflow-x-auto bg-white shadow-lg rounded-lg">
                             <table className="min-w-full table-auto">

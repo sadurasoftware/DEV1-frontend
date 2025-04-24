@@ -73,7 +73,7 @@ export const UpdateStatus = () => {
                         <div>
                             <Label htmlFor="description" className="text-xs font-medium">
                                 Description
-                            </Label>
+                             </Label>
                             <textarea
                                 id="description"
                                 name="description"
@@ -107,7 +107,7 @@ export const UpdateStatus = () => {
                             <select
                                 id="category"
                                 name="category"
-                                value={ticketData?.ticket?.category}
+                                value={ticketData?.ticket?.category.name}
                                 disabled
                                 className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                             >
@@ -179,7 +179,7 @@ export const UpdateStatus = () => {
                             >
                                 {isPending ? 'Updating Status...' : 'Update Status'}
                             </button>
-                            <Link to="/tickets" className="bg-blue-500 text-white px-4 py-2  rounded-md hover:bg-blue-600 transition duration-200">
+                            <Link to="/tickets/1" className="bg-blue-500 text-white px-4 py-2  rounded-md hover:bg-blue-600 transition duration-200">
                                 Back
                             </Link>
                         </div>

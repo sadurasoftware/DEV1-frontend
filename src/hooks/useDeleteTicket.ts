@@ -1,7 +1,8 @@
 import { deleteTicket } from '@/apis/ticketAPI'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 export const useDeleteTicket = () => {
+  const queryClient = useQueryClient()
   const {
     mutate: ticketDelete,
     isError: isTicketError,
@@ -10,7 +11,7 @@ export const useDeleteTicket = () => {
   } = useMutation({
     mutationFn: (id: string) => deleteTicket(id),
     onSuccess: () => {
-      console.log('Ticket deleted successfully')
+      queryClient.invalidateQueries({ queryKey: ['userTickets'] })
     },
     onError: (error: any) => {
       console.error('Error deleting role:', error)

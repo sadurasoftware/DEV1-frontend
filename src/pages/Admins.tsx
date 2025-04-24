@@ -1,35 +1,41 @@
 import { useFetchAdmins } from '@/hooks/useFetchAdmins'
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useDebounce } from '@/hooks/useDebounce'
 import { Label } from '@radix-ui/react-label'
 import { Input } from '@/components/ui/input'
 import { useFetchDepartments } from '@/hooks/useFetchDepartments'
 
 const Admins = () => {
+    const { pageno } = useParams();
+    const [filterData, setFilterData] = useState({
+        page: 1,
+        search: '',
+        departmentName: ''
+    })
+    const navigate = useNavigate()
+    useEffect(() => {
+        setFilterData(prev => ({ ...prev, page: Number(pageno) || 1 }));
+    }, [pageno]);
 
-  const [filterData, setFilterData] = useState({
-          page: 1,
-          search: '',
-          departmentName: ''
-      })
-      const debounceValue = useDebounce(filterData.search, 1000);
-       const { departmentsLoading, departmentsData } = useFetchDepartments()
-  const { adminLoading, adminsData, isAdminsError, adminsError } = useFetchAdmins(  
-    filterData.page,
-    debounceValue,
-    filterData.departmentName,)
+
+    const debounceValue = useDebounce(filterData.search, 1000);
+    const { departmentsLoading, departmentsData } = useFetchDepartments()
+    const { adminLoading, adminsData, isAdminsError, adminsError } = useFetchAdmins(
+        filterData.page,
+        debounceValue,
+        filterData.departmentName,)
 
     console.log('admin:', adminsData)
 
-  useEffect(() => {
-          setFilterData(prevData => ({
-              ...prevData,
-              page: 1,
-          }));
-      }, [filterData.search, filterData.departmentName]);
+    useEffect(() => {
+        setFilterData(prevData => ({
+            ...prevData,
+            page: 1,
+        }));
+    }, [filterData.search, filterData.departmentName]);
 
-      if (adminLoading) {
+    if (adminLoading) {
         return (
             <div className="flex justify-center items-center min-h-screen bg-gray-100">
                 <h4 className="text-xl font-semibold text-gray-500">Loading...</h4>
@@ -38,56 +44,41 @@ const Admins = () => {
     }
 
 
-    if (adminLoading) {
-      return (
-        <div className="flex justify-center items-center min-h-screen bg-gray-100">
-          <h4 className="text-xl font-semibold text-gray-500">Loading...</h4>
-        </div>
-      );
-    }
-    
     if (isAdminsError) {
-      return (
-        <div className="flex justify-center items-center min-h-screen bg-gray-100">
-          <h4 className="text-xl font-semibold text-red-500">{adminsError?.message}</h4>
-        </div>
-      );
+        return (
+            <div className="flex justify-center items-center min-h-screen bg-gray-100">
+                <h4 className="text-xl font-semibold text-red-500">{adminsError?.message}</h4>
+            </div>
+        );
     }
-    
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
-) => {
-    const { name, value } = e.target;
-    setFilterData(prevData => ({
-        ...prevData,
-        [name]: value,
-    }));
-};
 
-const totalPages = adminsData?.totalPages || 1;
-
-const handleNextPage = () => {
-    if (filterData.page < totalPages) {
+    const handleChange = (
+        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+    ) => {
+        const { name, value } = e.target;
         setFilterData(prevData => ({
             ...prevData,
-            page: prevData.page + 1,
+            [name]: value,
         }));
-    }
-};
+    };
 
-const handlePreviousPage = () => {
-    if (filterData.page > 1) {
-        setFilterData(prevData => ({
-            ...prevData,
-            page: prevData.page - 1,
-        }));
-    }
-};
+    const totalPages = adminsData?.totalPages || 1;
 
+    const handleNextPage = () => {
+        if (filterData.page < totalPages) {
+          navigate(`/users/${filterData.page + 1}`);
+        }
+      };
+      
+      const handlePreviousPage = () => {
+        if (filterData.page > 1) {
+          navigate(`/users/${filterData.page - 1}`);
+        }
+      };
 
-  return (
-    <div className="min-h-screen bg-gray-50 py-2 px-4 sm:px-6 lg:px-8">
+    return (
+        <div className="min-h-screen bg-gray-50 py-2 px-4 sm:px-6 lg:px-8">
             <Link to='/dashboard' className="text-left font-bold text-blue-500">Back</Link>
 
             <div className="max-w-7xl mx-auto mt-4">
@@ -134,7 +125,7 @@ const handlePreviousPage = () => {
                     </div>
                 </div>
 
-                {adminsData && adminsData?.admins?.length > 0 ? (
+                {!adminLoading && adminsData && adminsData?.admins?.length > 0 ? (
                     <>
                         <div className="overflow-x-auto bg-white shadow-lg rounded-lg">
                             <table className="min-w-full table-auto">
@@ -181,7 +172,7 @@ const handlePreviousPage = () => {
                 )}
             </div>
         </div>
-  )
+    )
 }
 
 export default Admins

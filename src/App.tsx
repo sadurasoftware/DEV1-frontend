@@ -85,8 +85,8 @@ const App: React.FC = () => {
                 element={<EditAdminProfile />}
               />
               <Route path="/register" element={<RegisterForm />} />
-              <Route path="/users" element={<Users />} />
-              <Route path="/admins" element={<Admins />} />
+              <Route path="/users/:pageno" element={<Users />} />
+              <Route path="/admins/:pageno" element={<Admins />} />
               <Route path="/settings" element={<Settings />} />
               <Route
                 path="/super-admin-permissions"
@@ -98,7 +98,7 @@ const App: React.FC = () => {
               <Route path="/edit/:id" element={<EditForm />} />
               <Route path="/modules" element={<Modules />} />
               <Route path="/category" element={<Category />} />
-              <Route path="/tickets" element={<TicketsListPage/>}/>
+              <Route path="/tickets/:pageno" element={<TicketsListPage/>}/>
               <Route path="/view-ticket/:id" element={<ViewTicket/>}/>
               <Route path="/edit-ticket/:id" element={<EditTicket/>}/>
               <Route path="/update-status/:id" element={<UpdateStatus/>}/>
