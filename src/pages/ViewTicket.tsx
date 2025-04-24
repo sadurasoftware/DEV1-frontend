@@ -160,7 +160,7 @@ export const ViewTicket = () => {
                   >
                     Click here to view attachment
                   </button>
-                  {/* {isModalOpen && (
+                  {isModalOpen && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
                       <div className="bg-white p-4 rounded-lg max-w-lg relative">
                         <button
@@ -176,7 +176,7 @@ export const ViewTicket = () => {
                         />
                       </div>
                     </div>
-                  )} */}
+                  )}
                   {ticketData?.ticket?.attachments.length > 0 ? (
                     isModalOpen && (
                       <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
