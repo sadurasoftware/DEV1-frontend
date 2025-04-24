@@ -22,7 +22,8 @@ export const getAllTickets = async(status:string, priority:string, search:string
   const response = await api.get<ticketResponse>(
     `/api/tickets/get-all-tickets?status=${status}&priority=${priority}&search=${search}&page=${page}&limit=5`, 
     {
-      headers: {
+      headers: 
+      {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
