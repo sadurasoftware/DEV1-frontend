@@ -29,9 +29,6 @@ export const ViewTicket = () => {
   const { commentsLoading, commentsData } = useFetchCommentsByTicketId(id || '')
   const { commentDelete, isCommentError, commentError, deleteSuccess } = useDeleteComment()
 
-  // const [ticket, setTicket] = useState<any>({
-  //   status: ticketData?.ticket?.status || 'Open',
-  // });
   const [imageURL, setImageURL] = useState<string>('')
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -46,24 +43,11 @@ export const ViewTicket = () => {
     }))
   }
 
-  // const handleStatusChange = async(e: React.ChangeEvent<HTMLSelectElement>) => {
-  //   const { name, value } = e.target
-  //   setTicket((prevData: any) => ({
-  //     ...prevData,
-  //     [name]: value,
-  //   }))
-
-  //   await mutate({ id, status: ticket.status })
-  // }
-
   const handleSubmit = async () => {
     if (!id) return
     setIsSubmitting(true)
 
     try {
-
-      // await mutate({ id, status: ticket.status })
-
 
       const formData = new FormData();
       formData.append('commentText', commentData.commentText)
@@ -297,29 +281,6 @@ export const ViewTicket = () => {
                   </div>
                 </td>
               </tr>
-              {/* <tr className="border-t px-4 py-2 text-left text-gray-600 bg-gray-100">
-                <th className="px-4 py-2">Status</th>
-                <td className="px-4 py-2">
-                  <div>
-                    <Label htmlFor="status" className="text-xs font-medium">
-                      Status
-                    </Label>
-                    <select
-                      id="status"
-                      name="status"
-                      value={ticket.status}
-                      onChange={handleStatusChange}
-                      className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    >
-                      <option value="Open">Open</option>
-                      <option value="In Progress">In Progress</option>
-                      <option value="Resolved">Resolved</option>
-                      <option value="Closed">Closed</option>
-                      <option value="Pending">Pending</option>
-                    </select>
-                  </div>
-                </td>
-              </tr> */}
             </tbody>
           </table>
         </div>
