@@ -4,6 +4,8 @@ import { ApiResponse, ticketResponse } from '../types/ticketTypes'
 
 export const createTicket = async (data: FormData): Promise<ApiResponse> => {
   const token = useLoginInfoStore.getState().token
+  console.log("Token :", token);
+
   const response = await api.post<ApiResponse>(
     '/api/tickets/create',
     data,
@@ -12,6 +14,7 @@ export const createTicket = async (data: FormData): Promise<ApiResponse> => {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'multipart/form-data',
       },
+      
     }
   )
   return response.data
@@ -61,7 +64,7 @@ export const updateTicket = async (id: string, data: any) => {
       {
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
+          'Content-Type': 'multipart/form-data',
         },
       }
     )
@@ -111,7 +114,7 @@ export const deleteTicket = async(id:string)  => {
 
 export const ticketsCount = async() => {
   const token = useLoginInfoStore.getState().token
-  const response = await api.get(`/api/tickets//tickets-status-count`,
+  const response = await api.get(`/api/tickets/tickets-status-count`,
      {
       headers: {
         Authorization: `Bearer ${token}`,

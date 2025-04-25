@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { useDebounce } from "@/hooks/useDebounce";
 import { viewBackStore } from "@/store/viewBackStore";
 import { useFetchTicketsCount } from "@/hooks/useFetchTicketsCount";
+import { AxiosError } from "axios";
 
 export const TicketsListPage = () => {
     const { pageno } = useParams();
@@ -45,7 +46,10 @@ export const TicketsListPage = () => {
     if (isTicketsError) {
         return (
             <div className="flex justify-center items-center min-h-screen bg-gray-100">
-                <h4 className="text-xl font-semibold text-red-500">{ticketsError?.message}</h4>
+                <h4 className="text-xl font-semibold text-red-500">
+                     {(ticketsError instanceof AxiosError ? ticketsError.response?.data.message : 'An unexpected error occurred') || 'An unexpected error occurred'}
+                    
+                    </h4>
             </div>
         );
     }

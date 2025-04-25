@@ -16,6 +16,7 @@ export const EditTicket = () => {
         description: '',
         priority: 'Low',
         category: '',
+        attachments:[],
     });
 
     useEffect(() => {
@@ -24,7 +25,8 @@ export const EditTicket = () => {
                 title: ticketData.ticket.title,
                 description: ticketData.ticket.description,
                 priority: ticketData.ticket.priority,
-                category: ticketData.ticket.category,
+                category: ticketData.ticket.category.name,
+                attachments:ticketData.ticket.attachments
             });
         }
     }, [ticketData]);
@@ -45,6 +47,17 @@ export const EditTicket = () => {
             [name]: value,
         }));
     };
+    
+
+      const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files
+        if (files && files.length > 0) {
+          setTicket((prevData: any) => ({
+            ...prevData,
+            attachments: Array.from(files),
+          }))
+        }
+      } 
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -131,7 +144,40 @@ export const EditTicket = () => {
                             </select>
                         </div>
 
+                        <div>
+                            <Label htmlFor="attachments" className="text-xs font-medium">
+                                Attachments
+                            </Label>
+                            {ticketData?.ticket?.attachments && ticketData.ticket.attachments.length > 0 ? (
+                                ticketData.ticket.attachments.map((attachment: any) => (
+                                    <div key={attachment.id}>
+                                        <img
+                                            src={attachment.url}
+                                            alt={`Attachment ${attachment.id}`}
+                                            width={500}
+                                            height={500}
+                                            className="mb-4"
+                                        />
+                                    </div>
+                                ))
+                            ) : (
+                                <p>No attachments available.</p>
+                            )}
 
+                        </div>
+                        <div>
+                                      <Label htmlFor="attachments" className="text-xs font-medium">
+                                        Select files:
+                                      </Label>
+                                      <input
+                                        type="file"
+                                        id="attachments"
+                                        name="attachments"
+                                        onChange={handleFileChange}
+                                        className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                        multiple
+                                      />
+                                    </div>
                         {updateTicketSuccess && <h3>Ticket updated Successfully.</h3>}
 
                         {isTicketUpdateError && updateTicketError && (
