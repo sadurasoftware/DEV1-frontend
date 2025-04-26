@@ -6,20 +6,20 @@ import React, { useState } from 'react'
 import { useCreateTicketMutation } from '../hooks/useCreateTicket'
 import { Ticket } from '../types/ticketTypes'
 import { Link } from 'react-router-dom'
+import { AxiosError } from 'axios'
 
 const CreateTicket: React.FC = () => {
   const [ticketData, setTicketData] = useState<Ticket>({
     title: '',
     description: '',
-    attachment: null,
+    attachments: [],
     priority: 'Low',
     category: 'bug'
   })
-
   const { categoriesLoading, categoriesData, isCategoriesError, categoriesError } = useFetchCategories()
 
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({})
-  const { mutate, isPending, isError, isSuccess } = useCreateTicketMutation()
+  const { mutate, isPending, isError, error, isSuccess, data } = useCreateTicketMutation()
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -36,13 +36,14 @@ const CreateTicket: React.FC = () => {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
-    if (files && files[0]) {
+    if (files && files.length > 0) {
       setTicketData(prevData => ({
         ...prevData,
-        attachment: files[0],
+        attachments: Array.from(files),
       }))
     }
   }
+
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -53,11 +54,11 @@ const CreateTicket: React.FC = () => {
     formData.append('description', ticketData.description)
     formData.append('priority', ticketData.priority)
     formData.append('category', ticketData.category)
-    
 
-    if (ticketData.attachment) {
-      console.log(ticketData.attachment)
-      formData.append('attachment', ticketData.attachment)
+    if (ticketData.attachments && ticketData.attachments.length > 0) {
+      ticketData.attachments.forEach(file => {
+        formData.append('attachments', file)
+      })
     }
 
     try {
@@ -65,15 +66,15 @@ const CreateTicket: React.FC = () => {
       setTicketData({
         title: '',
         description: '',
-        attachment: null,
+        attachments: [],
         priority: 'Low',
         category: 'bug',
-      
       })
     } catch (err) {
       setFormErrors({ submit: 'An error occurred while creating the ticket.' })
     }
   }
+  console.log('Create ticket data:', data)
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-white dark:bg-black">
@@ -152,7 +153,7 @@ const CreateTicket: React.FC = () => {
                 className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
               >
                 {!categoriesLoading ? (
-                  categoriesData?.map((category:any, index:number) => (
+                  categoriesData?.map((category: any, index: number) => (
                     <option key={index} value={category.name}>
                       {category.name}
                     </option>
@@ -170,38 +171,19 @@ const CreateTicket: React.FC = () => {
 
             <div>
               <Label htmlFor="attachments" className="text-xs font-medium">
-                Attachments
+                Select files:
               </Label>
               <input
                 type="file"
-                id="attachment"
-                name="attachment"
+                id="attachments"
+                name="attachments"
                 onChange={handleFileChange}
                 className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                multiple
               />
             </div>
 
-            {/* <div>
-              <Label htmlFor="status" className="text-xs font-medium">
-                Status
-              </Label>
-              <select
-                id="status"
-                name="status"
-                value={ticketData.status}
-                onChange={handleChange}
-                className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              >
-                <option value="Open">Open</option>
-                <option value="In Progress">In Progress</option>
-                <option value="Resolved">Resolved</option>
-                <option value="Closed">Closed</option>
-                <option value="Pending">Pending</option>
-              </select>
-              {formErrors.status && (
-                <p className="text-error-red text-sm">{formErrors.status}</p>
-              )}
-            </div> */}
+
 
             <div className="flex gap-2 mt-4">
               <Button
@@ -211,27 +193,34 @@ const CreateTicket: React.FC = () => {
               >
                 {isPending ? 'Creating Ticket...' : 'Create Ticket'}
               </Button>
-             
+
             </div>
             <div className="flex gap-2 mt-4">
-            <Link 
+              <Link
                 className="w-full py-3 bg-cust-blue text-white dark:text-black font-semibold rounded-md hover:bg-gray transition dark:bg-gary dark:hover:bg-cust-green uppercase text-center"
                 to='/dashboard'>Back
               </Link>
             </div>
-            
+
           </div>
         </form>
 
-        {isError && formErrors.submit && (
+        {formErrors.submit && (
           <p className="text-error-red text-center mt-4">{formErrors.submit}</p>
         )}
 
-{isCategoriesError && categoriesError && (
-  <p className='text-error-red text-center mt-4'>
-    {(categoriesError as Error).message}
-  </p>
-)}
+        {isError && error && (
+          <h3 className='text-red font-bold'>
+            {(error instanceof AxiosError ? error.response?.data.message : 'An unexpected error occurred') || 'An unexpected error occurred'}
+          </h3>
+        )}
+
+
+        {isCategoriesError && categoriesError && (
+          <p className='text-error-red text-center mt-4'>
+            {(categoriesError as Error).message}
+          </p>
+        )}
 
 
         {isSuccess && (

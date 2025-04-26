@@ -34,7 +34,6 @@ import { MyTickets } from './pages/MyTickets'
 import { MyProfile } from './pages/MyProfile'
 import { EditComment } from './pages/EditComment'
 
-
 // import Theme from './pages/Theme';
 // import  useThemeStore from './store/themeStore';
 // import { useEffect } from 'react';
@@ -46,6 +45,8 @@ const App: React.FC = () => {
   // useEffect(() => {
   //   document.body.className = theme ;
   // }, [theme]);
+
+ 
 
   return (
     <Router>

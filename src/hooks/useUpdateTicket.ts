@@ -16,7 +16,7 @@ export const useUpdateTicket = () => {
     onSuccess: ticket => {
       console.log('Ticket data updated:', ticket)
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError) => {
       if (axios.isAxiosError(error)) {
         const axiosError = error as AxiosError
         console.error(axiosError.message || 'An unexpected error occurred')

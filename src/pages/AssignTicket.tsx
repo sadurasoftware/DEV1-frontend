@@ -133,7 +133,22 @@ export const AssignTicket = () => {
                         <Label htmlFor="attachments" className="text-xs font-medium">
                             Attachments
                         </Label>
-                        <img src={ticketData?.ticket?.attachment} alt="Attachment" width={500} height={500}/>
+                        {ticketData?.ticket?.attachments && ticketData.ticket.attachments.length > 0 ? (
+                            ticketData.ticket.attachments.map((attachment: any) => (
+                                <div key={attachment.id}>
+                                    <img
+                                        src={attachment.url}
+                                        alt={`Attachment ${attachment.id}`}
+                                        width={500}
+                                        height={500}
+                                        className="mb-4"
+                                    />
+                                </div>
+                            ))
+                        ) : (
+                            <p>No attachments available.</p>
+                        )}
+
                     </div>
 
                     <div>

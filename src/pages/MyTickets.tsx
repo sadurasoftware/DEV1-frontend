@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { useDeleteTicket } from '@/hooks/useDeleteTicket'; 
 import { viewBackStore } from "@/store/viewBackStore";
 import { useLoginInfoStore } from "@/store/useLoginInfoStore";
+import { AxiosError } from "axios";
 
 export const MyTickets = () => {
     const { userId } = useParams();
@@ -14,7 +15,6 @@ export const MyTickets = () => {
     const {user} = useLoginInfoStore();
     console.log(`User in Store:`, user)
 
-    // const userId = user?.id
     const handleViewTicket = (id: string) => {
         setBackRoutes(`/my-tickets/${userId}`); 
         navigate(`/view-ticket/${id}`);
@@ -37,7 +37,9 @@ export const MyTickets = () => {
     if (isTicketError) {
         return (
             <div className="flex justify-center items-center min-h-screen bg-gray-100">
-                <h4 className="text-xl font-semibold text-red-500">{ticketError?.message}</h4>
+                <h4 className="text-xl font-semibold text-red-500">
+                {(ticketError instanceof AxiosError ? ticketError.response?.data.message : 'An unexpected error occurred') || 'An unexpected error occurred'}
+                </h4>
             </div>
         );
     }
