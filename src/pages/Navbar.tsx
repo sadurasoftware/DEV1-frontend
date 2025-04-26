@@ -20,8 +20,10 @@ export const Navbar: React.FC = () => {
     try {
       if (token) {
         await logout({ token, clearLoginInfo })
+        useLoginInfoStore.persist.clearStorage()
         navigate('/login')
       }
+      
     } catch (error) {
       console.error('Logout failed:', error)
     }
