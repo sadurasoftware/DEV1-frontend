@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { useState, useEffect } from 'react';
 import { useUpdateTicket } from '@/hooks/useUpdateTicket';
 import { Button } from '@/components/ui/button';
+import { AxiosError } from 'axios';
 
 export const EditTicket = () => {
     const { id } = useParams<{ id?: string }>();
@@ -16,8 +17,10 @@ export const EditTicket = () => {
         description: '',
         priority: 'Low',
         category: '',
-        attachments:[],
     });
+
+    const [existingAttachments, setExistingAttachments] = useState<string[]>([]);
+    const [newFiles, setNewFiles] = useState<File[]>([]);
 
     useEffect(() => {
         if (ticketData?.ticket) {
@@ -26,8 +29,8 @@ export const EditTicket = () => {
                 description: ticketData.ticket.description,
                 priority: ticketData.ticket.priority,
                 category: ticketData.ticket.category.name,
-                attachments:ticketData.ticket.attachments
             });
+            setExistingAttachments(ticketData.ticket.attachments.map((a: any) => a.url));
         }
     }, [ticketData]);
 
@@ -47,26 +50,33 @@ export const EditTicket = () => {
             [name]: value,
         }));
     };
-    
 
-      const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const files = e.target.files
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files;
         if (files && files.length > 0) {
-          setTicket((prevData: any) => ({
-            ...prevData,
-            attachments: Array.from(files),
-          }))
+            setNewFiles(Array.from(files));
         }
-      } 
+    }
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!id) {
-            console.error("Ticket ID is missing.");
-            return;
-        }
-        console.log('Submitting ticket data:', ticket);
-        mutate({ id, ticket });
+        if (!id) return console.error('Missing ticket ID');
+
+        const formData = new FormData();
+        formData.append('title', ticket.title);
+        formData.append('description', ticket.description);
+        formData.append('priority', ticket.priority);
+        formData.append('category', ticket.category);
+
+        newFiles.forEach(file => formData.append('attachments', file));
+
+        console.log('Submitting ticket:', {
+            ...ticket,
+            attachments: newFiles.map(file => file.name),
+        });
+
+        mutate({ id, formData });
     };
 
     return (
@@ -144,45 +154,48 @@ export const EditTicket = () => {
                             </select>
                         </div>
 
-                        <div>
-                            <Label htmlFor="attachments" className="text-xs font-medium">
-                                Attachments
-                            </Label>
-                            {ticketData?.ticket?.attachments && ticketData.ticket.attachments.length > 0 ? (
-                                ticketData.ticket.attachments.map((attachment: any) => (
-                                    <div key={attachment.id}>
-                                        <img
-                                            src={attachment.url}
-                                            alt={`Attachment ${attachment.id}`}
-                                            width={500}
-                                            height={500}
-                                            className="mb-4"
-                                        />
-                                    </div>
+                        <div className="mb-4">
+                            <Label>Existing Attachments</Label>
+                            {existingAttachments.length > 0 ? (
+                                existingAttachments.map((url, i) => (
+                                    <img key={i} src={url} alt={`attachment-${i}`} className="w-32 h-32 object-cover mb-2" />
                                 ))
                             ) : (
                                 <p>No attachments available.</p>
                             )}
-
                         </div>
-                        <div>
-                                      <Label htmlFor="attachments" className="text-xs font-medium">
-                                        Select files:
-                                      </Label>
-                                      <input
-                                        type="file"
-                                        id="attachments"
-                                        name="attachments"
-                                        onChange={handleFileChange}
-                                        className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                        multiple
-                                      />
-                                    </div>
+
+                        <div className="mb-4">
+                            <Label htmlFor="attachments">Upload New Attachments</Label>
+                            <input
+                                type="file"
+                                id="attachments"
+                                name="attachments"
+                                onChange={handleFileChange}
+                                multiple
+                                className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            />
+                        </div>
+
+                        {newFiles.length > 0 && (
+                            <div className="mb-4">
+                                <Label>New Files Preview</Label>
+                                {newFiles.map((file, i) => (
+                                    <img
+                                        key={i}
+                                        src={URL.createObjectURL(file)}
+                                        alt={`new-attachment-${i}`}
+                                        className="w-32 h-32 object-cover mb-2"
+                                    />
+                                ))}
+                            </div>
+                        )}
+
                         {updateTicketSuccess && <h3>Ticket updated Successfully.</h3>}
 
                         {isTicketUpdateError && updateTicketError && (
                             <p className='text-error-red text-center mt-4'>
-                                {(updateTicketError as Error).message}
+                                {(updateTicketError instanceof AxiosError ? updateTicketError.message : 'An unexpected error occurred') || 'An unexpected error occurred'}
                             </p>
                         )}
 
