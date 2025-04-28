@@ -10,11 +10,11 @@ export const useUpdateTicket = () => {
     error: updateTicketError,
     isSuccess: updateTicketSuccess,
   } = useMutation({
-    mutationFn: async ({ id, ticket }:{id:string, ticket:any}) => {
-      return await updateTicket(id, ticket)
+    mutationFn: async ({ id, formData }:{id:string, formData:FormData}) => {
+      return await updateTicket(id, formData)
     },
-    onSuccess: ticket => {
-      console.log('Ticket data updated:', ticket)
+    onSuccess: formData => {
+      console.log('Ticket data updated:', formData)
     },
     onError: (error: AxiosError) => {
       if (axios.isAxiosError(error)) {

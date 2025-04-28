@@ -54,12 +54,12 @@ export const getTicketById = async(id:string) =>{
   return response.data
 }
 
-export const updateTicket = async (id: string, data: any) => {
+export const updateTicket = async (id: string, formData: FormData) => {
   const token = useLoginInfoStore.getState().token
   try {
     const response = await api.put(
       `/api/tickets/update-ticket/${id}`,
-        data
+      formData
       ,
       {
         headers: {
