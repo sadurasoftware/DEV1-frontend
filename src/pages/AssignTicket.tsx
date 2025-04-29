@@ -178,6 +178,7 @@ export const AssignTicket = () => {
                             onChange={handleChange}
                             className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                         >
+                            <option value="">Select a user</option>
                             {usersLoading ? (
                                 <option value="" disabled>Loading users...</option>
                             ) : (usersData?.users && usersData?.users.length > 0) ? (
