@@ -37,7 +37,7 @@ export const getAllTickets = async(status:string, priority:string, search:string
 
 export const assignTicket = async(id:string, assignedTo:number)  => {
   const token = useLoginInfoStore.getState().token
-  const response = await api.patch(`/api/tickets/assign-ticket/${id}`, 
+  const response = await api.patch(`/api/tickets/assign-ticket/${id}`,  
     { assignedTo },
     {
       headers: {
@@ -114,11 +114,24 @@ export const deleteTicket = async(id:string)  => {
 
 export const ticketsCount = async() => {
   const token = useLoginInfoStore.getState().token
-  const response = await api.get(`/api/tickets/tickets-status-count`,
+  const response = await api.get(`/api/tickets/dashboard`,
      {
       headers: {
         Authorization: `Bearer ${token}`,
       }, 
     })
+  return response.data
+}
+
+export const ticketHistory = async(ticketId:string) => {
+  const token = useLoginInfoStore.getState().token
+  const response = await api.get(`api/tickets/${ticketId}/history`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    }
+  )
   return response.data
 }

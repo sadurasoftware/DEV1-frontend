@@ -7,6 +7,8 @@ import { useCreateComment } from '@/hooks/useCreateComment';
 import { useFetchCommentsByTicketId } from '@/hooks/useFetchCommentsByTicketId';
 import { useDeleteComment } from '@/hooks/useDeleteComment';
 import { viewBackStore } from '@/store/viewBackStore';
+import { AxiosError } from 'axios';
+import { useGetTicketHistory } from '@/hooks/useGetTicketHistory';
 
 export const ViewTicket = () => {
   const { id } = useParams<{ id?: string }>()
@@ -24,10 +26,15 @@ export const ViewTicket = () => {
   const navigate = useNavigate()
   const { backRoutes } = viewBackStore();
   const { ticketData } = useFetchTicketById(id || '')
-  const { createCommentMutation } = useCreateComment()
+  const { createCommentMutation, isError, error } = useCreateComment()
+
+
+
   // const { mutate } = useUpdateTicketStatus()
   const { commentsLoading, commentsData } = useFetchCommentsByTicketId(id || '')
   const { commentDelete, isCommentError, commentError, deleteSuccess } = useDeleteComment()
+  const { historyLoading, historyData, isHistoryError, historyError } = useGetTicketHistory(id || '')
+  console.log('History:', historyData ? historyData : 'no data')
 
   const [imageURL, setImageURL] = useState<string>('')
   const [imageURLs, setImageURLs] = useState<string[]>([])
@@ -43,6 +50,8 @@ export const ViewTicket = () => {
       [name]: value,
     }))
   }
+
+
 
   const handleSubmit = async () => {
     if (!id) return
@@ -137,7 +146,7 @@ export const ViewTicket = () => {
                 <th className="px-4 py-2">Email</th>
                 <td className="px-4 py-2">{ticketData?.ticket?.user.email}</td>
                 <th className="px-4 py-2">Ticket Category</th>
-                <td className="px-4 py-2">{ticketData?.ticket?.category.name}</td>
+                <td className="px-4 py-2">{ticketData?.ticket?.category?.name || 'N/A'}</td>
               </tr>
               <tr className="border-t px-4 py-2 text-left text-gray-600 bg-gray-100">
                 <th className="px-4 py-2">Priority</th>
@@ -202,29 +211,24 @@ export const ViewTicket = () => {
           </table>
         </div>
         <div>
-          <table className="min-w-full table-auto border-t mt-5">
-            <thead>
-              <tr>
-                <td colSpan={5} className="px-4 py-2 text-gray-800 bg-gray-300">Ticket History</td>
-              </tr>
-
-            </thead>
-            <tbody className='border-t'>
-              <tr className='border-t px-4 py-2 text-left text-gray-600 bg-gray-100'>
-                <th className="px-4 py-2">Ticket Updated Details</th>
-                {/* <th className="px-4 py-2">Status</th> */}
-                <th className="px-4 py-2">Updated By</th>
-                <th className="px-4 py-2">Attachment</th>
-                {/* <th className="px-4 py-2">Date</th> */}
-                <th className="px-4 py-2">Edit</th>
-                <th className="px-4 py-2">Delete</th>
-              </tr>
-
-              {!commentsLoading && commentsData?.comments?.length > 0 &&
-                commentsData.comments.map((comment: any) => (
+          {!commentsLoading && commentsData?.comments?.length > 0 ? (
+            <table className="min-w-full table-auto border-t mt-5">
+              <thead>
+                <tr>
+                  <td colSpan={5} className="px-4 py-2 text-gray-800 bg-gray-300">Comments</td>
+                </tr>
+                <tr className='border-t px-4 py-2 text-left text-gray-600 bg-gray-100'>
+                  <th className="px-4 py-2">Ticket Updated Details</th>
+                  <th className="px-4 py-2">Updated By</th>
+                  <th className="px-4 py-2">Attachment</th>
+                  <th className="px-4 py-2">Edit</th>
+                  <th className="px-4 py-2">Delete</th>
+                </tr>
+              </thead>
+              <tbody className="border-t">
+                {commentsData.comments.map((comment: any) => (
                   <tr key={comment.id} className='border-t px-4 py-2 text-left text-gray-500 bg-gray-50'>
                     <td className="px-4 py-2">{comment.commentText}</td>
-                    {/* <td className="px-4 py-2">{ticketData.ticket.status}</td> */}
                     <td className="px-4 py-2">{comment.commenter?.firstname} {comment.commenter?.lastname}</td>
                     <td className="px-4 py-2">
                       {comment.attachment ? (
@@ -238,28 +242,29 @@ export const ViewTicket = () => {
                         'No Attachment'
                       )}
                     </td>
-                    {/* <td className="px-4 py-2">{new Date(comment.updatedAt).toLocaleString()}</td> */}
                     <td className='px-4 py-2'>
                       <button
                         className='bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-200'
                         onClick={() => handleEdit(comment.id)}
-                      >Edit
-                      </button></td>
+                      >
+                        Edit
+                      </button>
+                    </td>
                     <td className='px-4 py-2'>
                       <button
                         className='bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition duration-200'
                         onClick={() => handleDelete(comment.id)}
-                      >Delete
-                      </button></td>
+                      >
+                        Delete
+                      </button>
+                    </td>
                   </tr>
-
-                ))
-              }
-
-
-            </tbody>
-          </table>
+                ))}
+              </tbody>
+            </table>
+          ) : null}
         </div>
+
         <div>
           {deleteSuccess && <h4>Comment deleted Successfully..!</h4>}
 
@@ -305,6 +310,11 @@ export const ViewTicket = () => {
             </tbody>
           </table>
         </div>
+
+        {isError && <h3 className='text-red font-bold'>
+          {(error instanceof AxiosError ? error.response?.data.message : 'An unexpected error occurred') || 'An unexpected error occurred'}</h3>}
+
+
         {isCommentError && <h4 className='text-center'>{commentError}</h4>}
         <button
           onClick={handleSubmit}
@@ -323,6 +333,60 @@ export const ViewTicket = () => {
         </Link>
 
       </div>
+      <div>
+        {!historyLoading && historyData?.history?.length > 0 ? (
+          <>
+            <table className="min-w-full table-auto border-t mt-5">
+              <thead>
+                <tr>
+                  <td colSpan={5} className="px-4 py-2 text-gray-800 bg-gray-300">
+                    Ticket History
+                  </td>
+                </tr>
+              </thead>
+              <tbody className="border-t">
+                <tr className="border-t px-4 py-2 text-left text-gray-600 bg-gray-100">
+                  <th className="px-4 py-2">Ticket Updated Details</th>
+                  <th className="px-4 py-2">Updated By</th>
+                  <th className="px-4 py-2">Old Content</th>
+                  <th className="px-4 py-2">Updated Content</th>
+                  <th className="px-4 py-2">Updated at</th>
+                </tr>
+                {historyData.history.map((his: any) => (
+                  <tr key={his.id} className="border-t px-4 py-2 text-left text-gray-500 bg-gray-50">
+                    <td className="px-4 py-2">{his.action}</td>
+                    <td className="px-4 py-2">{his.changedBy}</td>
+                    <td className="px-4 py-2">
+                      {typeof his.oldValue === 'object'
+                        ? JSON.stringify(his.oldValue)
+                        : his.oldValue}
+                    </td>
+                    <td className="px-4 py-2">
+                      {typeof his.newValue === 'object'
+                        ? JSON.stringify(his.newValue)
+                        : his.newValue}
+                    </td>
+                    <td className="px-4 py-2">
+                      {new Date(his.changedAt).toLocaleString()}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </>
+        ) : null}
+
+        {isHistoryError && (
+          <h3>
+            {historyError instanceof AxiosError
+              ? historyError.response?.data.message
+              : 'An unexpected error occurred'}
+          </h3>
+        )}
+      </div>
+
+
+
     </div>
   );
 };
