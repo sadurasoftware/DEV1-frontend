@@ -27,17 +27,17 @@ export const fetchCommentById = async(commentId:any) =>
   return response.data
 }
 
-export const updateComment = async (ticketId: any,  commentId:any, commentText: any) => {
+export const updateComment = async (ticketId: any,  commentId:any, formData: FormData) => {
   const token = useLoginInfoStore.getState().token
   try {
     const response = await api.put(
       `/api/comments/update/${ticketId}/${commentId}`,
-      {commentText}
+      formData
       ,
       {
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
+          'Content-Type': 'multipart/form-data',
         },
       }
     )

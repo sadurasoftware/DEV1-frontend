@@ -10,7 +10,7 @@ export const useCreateComment  = () => {
         queryClient.invalidateQueries({ queryKey: ['comments'] })
       },
       onError: (error: any) => {
-        if (axios.isAxiosError(error)) {
+        if (axios.isAxiosError(error)) { 
           const axiosError = error as AxiosError
           console.error(axiosError.message || 'An unexpected error occurred')
         } else {

@@ -157,9 +157,16 @@ export const EditTicket = () => {
                         <div className="mb-4">
                             <Label>Existing Attachments</Label>
                             {existingAttachments.length > 0 ? (
-                                existingAttachments.map((url, i) => (
-                                    <img key={i} src={url} alt={`attachment-${i}`} className="w-32 h-32 object-cover mb-2" />
-                                ))
+                               <div className="flex gap-2 flex-wrap">
+                               {existingAttachments.map((url, i) => (
+                                 <img
+                                   key={i}
+                                   src={url}
+                                   alt={`attachment-${i}`}
+                                   className="w-32 h-32 object-cover mb-2 rounded"
+                                 />
+                               ))}
+                             </div>
                             ) : (
                                 <p>No attachments available.</p>
                             )}
