@@ -12,7 +12,7 @@ const CreateTicket: React.FC = () => {
   const [ticketData, setTicketData] = useState<Ticket>({
     title: '',
     description: '',
-    attachments: [],
+    attachments: [], 
     priority: 'Low',
     category: 'bug'
   })

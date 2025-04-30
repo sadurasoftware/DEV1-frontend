@@ -13,13 +13,13 @@ import { useGetTicketHistory } from '@/hooks/useGetTicketHistory';
 export const ViewTicket = () => {
   const { id } = useParams<{ id?: string }>()
   const [commentData, setCommentData] = useState<{
-    ticketId: string;
-    commentText: string;
-    attachment: File | null;
+    ticketId: string,
+    commentText: string,
+    attachments: File[]
   }>({
     ticketId: '',
     commentText: '',
-    attachment: null,
+    attachments: [],
   });
 
 
@@ -36,7 +36,6 @@ export const ViewTicket = () => {
   const { historyLoading, historyData, isHistoryError, historyError } = useGetTicketHistory(id || '')
   console.log('History:', historyData ? historyData : 'no data')
 
-  const [imageURL, setImageURL] = useState<string>('')
   const [imageURLs, setImageURLs] = useState<string[]>([])
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -63,8 +62,10 @@ export const ViewTicket = () => {
       formData.append('commentText', commentData.commentText)
 
 
-      if (commentData.attachment) {
-        formData.append('attachment', commentData.attachment)
+      if (commentData.attachments && commentData.attachments.length > 0) {
+        commentData.attachments.forEach(file => {
+          formData.append('attachments', file)
+        })
       }
 
 
@@ -77,10 +78,9 @@ export const ViewTicket = () => {
         {
           ticketId: '',
           commentText: '',
-          attachment: null,
+          attachments: [],
         }
       )
-      console.log('Ticket status updated and comment submitted successfully.')
     } catch (err) {
       console.error('Something went wrong:', err)
     } finally {
@@ -96,22 +96,25 @@ export const ViewTicket = () => {
     }
   }
 
-  const handleCommentImageClick = (attachmentUrl: string) => {
-    if (attachmentUrl) {
-      setImageURL(attachmentUrl)
+  const handleCommentImageClick = (attachments: { url: string }[]) => {
+    if (attachments?.length) {
+      const urls = attachments.map(att => att.url)
+      setImageURLs(urls)
       setIsModalOpen(true)
     }
   }
 
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
-    if (files && files[0]) {
-      setCommentData((prevData) => ({
+    if (files && files.length > 0) {
+      setCommentData(prevData => ({
         ...prevData,
-        attachment: files[0],
-      }));
+        attachments: Array.from(files),
+      }))
     }
-  };
+  }
+
 
   const handleEdit = (commentId: string) => {
     navigate(`/comments/${id}/${commentId}`)
@@ -123,11 +126,11 @@ export const ViewTicket = () => {
 
   const closeModal = () => {
     setIsModalOpen(false)
-    setImageURL('')
   };
 
   return (
     <div className="min-h-screen bg-gray-100 py-8 px-6">
+      {/* Ticket Details Display */}
       <div className="max-w mx-auto bg-white p-6 rounded-lg shadow-lg">
         <h1 className="text-3xl font-semibold text-center text-indigo-600 mb-6">
           Ticket Details
@@ -163,53 +166,50 @@ export const ViewTicket = () => {
               <tr className="border-t px-4 py-2 text-left text-gray-600 bg-gray-100">
                 <th className="px-4 py-2">Attachment</th>
                 <td className="px-4 py-2" colSpan={3}>
-                  <button
-                    onClick={handleImageClick}
-                    className="text-blue-500 hover:underline"
-                  >
-                    Click here to view attachment
-                  </button>
-                  {isModalOpen && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-                      <div className="bg-white p-4 rounded-lg max-w-lg relative">
-                        <button
-                          onClick={closeModal}
-                          className="absolute top-2 right-2 text-black font-bold text-lg"
-                        >
-                          X
-                        </button>
-                        <img
-                          src={imageURL}
-                          alt="Ticket Attachment"
-                          className="max-w-full max-h-screen object-contain"
-                        />
-                      </div>
-                    </div>
-                  )}
-                  {ticketData?.ticket?.attachments.length > 0 ? (
-                    isModalOpen && (
-                      <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-                        <div className="bg-white p-4 rounded-lg max-w-4xl w-full relative overflow-y-auto max-h-screen">
-                          <button onClick={closeModal} className="absolute top-2 right-2 text-black font-bold text-lg">X</button>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                            {imageURLs.map((url, index) => (
-                              <img key={index} src={url} alt={`Attachment ${index + 1}`} className="w-full h-auto border rounded shadow object-contain" />
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    )
-                  ) : (
-                    "No Attachments"
-                  )}
+  {ticketData?.ticket?.attachments?.length > 0 ? (
+    <>
+      <button
+        onClick={handleImageClick}
+        className="text-blue-500 hover:underline"
+      >
+        Click here to view attachment
+      </button>
 
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-4 rounded-lg max-w-4xl w-full relative overflow-y-auto max-h-screen">
+            <button
+              onClick={closeModal}
+              className="absolute top-2 right-2 text-black font-bold text-lg"
+            >
+              X
+            </button>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              {imageURLs.map((url, index) => (
+                <img
+                  key={index}
+                  src={url}
+                  alt={`Attachment ${index + 1}`}
+                  className="w-full h-auto border rounded shadow object-contain"
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  ) : (
+    "No Attachments"
+  )}
+</td>
 
-
-                </td>
               </tr>
             </tbody>
           </table>
         </div>
+
+        {/* If comments available show comments table */}
+
         <div>
           {!commentsLoading && commentsData?.comments?.length > 0 ? (
             <table className="min-w-full table-auto border-t mt-5">
@@ -231,16 +231,35 @@ export const ViewTicket = () => {
                     <td className="px-4 py-2">{comment.commentText}</td>
                     <td className="px-4 py-2">{comment.commenter?.firstname} {comment.commenter?.lastname}</td>
                     <td className="px-4 py-2">
-                      {comment.attachment ? (
-                        <button
-                          onClick={() => handleCommentImageClick(comment.attachment)}
-                          className="text-blue-500 hover:underline"
-                        >
-                          View
-                        </button>
-                      ) : (
-                        'No Attachment'
-                      )}
+                      <tr className="border-t px-4 py-2 text-left text-gray-600 bg-gray-100">
+
+                        <td className="px-4 py-2" >
+                          <button
+                            onClick={() => handleCommentImageClick(comment.attachments || [])}
+
+                            className="text-blue-500 hover:underline"
+                          >
+                            Click here to view attachment
+                          </button>
+
+                          {isModalOpen && (
+                            <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                              <div className="bg-white p-4 rounded-lg max-w-4xl w-full relative overflow-y-auto max-h-screen">
+                                <button onClick={closeModal} className="absolute top-2 right-2 text-black font-bold text-lg">X</button>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                                  {imageURLs.map((url, index) => (
+                                    <img key={index} src={url} alt={`Attachment ${index + 1}`} className="w-full h-auto border rounded shadow object-contain" />
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                          )}
+
+
+
+
+                        </td>
+                      </tr>
                     </td>
                     <td className='px-4 py-2'>
                       <button
@@ -269,6 +288,9 @@ export const ViewTicket = () => {
           {deleteSuccess && <h4>Comment deleted Successfully..!</h4>}
 
         </div>
+
+        {/* Tickets history */}
+
         <div className="mt-4">
           <table className="min-w-full table-auto border-t">
             <tbody className="border-t">
@@ -302,6 +324,7 @@ export const ViewTicket = () => {
                       id="attachment"
                       name="attachment"
                       onChange={handleFileChange}
+                      multiple
                       className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     />
                   </div>
