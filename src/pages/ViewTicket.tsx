@@ -36,7 +36,6 @@ export const ViewTicket = () => {
   const { historyLoading, historyData, isHistoryError, historyError } = useGetTicketHistory(id || '')
   console.log('History:', historyData ? historyData : 'no data')
 
-  const [imageURL, setImageURL] = useState<string>('')
   const [imageURLs, setImageURLs] = useState<string[]>([])
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -127,7 +126,6 @@ export const ViewTicket = () => {
 
   const closeModal = () => {
     setIsModalOpen(false)
-    setImageURL('')
   };
 
   return (

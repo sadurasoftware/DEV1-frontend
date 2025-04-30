@@ -3,7 +3,7 @@ import { updateTicket } from '@/apis/ticketAPI'
 import axios, { AxiosError } from 'axios'
 
 export const useUpdateTicket = () => {
-  const {
+  const { 
     mutate,
     isPending: updateTicketPending,
     isError: isTicketUpdateError,
