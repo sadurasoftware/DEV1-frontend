@@ -7,19 +7,22 @@ import { useCreateTicketMutation } from '../hooks/useCreateTicket'
 import { Ticket } from '../types/ticketTypes'
 import { Link } from 'react-router-dom'
 import { AxiosError } from 'axios'
+import { createTicketValidation } from '@/validation/createTicketValidation'
+import { z } from 'zod'
 
 const CreateTicket: React.FC = () => {
   const [ticketData, setTicketData] = useState<Ticket>({
     title: '',
     description: '',
     attachments: [], 
-    priority: 'Low',
-    category: 'bug'
+    priority: '',
+    category: ''
   })
+  const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({})
   const { categoriesLoading, categoriesData, isCategoriesError, categoriesError } = useFetchCategories()
 
-  const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({})
-  const { mutate, isPending, isError, error, isSuccess, data } = useCreateTicketMutation()
+  
+  const { mutate, isPending, isError, error, isSuccess } = useCreateTicketMutation()
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -47,8 +50,13 @@ const CreateTicket: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    setFormErrors({})
 
+    setFormErrors({})
+    
+   
+
+    try {
+      createTicketValidation.parse(ticketData)
     const formData = new FormData()
     formData.append('title', ticketData.title)
     formData.append('description', ticketData.description)
@@ -60,21 +68,25 @@ const CreateTicket: React.FC = () => {
         formData.append('attachments', file)
       })
     }
-
-    try {
       mutate(formData)
       setTicketData({
         title: '',
         description: '',
         attachments: [],
-        priority: 'Low',
-        category: 'bug',
+        priority: '',
+        category: '',
       })
     } catch (err) {
-      setFormErrors({ submit: 'An error occurred while creating the ticket.' })
+      if (err instanceof z.ZodError) {
+              const errors: { [key: string]: string } = {}
+              err.errors.forEach(error => {
+                errors[error.path[0]] = error.message
+              })
+              setFormErrors(errors)
+            }
     }
   }
-  console.log('Create ticket data:', data)
+ 
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-white dark:bg-black">
@@ -94,7 +106,7 @@ const CreateTicket: React.FC = () => {
                 name="title"
                 value={ticketData.title}
                 onChange={handleChange}
-                required
+                
               />
               {formErrors.title && (
                 <p className="text-error-red text-sm">{formErrors.title}</p>
@@ -110,7 +122,7 @@ const CreateTicket: React.FC = () => {
                 name="description"
                 value={ticketData.description}
                 onChange={handleChange}
-                required
+                
                 rows={4}
                 className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
@@ -132,6 +144,7 @@ const CreateTicket: React.FC = () => {
                 onChange={handleChange}
                 className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
               >
+                <option value="">Select priority</option>
                 <option value="Low">Low</option>
                 <option value="Medium">Medium</option>
                 <option value="High">High</option>
@@ -152,6 +165,7 @@ const CreateTicket: React.FC = () => {
                 onChange={handleChange}
                 className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
               >
+                <option value="">Select category</option>
                 {!categoriesLoading ? (
                   categoriesData?.map((category: any, index: number) => (
                     <option key={index} value={category.name}>
@@ -189,7 +203,7 @@ const CreateTicket: React.FC = () => {
               <Button
                 type="submit"
                 className="w-full py-3 bg-cust-blue text-white dark:text-black font-semibold rounded-md hover:bg-cust-blue transition dark:bg-cust-green dark:hover:bg-cust-green uppercase"
-                disabled={isPending}
+               
               >
                 {isPending ? 'Creating Ticket...' : 'Create Ticket'}
               </Button>
@@ -210,7 +224,7 @@ const CreateTicket: React.FC = () => {
         )}
 
         {isError && error && (
-          <h3 className='text-red font-bold'>
+          <h3 className='text-error-red font-bold'>
             {(error instanceof AxiosError ? error.response?.data.message : 'An unexpected error occurred') || 'An unexpected error occurred'}
           </h3>
         )}
@@ -218,7 +232,7 @@ const CreateTicket: React.FC = () => {
 
         {isCategoriesError && categoriesError && (
           <p className='text-error-red text-center mt-4'>
-            {(categoriesError as Error).message}
+            {(categoriesError instanceof AxiosError? categoriesError.response?.data.message : 'Categorry not set')}
           </p>
         )}
 

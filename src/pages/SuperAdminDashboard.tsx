@@ -25,6 +25,13 @@ export const SuperAdminDashboard = () => {
     navigate(`/tickets/1`)
   }
 
+  const handleShowMyTickets = () => {
+    navigate(`/my-tickets/${user?.id}`)
+  }
+
+  const handleRaiseTickets = () => {
+    navigate(`/create-ticket`)
+  }
 
 
   return (
@@ -61,11 +68,25 @@ export const SuperAdminDashboard = () => {
             Show Admins
           </button>)}
 
-          <button
+          {(user?.roleId === 1 || user?.roleId === 2) && (<button
             onClick={handleShowTickets}
-            className="bg-green-500 text-white px-6 py-3 rounded-md hover:bg-green-600 transition duration-200"
+            className="bg-orange-500 text-white px-6 py-3 rounded-md hover:bg-orange-600 transition duration-200"
           >
-            Tickets
+            Tickets Dashboard
+          </button>)}
+
+          <button
+            onClick={handleShowMyTickets}
+            className="bg-yellow-500 text-white px-6 py-3 rounded-md hover:bg-yellow-600 transition duration-200"
+          >
+            My Tickets
+          </button>
+
+          <button
+            onClick={handleRaiseTickets}
+            className="bg-gray-500 text-white px-6 py-3 rounded-md hover:bg-gray-600 transition duration-200"
+          >
+            Raise Ticket
           </button>
 
         </div>

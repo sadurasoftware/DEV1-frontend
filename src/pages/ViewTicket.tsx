@@ -9,9 +9,12 @@ import { useDeleteComment } from '@/hooks/useDeleteComment';
 import { viewBackStore } from '@/store/viewBackStore';
 import { AxiosError } from 'axios';
 import { useGetTicketHistory } from '@/hooks/useGetTicketHistory';
+import { commentValidation } from '@/validation/commentValidation';
+import { z } from 'zod';
 
 export const ViewTicket = () => {
   const { id } = useParams<{ id?: string }>()
+  const [commentTextError ,setCommentTextError] = useState('')
   const [commentData, setCommentData] = useState<{
     ticketId: string,
     commentText: string,
@@ -58,6 +61,8 @@ export const ViewTicket = () => {
 
     try {
 
+      commentValidation.parse({ commentText: commentData.commentText })
+
       const formData = new FormData();
       formData.append('commentText', commentData.commentText)
 
@@ -82,7 +87,9 @@ export const ViewTicket = () => {
         }
       )
     } catch (err) {
-      console.error('Something went wrong:', err)
+       if (err instanceof z.ZodError) {
+                setCommentTextError(err.errors[0]?.message || 'Invalid input')
+              }
     } finally {
       setIsSubmitting(false)
     }
@@ -310,6 +317,7 @@ export const ViewTicket = () => {
                       className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     />
                   </div>
+                  {commentTextError && <h3 className='text-error-red'>{commentTextError}</h3>}
                 </td>
               </tr>
               <tr className="border-t px-4 py-2 text-left">

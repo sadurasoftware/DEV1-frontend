@@ -5,8 +5,8 @@ export const useDeleteTicket = () => {
   const queryClient = useQueryClient()
   const {
     mutate: ticketDelete,
-    isError: isTicketError,
-    error: ticketError,
+    isError: isDeleteTicketError,
+    error: deleteticketError,
     isPending: deleteTicketPending,
   } = useMutation({
     mutationFn: (id: string) => deleteTicket(id),
@@ -20,8 +20,8 @@ export const useDeleteTicket = () => {
 
   return {
     ticketDelete,
-    isTicketError,
-    ticketError,
+    isDeleteTicketError, 
+    deleteticketError,
     deleteTicketPending,
   }
 }
