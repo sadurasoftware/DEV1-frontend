@@ -102,8 +102,6 @@ const RegisterForm: React.FC = () => {
     setFormErrors({})
     setApiError(null)
 
-    console.log(formData.department)
-
     if (formData.password !== formData.confirmPassword) {
       setFormErrors(prevErrors => ({
         ...prevErrors,

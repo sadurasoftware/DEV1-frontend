@@ -12,7 +12,7 @@
 export type Ticket = {
   title: string
   description: string
-  priority: 'Low' | 'Medium' | 'High'
+  priority: string 
   category: string
   // status: 'Open' | 'Closed' | 'In Progress' | 'Resolved' | 'Pending'
   attachments: File[]
