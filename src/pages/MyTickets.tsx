@@ -10,7 +10,7 @@ export const MyTickets = () => {
     const { ticketLoading, ticketData, isTicketError, ticketError, refetch } = useGetTicketsByUser(userId || '');
     const navigate = useNavigate();
     const {setBackRoutes} = viewBackStore()
-    const { ticketDelete } = useDeleteTicket();
+    const { ticketDelete, isDeleteTicketError, deleteticketError } = useDeleteTicket();
 
     const {user} = useLoginInfoStore();
     console.log(`User in Store:`, user)
@@ -25,6 +25,8 @@ export const MyTickets = () => {
     };
     
     const handleDeleteTicket = async (id: string) => {
+        const confirmDelete = window.confirm("Are you sure you want to delete this ticket?");
+        if (!confirmDelete) return;
         try {
             await ticketDelete(id);
             refetch();
@@ -50,7 +52,7 @@ export const MyTickets = () => {
             <div className="max-w-7xl mx-auto">
                 <h2 className="text-3xl font-semibold text-center text-indigo-600 mb-8">Tickets List</h2>
 
-                {ticketData && ticketData.tickets.length > 0 ? (
+                {!ticketLoading && ticketData && ticketData.tickets.length > 0 ? (
                     <div className="overflow-x-auto bg-white shadow-lg rounded-lg">
                         <table className="min-w-full table-auto">
                             <thead>
@@ -112,6 +114,13 @@ export const MyTickets = () => {
                     <div className="text-center text-lg text-gray-600 mt-6">No tickets available</div>
                 )}
             </div>
+            {isDeleteTicketError && 
+            <h3 className='text-red font-bold mt-5'>
+                {(deleteticketError instanceof AxiosError ? deleteticketError.response?.data.message : 'An unexpected error occurred') || 'An unexpected error occurred'}
+            </h3>
+            }
+            {ticketLoading && <p>Loading...</p>}
+
         </div>
     );
 };
