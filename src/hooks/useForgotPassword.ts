@@ -2,26 +2,24 @@ import { useMutation } from '@tanstack/react-query'
 import { forgotPassword } from '../apis/forgotpasswordAPI'
 import { ErrorResponse } from '../types/loginType'
 import { AxiosError } from 'axios'
-import { useState } from 'react'
 
 export const useForgotPasswordMutation = () => {
-  const [error, setError] = useState<string>('')
-  const [successMessage, setSuccessMessage] = useState<string>('')
 
-  const { mutate, isPending, isError, isSuccess, data } = useMutation({
+
+  const { mutate, isPending, isError, isSuccess, data, error } = useMutation({
     mutationFn: (email: string) => forgotPassword(email),
     onSuccess: data => {
       console.log('Password reset link sent successfully:', data)
-      setSuccessMessage('Password reset link sent successfully')
+
     },
-    onError: (error: AxiosError<ErrorResponse>) => {
+    onError: (error: AxiosError<any, ErrorResponse>) => {
       if (error.response) {
-        setError(error.response?.data.message || 'An unexpected error occurred')
+       console.error(error.response?.data.message || 'An unexpected error occurred')
       } else {
-        setError('An unexpected error occurred.')
+        console.error('An unexpected error occurred.')
       }
     },
   })
 
-  return { mutate, isPending, isError, isSuccess, successMessage, error, data }
+  return { mutate, isPending, isError, error, isSuccess, data }
 }

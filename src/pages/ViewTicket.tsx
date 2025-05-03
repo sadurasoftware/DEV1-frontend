@@ -14,7 +14,7 @@ import { z } from 'zod';
 
 export const ViewTicket = () => {
   const { id } = useParams<{ id?: string }>()
-  const [commentTextError ,setCommentTextError] = useState('')
+  const [commentTextError, setCommentTextError] = useState('')
   const [commentData, setCommentData] = useState<{
     ticketId: string,
     commentText: string,
@@ -30,8 +30,6 @@ export const ViewTicket = () => {
   const { backRoutes } = viewBackStore();
   const { ticketData } = useFetchTicketById(id || '')
   const { createCommentMutation, isError, error } = useCreateComment()
-
-
 
   // const { mutate } = useUpdateTicketStatus()
   const { commentsLoading, commentsData } = useFetchCommentsByTicketId(id || '')
@@ -87,9 +85,9 @@ export const ViewTicket = () => {
         }
       )
     } catch (err) {
-       if (err instanceof z.ZodError) {
-                setCommentTextError(err.errors[0]?.message || 'Invalid input')
-              }
+      if (err instanceof z.ZodError) {
+        setCommentTextError(err.errors[0]?.message || 'Invalid input')
+      }
     } finally {
       setIsSubmitting(false)
     }
@@ -173,42 +171,42 @@ export const ViewTicket = () => {
               <tr className="border-t px-4 py-2 text-left text-gray-600 bg-gray-100">
                 <th className="px-4 py-2">Attachment</th>
                 <td className="px-4 py-2" colSpan={3}>
-  {ticketData?.ticket?.attachments?.length > 0 ? (
-    <>
-      <button
-        onClick={handleImageClick}
-        className="text-blue-500 hover:underline"
-      >
-        Click here to view attachment
-      </button>
+                  {ticketData?.ticket?.attachments?.length > 0 ? (
+                    <>
+                      <button
+                        onClick={handleImageClick}
+                        className="text-blue-500 hover:underline"
+                      >
+                        Click here to view attachment
+                      </button>
 
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-4 rounded-lg max-w-4xl w-full relative overflow-y-auto max-h-screen">
-            <button
-              onClick={closeModal}
-              className="absolute top-2 right-2 text-black font-bold text-lg"
-            >
-              X
-            </button>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              {imageURLs.map((url, index) => (
-                <img
-                  key={index}
-                  src={url}
-                  alt={`Attachment ${index + 1}`}
-                  className="w-full h-auto border rounded shadow object-contain"
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-    </>
-  ) : (
-    "No Attachments"
-  )}
-</td>
+                      {isModalOpen && (
+                        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                          <div className="bg-white p-4 rounded-lg max-w-4xl w-full relative overflow-y-auto max-h-screen">
+                            <button
+                              onClick={closeModal}
+                              className="absolute top-2 right-2 text-black font-bold text-lg"
+                            >
+                              X
+                            </button>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                              {imageURLs.map((url, index) => (
+                                <img
+                                  key={index}
+                                  src={url}
+                                  alt={`Attachment ${index + 1}`}
+                                  className="w-full h-auto border rounded shadow object-contain"
+                                />
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    "No Attachments"
+                  )}
+                </td>
 
               </tr>
             </tbody>
@@ -342,9 +340,16 @@ export const ViewTicket = () => {
           </table>
         </div>
 
-        {isError && <h3 className='text-red font-bold'>
-          {(error instanceof AxiosError ? error.response?.data.message : 'An unexpected error occurred') || 'An unexpected error occurred'}</h3>}
+        {isError && (
+          <h3 className="text-red font-bold">
+            {Array.isArray(error?.response?.data?.errors)
+              ? error.response.data.errors[0]
+              : error?.response?.data?.message || 'An unexpected error occurred'}
+          </h3>
+        )}
 
+
+        
 
         {isCommentError && <h4 className='text-center'>{commentError}</h4>}
         <button
