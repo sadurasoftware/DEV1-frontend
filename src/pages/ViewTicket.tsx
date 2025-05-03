@@ -11,6 +11,7 @@ import { AxiosError } from 'axios';
 import { useGetTicketHistory } from '@/hooks/useGetTicketHistory';
 import { commentValidation } from '@/validation/commentValidation';
 import { z } from 'zod';
+import { useLoginInfoStore } from '@/store/useLoginInfoStore';
 
 export const ViewTicket = () => {
   const { id } = useParams<{ id?: string }>()
@@ -25,7 +26,8 @@ export const ViewTicket = () => {
     attachments: [],
   });
 
-
+  const { user } = useLoginInfoStore();
+  console.log('User in store:', user)
   const navigate = useNavigate()
   const { backRoutes } = viewBackStore();
   const { ticketData } = useFetchTicketById(id || '')
@@ -33,9 +35,9 @@ export const ViewTicket = () => {
 
   // const { mutate } = useUpdateTicketStatus()
   const { commentsLoading, commentsData } = useFetchCommentsByTicketId(id || '')
+  // console.log('Comments data:', commentsData?.comments?.attachments?.length)
   const { commentDelete, isCommentError, commentError, deleteSuccess } = useDeleteComment()
   const { historyLoading, historyData, isHistoryError, historyError } = useGetTicketHistory(id || '')
-  console.log('History:', historyData ? historyData : 'no data')
 
   const [imageURLs, setImageURLs] = useState<string[]>([])
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
@@ -170,12 +172,12 @@ export const ViewTicket = () => {
               </tr>
               <tr className="border-t px-4 py-2 text-left text-gray-600 bg-gray-100">
                 <th className="px-4 py-2">Attachment</th>
-                <td className="px-4 py-2" colSpan={3}>
+                <td className="px-4 py-2">
                   {ticketData?.ticket?.attachments?.length > 0 ? (
                     <>
                       <button
                         onClick={handleImageClick}
-                        className="text-blue-500 hover:underline"
+                        className="text-blue-500"
                       >
                         Click here to view attachment
                       </button>
@@ -207,7 +209,8 @@ export const ViewTicket = () => {
                     "No Attachments"
                   )}
                 </td>
-
+                <th className="px-4 py-2">Assigned to:</th>
+                <td className="px-4 py-2">{(ticketData?.ticket?.assignedUser?.firstname)? ticketData?.ticket?.assignedUser?.firstname : "Unassigned"}</td>
               </tr>
             </tbody>
           </table>
@@ -239,28 +242,31 @@ export const ViewTicket = () => {
                       <tr className="border-t px-4 py-2 text-left text-gray-600 bg-gray-100">
 
                         <td className="px-4 py-2" >
-                          <button
-                            onClick={() => handleCommentImageClick(comment.attachments || [])}
 
-                            className="text-blue-500 hover:underline"
-                          >
-                            Click here to view attachment
-                          </button>
 
-                          {isModalOpen && (
-                            <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-                              <div className="bg-white p-4 rounded-lg max-w-4xl w-full relative overflow-y-auto max-h-screen">
-                                <button onClick={closeModal} className="absolute top-2 right-2 text-black font-bold text-lg">X</button>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                                  {imageURLs.map((url, index) => (
-                                    <img key={index} src={url} alt={`Attachment ${index + 1}`} className="w-full h-auto border rounded shadow object-contain" />
-                                  ))}
+                          {comment?.attachments?.length > 0 ?
+                            (<>
+                              <button
+                                onClick={() => handleCommentImageClick(comment.attachments || [])}
+
+                                className="text-blue-500 hover:underline"
+                              >
+                                Click here to view attachment
+                              </button>
+
+                              {isModalOpen && (
+                                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                                  <div className="bg-white p-4 rounded-lg max-w-4xl w-full relative overflow-y-auto max-h-screen">
+                                    <button onClick={closeModal} className="absolute top-2 right-2 text-black font-bold text-lg">X</button>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                                      {imageURLs.map((url, index) => (
+                                        <img key={index} src={url} alt={`Attachment ${index + 1}`} className="w-full h-auto border rounded shadow object-contain" />
+                                      ))}
+                                    </div>
+                                  </div>
                                 </div>
-                              </div>
-                            </div>
-                          )}
-
-
+                              )}
+                            </>) : ('No attachments')}
 
 
                         </td>
@@ -294,52 +300,56 @@ export const ViewTicket = () => {
 
         </div>
 
-        {/* Tickets history */}
-
-        <div className="mt-4">
-          <table className="min-w-full table-auto border-t">
-            <tbody className="border-t">
-              <tr className="border-t px-4 py-2 text-left text-gray-600 bg-gray-100">
-                <th className="px-4 py-2">Ticket Comments</th>
-                <td className="px-4 py-2">
-                  <div>
-                    <Label htmlFor="description" className="text-xs font-medium">
-                      Comments
-                    </Label>
-                    <textarea
-                      id="commentText"
-                      name="commentText"
-                      onChange={handleChange}
-                      value={commentData.commentText}
-                      rows={4}
-                      className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    />
-                  </div>
-                  {commentTextError && <h3 className='text-error-red'>{commentTextError}</h3>}
-                </td>
-              </tr>
-              <tr className="border-t px-4 py-2 text-left">
-                <th className="px-4 py-2">Attachment</th>
-                <td className="px-4 py-2">
-                  <div>
-                    <Label htmlFor="attachments" className="text-xs font-medium">
-                      Attachments
-                    </Label>
-                    <input
-                      type="file"
-                      id="attachment"
-                      name="attachment"
-                      onChange={handleFileChange}
-                      multiple
-                      className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    />
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
+        {/* Ticket comments Post */}
+        {(
+          user?.department === 'Support team department' ||
+          user?.id === ticketData?.ticket?.user?.id ||
+          user?.id === ticketData?.ticket?.assignedUser?.id
+        ) &&
+          <div className="mt-4">
+            <table className="min-w-full table-auto border-t">
+              <tbody className="border-t">
+                <tr className="border-t px-4 py-2 text-left text-gray-600 bg-gray-100">
+                  <th className="px-4 py-2">Ticket Comments</th>
+                  <td className="px-4 py-2">
+                    <div>
+                      <Label htmlFor="description" className="text-xs font-medium">
+                        Comments
+                      </Label>
+                      <textarea
+                        id="commentText"
+                        name="commentText"
+                        onChange={handleChange}
+                        value={commentData.commentText}
+                        rows={4}
+                        className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      />
+                    </div>
+                    {commentTextError && <h3 className='text-error-red'>{commentTextError}</h3>}
+                  </td>
+                </tr>
+                <tr className="border-t px-4 py-2 text-left">
+                  <th className="px-4 py-2">Attachment</th>
+                  <td className="px-4 py-2">
+                    <div>
+                      <Label htmlFor="attachments" className="text-xs font-medium">
+                        Attachments
+                      </Label>
+                      <input
+                        type="file"
+                        id="attachment"
+                        name="attachment"
+                        onChange={handleFileChange}
+                        multiple
+                        className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      />
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        }
         {isError && (
           <h3 className="text-red font-bold">
             {Array.isArray(error?.response?.data?.errors)
@@ -349,7 +359,7 @@ export const ViewTicket = () => {
         )}
 
 
-        
+
 
         {isCommentError && <h4 className='text-center'>{commentError}</h4>}
         <button
