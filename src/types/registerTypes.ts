@@ -32,9 +32,9 @@ export type ErrorResponse = {
 export type PasswordType = {
   minLength: boolean
   maxLength: boolean
-  hasUpperCase: boolean
-  hasSpecialChar: boolean
-  hasNumber: boolean
+  // hasUpperCase: boolean
+  // hasSpecialChar: boolean
+  // hasNumber: boolean
 }
 
 export type userArray = {
