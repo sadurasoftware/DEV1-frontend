@@ -62,23 +62,20 @@ export const ViewTicket = () => {
     try {
 
       commentValidation.parse({ commentText: commentData.commentText })
-
+      setCommentTextError('')
+      setCommentData({
+        ticketId: '',
+        commentText: '',
+        attachments: [],
+      })
       const formData = new FormData();
       formData.append('commentText', commentData.commentText)
-
-
       if (commentData.attachments && commentData.attachments.length > 0) {
         commentData.attachments.forEach(file => {
           formData.append('attachments', file)
         })
       }
-
-
       await createCommentMutation({ ticketId: id, data: formData })
-
-
-
-
       setCommentData(
         {
           ticketId: '',
