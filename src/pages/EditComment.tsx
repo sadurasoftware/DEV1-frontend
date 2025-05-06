@@ -169,7 +169,7 @@ export const EditComment = () => {
 
         {isCommentUpdateError && updateCommentError && (
           <p className='text-error-red text-center mt-4'>
-            {(updateCommentError instanceof AxiosError ? updateCommentError.message : 'An unexpected error occurred') || 'An unexpected error occurred'}
+            {(updateCommentError instanceof AxiosError ? updateCommentError?.response?.data.message : 'An unexpected error occurred') || 'An unexpected error occurred'}
           </p>
         )}
 
