@@ -269,7 +269,9 @@ export const ViewTicket = () => {
                         </td>
                       </tr>
                     </td>
-                    <td className='px-4 py-2'>
+                    {(comment?.commenter?.id === user?.id)? (
+                      <>
+                      <td className='px-4 py-2'>
                       <button
                         className='bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-200'
                         onClick={() => handleEdit(comment.id)}
@@ -285,6 +287,13 @@ export const ViewTicket = () => {
                         Delete
                       </button>
                     </td>
+                      </>
+                      
+                    ):(
+                      <td className='text-blue-500' colSpan={2}>You can not edit or delete this comment</td>
+                    ) }
+                    
+                    
                   </tr>
                 ))}
               </tbody>

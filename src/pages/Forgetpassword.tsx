@@ -1,12 +1,12 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useForgotPasswordMutation } from '../hooks/useForgotPassword'
 import { emailValidation } from '@/validation/emailValidation'
 import { z } from 'zod'
-import { AxiosError } from 'axios'
+// import { AxiosError } from 'axios'
 
 export const ForgotPassword = () => {
   const [email, setEmail] = useState<string>('')
@@ -26,6 +26,18 @@ export const ForgotPassword = () => {
     }
 
   }
+
+  useEffect(()=>{
+    if(isError)
+      {
+        setEmailError(error?.response?.data?.error || 'Invalid input')
+      }
+      else
+      {
+        setEmailError('')
+      }
+  },[isError])
+  
 
   return (
     <div className="min-h-screen flex items-center justify-center">
@@ -65,13 +77,13 @@ export const ForgotPassword = () => {
             <p className="text-error-red text-xs mt-4">{emailError}</p>
           )}
 
-          {isError && (
+          {/* {isError && (
             <p className="text-error-red text-xs mt-4">
               {(error instanceof AxiosError)
                 ? (error.response?.data?.error || error.response?.data?.error.message)
                 : 'Forgot password error'}
             </p>
-          )}
+          )} */}
 
 
 

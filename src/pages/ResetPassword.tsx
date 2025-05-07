@@ -20,10 +20,10 @@ export const ResetPassword = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (token && password) {
+    if (token) {
       try {
 
-        passwordValidation.parse({ password })
+        passwordValidation.parse({ password, confirmPassword })
         if (password !== confirmPassword) {
           setPasswordError('Passwords do not match')
           return
@@ -36,7 +36,7 @@ export const ResetPassword = () => {
         }
       }
     } else {
-      setPasswordError('Token or password is missing')
+      setPasswordError('Token is missing')
     }
   }
 
