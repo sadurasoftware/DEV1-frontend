@@ -125,6 +125,8 @@ export const ViewTicket = () => {
   }
 
   const handleDelete = (id: any) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this Comment?");
+        if (!confirmDelete) return;
     commentDelete(id)
   }
 
