@@ -10,17 +10,24 @@ import { passwordValidation } from '../validation/passwordValidation'
 
 export const ResetPassword = () => {
   const [password, setPassword] = useState<string>('')
+  const [confirmPassword, setConfirmPassword] = useState<string>('')
   const [passwordError, setPasswordError] = useState<string>('')
   const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [searchParams] = useSearchParams()
   const token = searchParams.get('token')
-  const { mutate, isError, error, successMessage } = useResetPasswordMutation()
+  const { mutate, isPending, isError, error, successMessage } = useResetPasswordMutation()
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (token && password) {
+    if (token) {
       try {
-        passwordValidation.parse({ password })
+
+        passwordValidation.parse({ password, confirmPassword })
+        if (password !== confirmPassword) {
+          setPasswordError('Passwords do not match')
+          return
+        }
         setPasswordError('')
         mutate({ password, token })
       } catch (err) {
@@ -29,7 +36,7 @@ export const ResetPassword = () => {
         }
       }
     } else {
-      setPasswordError('Token or password is missing')
+      setPasswordError('Token is missing')
     }
   }
 
@@ -42,7 +49,7 @@ export const ResetPassword = () => {
         <div className="space-y-4">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="relative">
-              <Label htmlFor="email" className="label">
+              <Label htmlFor="password" className="label">
                 New Password
               </Label>
               <Input
@@ -61,6 +68,26 @@ export const ResetPassword = () => {
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
               </span>
             </div>
+            <div className="relative">
+              <Label htmlFor="confirmPassword" className="label">
+                Confirm New Password
+              </Label>
+              <Input
+                type={showConfirmPassword ? 'text' : 'password'}
+                id="confirmPassword"
+                name="confirmPassword"
+                placeholder="Enter your Confirm password"
+                value={confirmPassword}
+                onChange={e => setConfirmPassword(e.target.value)}
+              
+              />
+              <span
+                className="absolute right-3 top-10 cursor-pointer"
+                onClick={() => setShowConfirmPassword(prev => !prev)}
+              >
+                {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+              </span>
+            </div>
             {isError && <p className="text-error-red text-xs mt-4 ">{error}</p>}
             {passwordError && (
               <p className="text-error-red text-xs mt-4 ">{passwordError}</p>
@@ -75,7 +102,7 @@ export const ResetPassword = () => {
                 type="submit"
                 className="w-full mt-6 py-3 bg-cust-blue text-white dark:text-black font-semibold rounded-md hover:bg-cust-blue transition dark:bg-cust-green dark:hover:bg-cust-green uppercase"
               >
-                Reset password
+                {isPending? ('Resetting password...'):'Reset Password'}
               </Button>
             </div>
             {/*  <input

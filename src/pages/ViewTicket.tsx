@@ -9,34 +9,36 @@ import { useDeleteComment } from '@/hooks/useDeleteComment';
 import { viewBackStore } from '@/store/viewBackStore';
 import { AxiosError } from 'axios';
 import { useGetTicketHistory } from '@/hooks/useGetTicketHistory';
+import { commentValidation } from '@/validation/commentValidation';
+import { z } from 'zod';
+import { useLoginInfoStore } from '@/store/useLoginInfoStore';
 
 export const ViewTicket = () => {
   const { id } = useParams<{ id?: string }>()
+  const [commentTextError, setCommentTextError] = useState('')
   const [commentData, setCommentData] = useState<{
-    ticketId: string;
-    commentText: string;
-    attachment: File | null;
+    ticketId: string,
+    commentText: string,
+    attachments: File[]
   }>({
     ticketId: '',
     commentText: '',
-    attachment: null,
+    attachments: [],
   });
 
-
+  const { user } = useLoginInfoStore();
+  console.log('User in store:', user)
   const navigate = useNavigate()
   const { backRoutes } = viewBackStore();
   const { ticketData } = useFetchTicketById(id || '')
   const { createCommentMutation, isError, error } = useCreateComment()
 
-
-
   // const { mutate } = useUpdateTicketStatus()
   const { commentsLoading, commentsData } = useFetchCommentsByTicketId(id || '')
+  // console.log('Comments data:', commentsData?.comments?.attachments?.length)
   const { commentDelete, isCommentError, commentError, deleteSuccess } = useDeleteComment()
   const { historyLoading, historyData, isHistoryError, historyError } = useGetTicketHistory(id || '')
-  console.log('History:', historyData ? historyData : 'no data')
 
-  const [imageURL, setImageURL] = useState<string>('')
   const [imageURLs, setImageURLs] = useState<string[]>([])
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -59,30 +61,32 @@ export const ViewTicket = () => {
 
     try {
 
+      commentValidation.parse({ commentText: commentData.commentText })
+      setCommentTextError('')
+      setCommentData({
+        ticketId: '',
+        commentText: '',
+        attachments: [],
+      })
       const formData = new FormData();
       formData.append('commentText', commentData.commentText)
-
-
-      if (commentData.attachment) {
-        formData.append('attachment', commentData.attachment)
+      if (commentData.attachments && commentData.attachments.length > 0) {
+        commentData.attachments.forEach(file => {
+          formData.append('attachments', file)
+        })
       }
-
-
       await createCommentMutation({ ticketId: id, data: formData })
-
-
-
-
       setCommentData(
         {
           ticketId: '',
           commentText: '',
-          attachment: null,
+          attachments: [],
         }
       )
-      console.log('Ticket status updated and comment submitted successfully.')
     } catch (err) {
-      console.error('Something went wrong:', err)
+      if (err instanceof z.ZodError) {
+        setCommentTextError(err.errors[0]?.message || 'Invalid input')
+      }
     } finally {
       setIsSubmitting(false)
     }
@@ -96,22 +100,25 @@ export const ViewTicket = () => {
     }
   }
 
-  const handleCommentImageClick = (attachmentUrl: string) => {
-    if (attachmentUrl) {
-      setImageURL(attachmentUrl)
+  const handleCommentImageClick = (attachments: { url: string }[]) => {
+    if (attachments?.length) {
+      const urls = attachments.map(att => att.url)
+      setImageURLs(urls)
       setIsModalOpen(true)
     }
   }
 
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
-    if (files && files[0]) {
-      setCommentData((prevData) => ({
+    if (files && files.length > 0) {
+      setCommentData(prevData => ({
         ...prevData,
-        attachment: files[0],
-      }));
+        attachments: Array.from(files),
+      }))
     }
-  };
+  }
+
 
   const handleEdit = (commentId: string) => {
     navigate(`/comments/${id}/${commentId}`)
@@ -123,11 +130,11 @@ export const ViewTicket = () => {
 
   const closeModal = () => {
     setIsModalOpen(false)
-    setImageURL('')
   };
 
   return (
     <div className="min-h-screen bg-gray-100 py-8 px-6">
+      {/* Ticket Details Display */}
       <div className="max-w mx-auto bg-white p-6 rounded-lg shadow-lg">
         <h1 className="text-3xl font-semibold text-center text-indigo-600 mb-6">
           Ticket Details
@@ -162,54 +169,52 @@ export const ViewTicket = () => {
               </tr>
               <tr className="border-t px-4 py-2 text-left text-gray-600 bg-gray-100">
                 <th className="px-4 py-2">Attachment</th>
-                <td className="px-4 py-2" colSpan={3}>
-                  <button
-                    onClick={handleImageClick}
-                    className="text-blue-500 hover:underline"
-                  >
-                    Click here to view attachment
-                  </button>
-                  {isModalOpen && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-                      <div className="bg-white p-4 rounded-lg max-w-lg relative">
-                        <button
-                          onClick={closeModal}
-                          className="absolute top-2 right-2 text-black font-bold text-lg"
-                        >
-                          X
-                        </button>
-                        <img
-                          src={imageURL}
-                          alt="Ticket Attachment"
-                          className="max-w-full max-h-screen object-contain"
-                        />
-                      </div>
-                    </div>
-                  )}
-                  {ticketData?.ticket?.attachments.length > 0 ? (
-                    isModalOpen && (
-                      <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-                        <div className="bg-white p-4 rounded-lg max-w-4xl w-full relative overflow-y-auto max-h-screen">
-                          <button onClick={closeModal} className="absolute top-2 right-2 text-black font-bold text-lg">X</button>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                            {imageURLs.map((url, index) => (
-                              <img key={index} src={url} alt={`Attachment ${index + 1}`} className="w-full h-auto border rounded shadow object-contain" />
-                            ))}
+                <td className="px-4 py-2">
+                  {ticketData?.ticket?.attachments?.length > 0 ? (
+                    <>
+                      <button
+                        onClick={handleImageClick}
+                        className="text-blue-500"
+                      >
+                        Click here to view attachment
+                      </button>
+
+                      {isModalOpen && (
+                        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                          <div className="bg-white p-4 rounded-lg max-w-4xl w-full relative overflow-y-auto max-h-screen">
+                            <button
+                              onClick={closeModal}
+                              className="absolute top-2 right-2 text-black font-bold text-lg"
+                            >
+                              X
+                            </button>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                              {imageURLs.map((url, index) => (
+                                <img
+                                  key={index}
+                                  src={url}
+                                  alt={`Attachment ${index + 1}`}
+                                  className="w-full h-auto border rounded shadow object-contain"
+                                />
+                              ))}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    )
+                      )}
+                    </>
                   ) : (
                     "No Attachments"
                   )}
-
-
-
                 </td>
+                <th className="px-4 py-2">Assigned to:</th>
+                <td className="px-4 py-2">{(ticketData?.ticket?.assignedUser?.firstname)? ticketData?.ticket?.assignedUser?.firstname : "Unassigned"}</td>
               </tr>
             </tbody>
           </table>
         </div>
+
+        {/* If comments available show comments table */}
+
         <div>
           {!commentsLoading && commentsData?.comments?.length > 0 ? (
             <table className="min-w-full table-auto border-t mt-5">
@@ -231,18 +236,42 @@ export const ViewTicket = () => {
                     <td className="px-4 py-2">{comment.commentText}</td>
                     <td className="px-4 py-2">{comment.commenter?.firstname} {comment.commenter?.lastname}</td>
                     <td className="px-4 py-2">
-                      {comment.attachment ? (
-                        <button
-                          onClick={() => handleCommentImageClick(comment.attachment)}
-                          className="text-blue-500 hover:underline"
-                        >
-                          View
-                        </button>
-                      ) : (
-                        'No Attachment'
-                      )}
+                      <tr className="border-t px-4 py-2 text-left text-gray-600 bg-gray-100">
+
+                        <td className="px-4 py-2" >
+
+
+                          {comment?.attachments?.length > 0 ?
+                            (<>
+                              <button
+                                onClick={() => handleCommentImageClick(comment.attachments || [])}
+
+                                className="text-blue-500 hover:underline"
+                              >
+                                Click here to view attachment
+                              </button>
+
+                              {isModalOpen && (
+                                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                                  <div className="bg-white p-4 rounded-lg max-w-4xl w-full relative overflow-y-auto max-h-screen">
+                                    <button onClick={closeModal} className="absolute top-2 right-2 text-black font-bold text-lg">X</button>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                                      {imageURLs.map((url, index) => (
+                                        <img key={index} src={url} alt={`Attachment ${index + 1}`} className="w-full h-auto border rounded shadow object-contain" />
+                                      ))}
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                            </>) : ('No attachments')}
+
+
+                        </td>
+                      </tr>
                     </td>
-                    <td className='px-4 py-2'>
+                    {(comment?.commenter?.id === user?.id)? (
+                      <>
+                      <td className='px-4 py-2'>
                       <button
                         className='bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-200'
                         onClick={() => handleEdit(comment.id)}
@@ -258,6 +287,13 @@ export const ViewTicket = () => {
                         Delete
                       </button>
                     </td>
+                      </>
+                      
+                    ):(
+                      <td className='text-blue-500' colSpan={2}>You can not edit or delete this comment</td>
+                    ) }
+                    
+                    
                   </tr>
                 ))}
               </tbody>
@@ -269,50 +305,66 @@ export const ViewTicket = () => {
           {deleteSuccess && <h4>Comment deleted Successfully..!</h4>}
 
         </div>
-        <div className="mt-4">
-          <table className="min-w-full table-auto border-t">
-            <tbody className="border-t">
-              <tr className="border-t px-4 py-2 text-left text-gray-600 bg-gray-100">
-                <th className="px-4 py-2">Ticket Comments</th>
-                <td className="px-4 py-2">
-                  <div>
-                    <Label htmlFor="description" className="text-xs font-medium">
-                      Comments
-                    </Label>
-                    <textarea
-                      id="commentText"
-                      name="commentText"
-                      onChange={handleChange}
-                      value={commentData.commentText}
-                      rows={4}
-                      className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    />
-                  </div>
-                </td>
-              </tr>
-              <tr className="border-t px-4 py-2 text-left">
-                <th className="px-4 py-2">Attachment</th>
-                <td className="px-4 py-2">
-                  <div>
-                    <Label htmlFor="attachments" className="text-xs font-medium">
-                      Attachments
-                    </Label>
-                    <input
-                      type="file"
-                      id="attachment"
-                      name="attachment"
-                      onChange={handleFileChange}
-                      className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    />
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
 
-        {isError && <h3 className='text-red font-bold'>
-          {(error instanceof AxiosError ? error.response?.data.message : 'An unexpected error occurred') || 'An unexpected error occurred'}</h3>}
+        {/* Ticket comments Post */}
+        {(
+          user?.department === 'Support team department' ||
+          user?.id === ticketData?.ticket?.user?.id ||
+          user?.id === ticketData?.ticket?.assignedUser?.id
+        ) &&
+          <div className="mt-4">
+            <table className="min-w-full table-auto border-t">
+              <tbody className="border-t">
+                <tr className="border-t px-4 py-2 text-left text-gray-600 bg-gray-100">
+                  <th className="px-4 py-2">Ticket Comments</th>
+                  <td className="px-4 py-2">
+                    <div>
+                      <Label htmlFor="description" className="text-xs font-medium">
+                        Comments
+                      </Label>
+                      <textarea
+                        id="commentText"
+                        name="commentText"
+                        onChange={handleChange}
+                        value={commentData.commentText}
+                        rows={4}
+                        className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      />
+                    </div>
+                    {commentTextError && <h3 className='text-error-red'>{commentTextError}</h3>}
+                  </td>
+                </tr>
+                <tr className="border-t px-4 py-2 text-left">
+                  <th className="px-4 py-2">Attachment</th>
+                  <td className="px-4 py-2">
+                    <div>
+                      <Label htmlFor="attachments" className="text-xs font-medium">
+                        Attachments
+                      </Label>
+                      <input
+                        type="file"
+                        id="attachment"
+                        name="attachment"
+                        onChange={handleFileChange}
+                        multiple
+                        className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      />
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        }
+        {isError && (
+          <h3 className="text-red font-bold">
+            {Array.isArray(error?.response?.data?.errors)
+              ? error.response.data.errors[0]
+              : error?.response?.data?.message || 'An unexpected error occurred'}
+          </h3>
+        )}
+
+
 
 
         {isCommentError && <h4 className='text-center'>{commentError}</h4>}

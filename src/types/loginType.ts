@@ -11,6 +11,7 @@ export type User = {
   password: string
   isVerified: boolean
   roleId: number
+  department:string
   createdAt: string
   updatedAt: string
 }

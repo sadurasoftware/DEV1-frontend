@@ -1,8 +1,9 @@
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import axios, { AxiosError } from 'axios'
 import { updateComment } from '@/apis/commentsApi'
 
 export const useEditComment = () => {
+  const queryClient = useQueryClient()
   const {
     mutate,
     isPending: updateCommentPending,
@@ -10,9 +11,9 @@ export const useEditComment = () => {
     error: updateCommentError,
     isSuccess: updateCommentSuccess,
   } = useMutation({
-    mutationFn: ({ ticketId, commentId, commentText }: { ticketId:any, commentId:any, commentText:any }) => updateComment(ticketId, commentId, commentText),
-    onSuccess: commentText => {
-      console.log('comment data updated:', commentText)
+    mutationFn: ({ ticketId, commentId, formData }: { ticketId:any, commentId:any, formData:FormData }) => updateComment(ticketId, commentId, formData),
+    onSuccess: ()=> {
+      queryClient.invalidateQueries({ queryKey: ['comment'] })
     },
     onError: (error: any) => {
       if (axios.isAxiosError(error)) {

@@ -50,7 +50,7 @@ export const Navbar: React.FC = () => {
                   </Avatar>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
-                  <DropdownMenuLabel>user name</DropdownMenuLabel>
+                  <DropdownMenuLabel>{user?.firstname}{' '}{user?.lastname}</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   {user?.roleId === 3 && (
                     <DropdownMenuItem>
@@ -80,12 +80,12 @@ export const Navbar: React.FC = () => {
                       </DropdownMenuItem>
                     </>
                   )}
-                    <DropdownMenuItem>
+                    {/* <DropdownMenuItem>
                       <Link to="/create-ticket">Raise ticket</Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem>
                       <Link to={`/my-tickets/${user?.id}`}>My tickets</Link>
-                    </DropdownMenuItem>
+                    </DropdownMenuItem> */}
                     <DropdownMenuItem>
                       <Link to={`/my-profile/${user?.id}`}>My profile</Link>
                     </DropdownMenuItem>

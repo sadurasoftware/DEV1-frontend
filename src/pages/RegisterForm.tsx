@@ -7,15 +7,15 @@ import { useLoginInfoStore } from '@/store/useLoginInfoStore'
 import { roleType } from '@/types/roleTypes'
 import React, { useEffect, useState } from 'react'
 import { FaEye, FaEyeSlash } from 'react-icons/fa'
-import { FaCircleCheck, FaCircleXmark } from 'react-icons/fa6'
 import { Link } from 'react-router-dom'
-import { z } from 'zod'
+import {  z } from 'zod'
 import { useFetchDepartments } from '../hooks/useFetchDepartments'
 import { useFetchRoles } from '../hooks/useFetchRoles'
 import { useRegisterMutation } from '../hooks/useRegister'
 import useThemeStore from '../store/themeStore'
-import { PasswordType, User } from '../types/registerTypes'
+import { User } from '../types/registerTypes'
 import { registerValidation } from '../validation/registerValidation'
+
 
 const RegisterForm: React.FC = () => {
   const { theme } = useThemeStore()
@@ -29,38 +29,38 @@ const RegisterForm: React.FC = () => {
     confirmPassword: '',
     terms: false,
     role: 'user',
-    department: 'General department',
+    department: '',
   })
-  const [passwordCondition, setPasswordCondition] = useState<PasswordType>({
-    minLength: false,
-    maxLength: false,
-    hasUpperCase: false,
-    hasSpecialChar: false,
-    hasNumber: false,
-  })
+
   const [copy, setCopy] = useState<string>('')
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [passwordStrength, setPasswordStrength] = useState<any>()
+  const [passwordStrengthValue, setPasswordStrengthValue] = useState<any>()
 
-  const validatedPassword = (password: string) => {
-    if (password === '') {
-      setPasswordCondition({
-        minLength: false,
-        maxLength: false,
-        hasUpperCase: false,
-        hasSpecialChar: false,
-        hasNumber: false,
-      })
-    } else {
-      setPasswordCondition({
-        minLength: password.length >= 8,
-        maxLength: password.length <= 20,
-        hasUpperCase: /[A-Z]/.test(password),
-        hasNumber: /[0-9]/.test(password),
-        hasSpecialChar: /[^A-Za-z0-9]/.test(password),
-      })
+  const [passwordStrengthColor, setPasswordStrengthColor] = useState('')
+
+  const stongPasswordChecking = (password: string) => {
+    let score = 0
+    if (password.length >= 8) {
+      score += 10
     }
+    if (/[a-z]/.test(password)) {
+      score += 10
+    }
+    if (/[A-Z]/.test(password)) {
+      score += 20
+    }
+    if (/[0-9]/.test(password)) {
+      score += 30
+    }
+    if (/[!@#$%^&*]/.test(password)) {
+      score += 30
+    }
+    return score
   }
+
+
 
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({})
   const [apiError, setApiError] = useState<string | null>(null)
@@ -91,18 +91,38 @@ const RegisterForm: React.FC = () => {
     })
 
     if (name === 'password') {
-      validatedPassword(value)
+      const strengthValue = stongPasswordChecking(value)
+      setPasswordStrengthValue(strengthValue)
+
+      if (strengthValue >= 80) {
+        setPasswordStrength('Strong')
+        setPasswordStrengthColor('#22c55e')
+      }
+      else if (strengthValue >= 60) {
+        setPasswordStrength('Good')
+        setPasswordStrengthColor('#349beb')
+      }
+      else if (strengthValue >= 40) {
+        setPasswordStrength('Medium')
+        setPasswordStrengthColor('#facc15')
+      }
+      else {
+        setPasswordStrength('Weak')
+        setPasswordStrengthColor('#f87171')
+      }
+
     }
+   
+  
     setFormErrors({})
     setApiError(null)
+   
   }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setFormErrors({})
     setApiError(null)
-
-    console.log(formData.department)
 
     if (formData.password !== formData.confirmPassword) {
       setFormErrors(prevErrors => ({
@@ -118,15 +138,15 @@ const RegisterForm: React.FC = () => {
         role: 'user',
       }))
     }
-     const newFormData = {
+    const newFormData = {
       firstname: formData.firstname,
-            lastname: formData.lastname,
-            email: formData.email,
-            password: formData.password,
-            terms: formData.terms,
-            role: formData.role,
-            department: formData.department,
-     }
+      lastname: formData.lastname,
+      email: formData.email,
+      password: formData.password,
+      terms: formData.terms,
+      role: formData.role,
+      department: formData.department,
+    }
     try {
       registerValidation.parse(formData)
       mutate(newFormData, {
@@ -140,7 +160,7 @@ const RegisterForm: React.FC = () => {
             confirmPassword: '',
             terms: false,
             role: 'user',
-            department: 'general',
+            department: '',
           })
         },
         onError: err => {
@@ -195,10 +215,7 @@ const RegisterForm: React.FC = () => {
       password: generatePassword,
       confirmPassword: generatePassword,
     }))
-    validatedPassword(generatePassword)
   }
-
-  // console.log(formData.password);
 
   const copyToClipboard = () => {
     if (formData.password) {
@@ -206,12 +223,6 @@ const RegisterForm: React.FC = () => {
       setCopy('Copied')
     }
   }
-
-  const errPWmxLength = passwordCondition.maxLength
-  const errPWminLength = passwordCondition.minLength
-  const errPWupperClass = passwordCondition.hasUpperCase
-  const errPWnum = passwordCondition.hasNumber
-  const errPWspeChar = passwordCondition.hasSpecialChar
 
   return (
     <>
@@ -291,6 +302,22 @@ const RegisterForm: React.FC = () => {
                   >
                     {showPassword ? <FaEyeSlash /> : <FaEye />}
                   </span>
+
+                  <div className="flex gap-2 w-full h-0.5 mt-3">
+                    {[0, 1, 2, 3].map((i) => (
+                      <div
+                        key={i}
+                        className="flex-1 rounded-sm transition-all duration-300"
+                        style={{
+                          backgroundColor:
+                            passwordStrengthValue >= (i + 1) * 20 ? passwordStrengthColor : '#e5e7eb',
+                        }}
+                      />
+                    ))}
+                  </div>
+                  <Label htmlFor="password" className="text-xs font-medium text-right">
+                    {passwordStrength}
+                  </Label>
                 </div>
                 {isSuperAdmin && (
                   <div>
@@ -318,77 +345,6 @@ const RegisterForm: React.FC = () => {
                       {formErrors.password}
                     </p>
                   )}
-                  <p
-                    className={
-                      errPWmxLength
-                        ? 'errorMsg text-success-green '
-                        : 'errorMsg text-error-red'
-                    }
-                  >
-                    {errPWmxLength ? (
-                      <FaCircleCheck size={10} />
-                    ) : (
-                      <FaCircleXmark size={10} />
-                    )}
-                    Maximum 20 characters
-                  </p>
-                  <p
-                    className={
-                      errPWminLength
-                        ? 'errorMsg text-success-green '
-                        : `errorMsg text-error-red`
-                    }
-                  >
-                    {errPWminLength ? (
-                      <FaCircleCheck size={10} />
-                    ) : (
-                      <FaCircleXmark size={10} />
-                    )}
-                    At least 8 characters long
-                  </p>
-
-                  <p
-                    className={
-                      errPWupperClass
-                        ? 'errorMsg text-success-green '
-                        : `errorMsg text-error-red`
-                    }
-                  >
-                    {errPWupperClass ? (
-                      <FaCircleCheck size={10} />
-                    ) : (
-                      <FaCircleXmark size={10} />
-                    )}
-                    Contains at least one uppercase letter
-                  </p>
-                  <p
-                    className={
-                      errPWnum
-                        ? 'errorMsg text-success-green '
-                        : `errorMsg text-error-red`
-                    }
-                  >
-                    {errPWnum ? (
-                      <FaCircleCheck size={10} />
-                    ) : (
-                      <FaCircleXmark size={10} />
-                    )}
-                    Contains at least one number
-                  </p>
-                  <p
-                    className={
-                      errPWspeChar
-                        ? 'errorMsg text-success-green '
-                        : `errorMsg text-error-red`
-                    }
-                  >
-                    {errPWspeChar ? (
-                      <FaCircleCheck size={10} />
-                    ) : (
-                      <FaCircleXmark size={10} />
-                    )}
-                    Contains at least one special character
-                  </p>
                 </div>
               </div>
               <div>
@@ -460,6 +416,7 @@ const RegisterForm: React.FC = () => {
                   onChange={handleChange}
                   className={`w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500`}
                 >
+                  <option value="">Select department</option>
                   {!departmentsLoading ? (
                     departments?.map((department, index) => (
                       <option key={index} value={department.name}>
