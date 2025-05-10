@@ -7,9 +7,11 @@ import { useDebounce } from "@/hooks/useDebounce";
 import { viewBackStore } from "@/store/viewBackStore";
 import { useFetchTicketsCount } from "@/hooks/useFetchTicketsCount";
 import { AxiosError } from "axios";
+import { useLoginInfoStore } from "@/store/useLoginInfoStore";
 
 export const TicketsListPage = () => {
     const { pageno } = useParams();
+    const {user} = useLoginInfoStore();
     const [filterData, setFilterData] = useState({
         status: '',
         priority: '',
@@ -185,7 +187,11 @@ export const TicketsListPage = () => {
                                         <th className="px-4 py-3 text-sm font-semibold text-gray-600">Description</th>
                                         <th className="px-4 py-3 text-sm font-semibold text-gray-600">Priority</th>
                                         <th className="px-4 py-3 text-sm font-semibold text-gray-600">Status</th>
-                                        <th className="px-4 py-3 text-sm font-semibold text-gray-600">Update Status</th>
+                                        {
+                                            user?.department === 'Support team department' && 
+                                            <th className="px-4 py-3 text-sm font-semibold text-gray-600">Update Status</th>
+                                        }
+                                        
                                         <th className="px-4 py-3 text-sm font-semibold text-gray-600">Assigned To</th>
                                         <th className="px-4 py-3 text-sm font-semibold text-gray-600">View</th>
                                     </tr>
@@ -197,12 +203,15 @@ export const TicketsListPage = () => {
                                             <td className="px-4 py-3 text-sm">{ticket.description}</td>
                                             <td className="px-4 py-3 text-sm">{ticket.priority}</td>
                                             <td className="px-4 py-3 text-sm">{ticket.status}</td>
-                                            <td className="px-4 py-3 text-sm"><button
-                                                onClick={() => handleUpdateStatus(ticket.id)}
-                                                className="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition duration-200"
-                                            >
-                                                Update Status
-                                            </button></td>
+                                            {user?.department === 'Support team department' && 
+                                             <td className="px-4 py-3 text-sm"><button
+                                             onClick={() => handleUpdateStatus(ticket.id)}
+                                             className="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition duration-200"
+                                         >
+                                             Update Status
+                                         </button></td>
+                                            }
+                                           
                                             <td className="px-4 py-3 text-sm">
                                                 {ticket.assignedUser ? (
                                                     <span>{ticket.assignedUser.firstname}</span>
