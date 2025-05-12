@@ -11,6 +11,7 @@ import { z } from 'zod'
 
 export const EditComment = () => {
   const { ticketId, commentId } = useParams()
+  const [success, setSuccess] = useState('')
   const {
     commentLoading,
     commentData,
@@ -23,6 +24,7 @@ export const EditComment = () => {
     updateCommentSuccess,
     isCommentUpdateError,
     updateCommentError,
+    updateCommentData
   } = useEditComment()
 
   const [comment, setComment] = useState<any>({
@@ -32,6 +34,16 @@ export const EditComment = () => {
   })
 
   const [errorMsg, setErrorMsg] = useState('')
+
+  
+
+  useEffect(()=>{
+    if(updateCommentSuccess)
+      {
+        setSuccess(updateCommentData?.message)
+        setErrorMsg('')
+      }
+  }, [updateCommentSuccess])
 
   const [existingAttachments, setExistingAttachments] = useState<string[]>([])
   const [newFiles, setNewFiles] = useState<File[]>([])
@@ -89,7 +101,9 @@ export const EditComment = () => {
     })}
     catch (err) {
           if (err instanceof z.ZodError) {
+            setSuccess('')
             setErrorMsg(err.errors[0]?.message || 'Invalid input')
+            
           }
         }
   }
@@ -194,7 +208,7 @@ export const EditComment = () => {
         )}
 
         {updateCommentSuccess && (
-          <h2 className="text-center text-green-600 font-semibold">Comment updated successfully!</h2>
+          <h2 className="text-center text-green-600 font-semibold">{success}</h2>
         )}
 
         <div className="pt-4 text-left">
