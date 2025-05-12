@@ -12,7 +12,7 @@ import { z } from 'zod'
 import { useLoginInfoStore } from '../store/useLoginInfoStore'
 
 export const Login = () => {
-  // Get from store
+  // Get from store ---
   const setLoginInfo = useLoginInfoStore(state => state.setLoginInfo)
 
   const [user, setUser] = useState<LoginUser>({ email: '', password: '' })
@@ -45,17 +45,17 @@ export const Login = () => {
   useEffect(() => {
     if (isSuccess && data) {
       setSuccess(data.user.firstname + ' ' + data.user.lastname)
-      
+
       setLoginInfo(data?.token, data?.user)
       setError('')
       console.log('Inside login page..')
       console.log(`RoleId:${data?.user?.roleId}`)
       if (data?.user) {
-        navigate('/dashboard');
+        navigate('/dashboard')
       } else {
-        navigate('/login');
+        navigate('/login')
       }
-      
+
       setUser({ email: '', password: '' })
     }
 
