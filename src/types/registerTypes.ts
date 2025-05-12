@@ -10,13 +10,23 @@ export type User = {
   department: string
 }
 
+export type RegisterUser = {
+  // id: number
+  firstname: string
+  lastname: string
+  email: string
+  password: string
+  confirmPassword: string
+  terms: boolean
+  department: string
+}
+
 export type SendUser = {
   firstname: string
   lastname: string
   email: string
   password: string
   terms: boolean
-  role: string
   department: string
 }
 

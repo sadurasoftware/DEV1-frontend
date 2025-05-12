@@ -5,10 +5,13 @@ import { useFetchCommentById } from '@/hooks/usefetchCommentById'
 import { useState, useEffect } from 'react'
 import { useEditComment } from '@/hooks/useEditComment'
 import { AxiosError } from 'axios'
+import { commentValidation } from '@/validation/commentValidation'
+import { z } from 'zod'
 
 
 export const EditComment = () => {
   const { ticketId, commentId } = useParams()
+  const [success, setSuccess] = useState('')
   const {
     commentLoading,
     commentData,
@@ -21,6 +24,7 @@ export const EditComment = () => {
     updateCommentSuccess,
     isCommentUpdateError,
     updateCommentError,
+    updateCommentData
   } = useEditComment()
 
   const [comment, setComment] = useState<any>({
@@ -28,6 +32,18 @@ export const EditComment = () => {
     ticketId: '',
     commentText: '',
   })
+
+  const [errorMsg, setErrorMsg] = useState('')
+
+  
+
+  useEffect(()=>{
+    if(updateCommentSuccess)
+      {
+        setSuccess(updateCommentData?.message)
+        setErrorMsg('')
+      }
+  }, [updateCommentSuccess])
 
   const [existingAttachments, setExistingAttachments] = useState<string[]>([])
   const [newFiles, setNewFiles] = useState<File[]>([])
@@ -68,11 +84,12 @@ export const EditComment = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (!commentId || !ticketId) {
+    try
+    {if (!commentId || !ticketId) {
       console.error("Missing ticket or comment ID")
       return
     }
-
+    commentValidation.parse({ commentText: comment.commentText })
     const formData = new FormData()
     formData.append('commentText', comment.commentText)
     newFiles.forEach((file) => formData.append('attachments', file))
@@ -81,7 +98,14 @@ export const EditComment = () => {
       ticketId,
       commentId,
       formData,
-    })
+    })}
+    catch (err) {
+          if (err instanceof z.ZodError) {
+            setSuccess('')
+            setErrorMsg(err.errors[0]?.message || 'Invalid input')
+            
+          }
+        }
   }
 
   if (commentLoading) {
@@ -123,6 +147,9 @@ export const EditComment = () => {
             rows={4}
             className="w-full mt-1 p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
+          {errorMsg && errorMsg && (
+          <p className='text-error-red text-left mt-4'>{errorMsg}</p>
+        )}
         </div>
 
         <div className="mb-4">
@@ -165,6 +192,7 @@ export const EditComment = () => {
           )}
         </div>
 
+          
 
 
         {isCommentUpdateError && updateCommentError && (
@@ -180,7 +208,7 @@ export const EditComment = () => {
         )}
 
         {updateCommentSuccess && (
-          <h2 className="text-center text-green-600 font-semibold">Comment updated successfully!</h2>
+          <h2 className="text-center text-green-600 font-semibold">{success}</h2>
         )}
 
         <div className="pt-4 text-left">

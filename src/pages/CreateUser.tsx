@@ -4,27 +4,31 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useLoginInfoStore } from '@/store/useLoginInfoStore'
+import { roleType } from '@/types/roleTypes'
 import React, { useEffect, useState } from 'react'
 import { FaEye, FaEyeSlash } from 'react-icons/fa'
 import { Link } from 'react-router-dom'
-import { z } from 'zod'
+import {  z } from 'zod'
 import { useFetchDepartments } from '../hooks/useFetchDepartments'
+import { useFetchRoles } from '../hooks/useFetchRoles'
 import { useRegisterMutation } from '../hooks/useRegister'
 import useThemeStore from '../store/themeStore'
-import { RegisterUser } from '../types/registerTypes'
+import { User } from '../types/registerTypes'
 import { registerValidation } from '../validation/registerValidation'
 
 
 const RegisterForm: React.FC = () => {
   const { theme } = useThemeStore()
   const { user } = useLoginInfoStore()
-  const [formData, setFormData] = useState<RegisterUser>({
+  const [formData, setFormData] = useState<User>({
+    // id: 0,
     firstname: '',
     lastname: '',
     email: '',
     password: '',
     confirmPassword: '',
     terms: false,
+    role: 'user',
     department: '',
   })
 
@@ -61,10 +65,14 @@ const RegisterForm: React.FC = () => {
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({})
   const [apiError, setApiError] = useState<string | null>(null)
   const { mutate, isError, isSuccess } = useRegisterMutation()
+  const { rolesLoading, rolesData } = useFetchRoles()
+  const { roles } = rolesData || {}
   const { departmentsLoading, departmentsData } = useFetchDepartments()
   const { departments } = departmentsData || {}
 
   const isSuperAdmin = user?.roleId === 1
+
+  const rolesFilter = roles?.filter(role => role.name !== 'superadmin')
 
   useEffect(() => {
     setFormData(prevData => ({
@@ -104,45 +112,54 @@ const RegisterForm: React.FC = () => {
       }
 
     }
-
-
+   
+  
     setFormErrors({})
     setApiError(null)
-
+   
   }
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setFormErrors({})
     setApiError(null)
 
-    
+    if (formData.password !== formData.confirmPassword) {
+      setFormErrors(prevErrors => ({
+        ...prevErrors,
+        confirmPassword: 'Passwords do not match!',
+      }))
+      return
+    }
 
+    if (!isSuperAdmin) {
+      setFormData(prevData => ({
+        ...prevData,
+        role: 'user',
+      }))
+    }
     const newFormData = {
       firstname: formData.firstname,
       lastname: formData.lastname,
       email: formData.email,
       password: formData.password,
       terms: formData.terms,
+      role: formData.role,
       department: formData.department,
     }
     try {
       registerValidation.parse(formData)
-      if (formData.password !== formData.confirmPassword) {
-        setFormErrors(prevErrors => ({
-          ...prevErrors,
-          confirmPassword: 'Passwords do not match!',
-        }))
-        return
-      }
       mutate(newFormData, {
         onSuccess: () => {
           setFormData({
+            // id: 0,
             firstname: '',
             lastname: '',
             email: '',
             password: '',
             confirmPassword: '',
             terms: false,
+            role: 'user',
             department: '',
           })
         },
@@ -354,12 +371,39 @@ const RegisterForm: React.FC = () => {
                 </div>
                 {formErrors.confirmPassword !== formErrors.password && (
                   <p className="text-error-red text-sm">
-                    {/* Password does not match! */}
-                    {formErrors.confirmPassword}
+                    Password does not match!
                   </p>
                 )}
               </div>
-
+              {isSuperAdmin && (
+                <div>
+                  <Label htmlFor="role" className="label">
+                    Role
+                  </Label>
+                  <select
+                    id="role"
+                    name="role"
+                    value={formData.role}
+                    onChange={handleChange}
+                    className={`w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500`}
+                  >
+                    {!rolesLoading ? (
+                      rolesFilter?.map((role: roleType, index: number) => (
+                        <option key={index} value={role.name}>
+                          {role.name}
+                        </option>
+                      ))
+                    ) : (
+                      <option value="" disabled>
+                        Loading roles...
+                      </option>
+                    )}
+                  </select>
+                  {formErrors.role && (
+                    <p className="text-error-red text-sm">{formErrors.role}</p>
+                  )}
+                </div>
+              )}
 
               <div>
                 <Label htmlFor="department" className="label">

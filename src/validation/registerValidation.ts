@@ -11,6 +11,9 @@ export const registerValidation = z.object({
     .max(20, 'Password cannot be more than 20 characters')
     .min(8, 'Password must be at least 8 characters')
     .min(1, 'Password is required'),
+  confirmPassword: z
+    .string()
+    .min(1, 'Confirm password is required'),
   email: z.string().email('Please enter a valid email'),
   lastname: z.string().min(1, 'Last Name is required'),
   firstname: z.string()
