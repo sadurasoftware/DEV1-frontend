@@ -9,6 +9,7 @@ export const useUpdateTicket = () => {
     isError: isTicketUpdateError,
     error: updateTicketError,
     isSuccess: updateTicketSuccess,
+    data
   } = useMutation({
     mutationFn: async ({ id, formData }:{id:string, formData:FormData}) => {
       return await updateTicket(id, formData)
@@ -32,5 +33,6 @@ export const useUpdateTicket = () => {
     isTicketUpdateError,
     updateTicketError,
     updateTicketSuccess,
+    data
   }
 }

@@ -10,6 +10,7 @@ export const useEditComment = () => {
     isError: isCommentUpdateError,
     error: updateCommentError,
     isSuccess: updateCommentSuccess,
+    data: updateCommentData,
   } = useMutation({
     mutationFn: ({ ticketId, commentId, formData }: { ticketId:any, commentId:any, formData:FormData }) => updateComment(ticketId, commentId, formData),
     onSuccess: ()=> {
@@ -31,5 +32,6 @@ export const useEditComment = () => {
     isCommentUpdateError,
     updateCommentError,
     updateCommentSuccess,
+    updateCommentData
   }
 }
