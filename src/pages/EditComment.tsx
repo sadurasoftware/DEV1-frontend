@@ -4,7 +4,7 @@ import { Link, useParams } from 'react-router-dom'
 import { useFetchCommentById } from '@/hooks/usefetchCommentById'
 import { useState, useEffect } from 'react'
 import { useEditComment } from '@/hooks/useEditComment'
-import { AxiosError } from 'axios'
+import axios from 'axios'
 import { commentValidation } from '@/validation/commentValidation'
 import { z } from 'zod'
 
@@ -21,9 +21,6 @@ export const EditComment = () => {
 
   const {
     mutate,
-    updateCommentSuccess,
-    isCommentUpdateError,
-    updateCommentError,
     updateCommentData
   } = useEditComment()
 
@@ -35,15 +32,7 @@ export const EditComment = () => {
 
   const [errorMsg, setErrorMsg] = useState('')
 
-  
-
-  useEffect(()=>{
-    if(updateCommentSuccess)
-      {
-        setSuccess(updateCommentData?.message)
-        setErrorMsg('')
-      }
-  }, [updateCommentSuccess])
+  const [zodErrorMsg, setZodErrorMsg] = useState('')
 
   const [existingAttachments, setExistingAttachments] = useState<string[]>([])
   const [newFiles, setNewFiles] = useState<File[]>([])
@@ -69,6 +58,8 @@ export const EditComment = () => {
       ...prev,
       [name]: value,
     }))
+    setErrorMsg('')
+    setZodErrorMsg('')
   }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -80,32 +71,54 @@ export const EditComment = () => {
       const previews = selectedFiles.map((file) => URL.createObjectURL(file))
       setNewPreviews(previews)
     }
+    setErrorMsg('')
+    
   }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    try
-    {if (!commentId || !ticketId) {
-      console.error("Missing ticket or comment ID")
-      return
-    }
-    commentValidation.parse({ commentText: comment.commentText })
-    const formData = new FormData()
-    formData.append('commentText', comment.commentText)
-    newFiles.forEach((file) => formData.append('attachments', file))
+    try {
+      if (!commentId || !ticketId) {
+        console.error("Missing ticket or comment ID")
+        return
+      }
+      commentValidation.parse({ commentText: comment.commentText })
+      const formData = new FormData()
+      formData.append('commentText', comment.commentText)
+      newFiles.forEach((file) => formData.append('attachments', file))
 
-    mutate({
-      ticketId,
-      commentId,
-      formData,
-    })}
-    catch (err) {
-          if (err instanceof z.ZodError) {
-            setSuccess('')
-            setErrorMsg(err.errors[0]?.message || 'Invalid input')
-            
+      mutate(
+        { ticketId, commentId, formData },
+        {
+          onSuccess: () => {
+            setErrorMsg('')
+            setZodErrorMsg('')
+            setNewPreviews([])
+            setSuccess(updateCommentData?.message || 'Comment updated successfully...')
+          },
+          onError: (error: any) => {
+            if (axios.isAxiosError(error)) {
+              setSuccess('');
+              setZodErrorMsg('')
+              setErrorMsg( error.response?.data?.message || error.response?.data?.errors || 'An unexpected error occurred')
+            } else {
+              setErrorMsg('Something went wrong. Please try again.')
+            }
           }
         }
+      );
+    }
+    catch (err) {
+      console.log("Caught error:", err);
+      if (err instanceof z.ZodError) {
+        setSuccess('');
+        setErrorMsg('')
+        setZodErrorMsg(err.errors[0]?.message || 'Invalid input');
+      } else {
+        setZodErrorMsg('An unknown error occurred');
+      }
+    }
+
   }
 
   if (commentLoading) {
@@ -147,9 +160,9 @@ export const EditComment = () => {
             rows={4}
             className="w-full mt-1 p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
-          {errorMsg && errorMsg && (
-          <p className='text-error-red text-left mt-4'>{errorMsg}</p>
-        )}
+          {zodErrorMsg && (
+            <p className='text-error-red text-left mt-4'>{zodErrorMsg}</p>
+          )}
         </div>
 
         <div className="mb-4">
@@ -192,10 +205,10 @@ export const EditComment = () => {
           )}
         </div>
 
-          
 
 
-        {isCommentUpdateError && updateCommentError && (
+
+        {/* {isCommentUpdateError && updateCommentError && (
           <p className='text-error-red text-center mt-4'>
             {(updateCommentError instanceof AxiosError ? updateCommentError?.response?.data.message : 'An unexpected error occurred') || 'An unexpected error occurred'}
           </p>
@@ -209,7 +222,17 @@ export const EditComment = () => {
 
         {updateCommentSuccess && (
           <h2 className="text-center text-green-600 font-semibold">{success}</h2>
+        )} */}
+
+        {success && (
+          <h2 className="text-center text-green-600 font-semibold">{success}</h2>)
+        }
+
+        {errorMsg && (
+          <p className='text-error-red text-left mt-4'>{errorMsg}</p>
         )}
+
+
 
         <div className="pt-4 text-left">
           <button

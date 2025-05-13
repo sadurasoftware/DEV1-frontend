@@ -7,7 +7,7 @@ import { useCreateComment } from '@/hooks/useCreateComment';
 import { useFetchCommentsByTicketId } from '@/hooks/useFetchCommentsByTicketId';
 import { useDeleteComment } from '@/hooks/useDeleteComment';
 import { viewBackStore } from '@/store/viewBackStore';
-import { AxiosError } from 'axios';
+import axios, { AxiosError } from 'axios';
 import { useGetTicketHistory } from '@/hooks/useGetTicketHistory';
 import { commentValidation } from '@/validation/commentValidation';
 import { z } from 'zod';
@@ -31,12 +31,14 @@ export const ViewTicket = () => {
   const navigate = useNavigate()
   const { backRoutes } = viewBackStore();
   const { ticketData } = useFetchTicketById(id || '')
-  const { createCommentMutation, isError, error } = useCreateComment()
+  const { createCommentMutation, isError, error, data } = useCreateComment()
+  const [successMsg, setSuccessMsg] = useState('')
+  const [errMsg, setErrMsg] = useState('')
 
   // const { mutate } = useUpdateTicketStatus()
   const { commentsLoading, commentsData } = useFetchCommentsByTicketId(id || '')
   // console.log('Comments data:', commentsData?.comments?.attachments?.length)
-  const { commentDelete, isCommentError, commentError, deleteSuccess } = useDeleteComment()
+  const { commentDelete } = useDeleteComment()
   const { historyLoading, historyData, isHistoryError, historyError } = useGetTicketHistory(id || '')
 
   const [imageURLs, setImageURLs] = useState<string[]>([])
@@ -51,6 +53,9 @@ export const ViewTicket = () => {
       ...prevData,
       [name]: value,
     }))
+    setErrMsg('')
+    setSuccessMsg('')
+    
   }
 
 
@@ -75,7 +80,21 @@ export const ViewTicket = () => {
           formData.append('attachments', file)
         })
       }
-      await createCommentMutation({ ticketId: id, data: formData })
+      await createCommentMutation({ ticketId: id, data: formData },
+        {
+          onSuccess:()=>{
+            setErrMsg('')
+            setSuccessMsg(data?.message)
+          }, 
+          onError:(error: any)=>{
+             if (axios.isAxiosError(error)) {
+              setSuccessMsg('')
+              setErrMsg(error?.response?.data?.message || error?.response?.data?.errors || 'An error occurred')
+             }
+            
+          }
+        }
+      )
       setCommentData(
         {
           ticketId: '',
@@ -127,7 +146,19 @@ export const ViewTicket = () => {
   const handleDelete = (id: any) => {
     const confirmDelete = window.confirm("Are you sure you want to delete this Comment?");
         if (!confirmDelete) return;
-    commentDelete(id)
+    commentDelete(id, {
+      onSuccess:()=>{
+        setErrMsg('')
+        setSuccessMsg(data?.message || 'An unexpected error error.')
+      },
+      onError:(error:any)=>{
+        if(axios.isAxiosError(error))
+        {
+          setSuccessMsg('')
+          setErrMsg(error.response?.data?.message || error.response?.data?.errors || 'An unexpected error occured.')
+        }
+      }
+    })
   }
 
   const closeModal = () => {
@@ -304,7 +335,7 @@ export const ViewTicket = () => {
         </div>
 
         <div>
-          {deleteSuccess && <h4>Comment deleted Successfully..!</h4>}
+          
 
         </div>
 
@@ -356,6 +387,8 @@ export const ViewTicket = () => {
                 </tr>
               </tbody>
             </table>
+            {successMsg && <h3 className='text-green font-bold'>{successMsg}</h3>}
+            {errMsg && <h3 className='text-red font-bold'>{errMsg}</h3>}
           </div>
         }
         {isError && (
@@ -366,10 +399,6 @@ export const ViewTicket = () => {
           </h3>
         )}
 
-
-
-
-        {isCommentError && <h4 className='text-center'>{commentError}</h4>}
         <button
           onClick={handleSubmit}
           className="bg-green-600 text-white px-4 py-2 mt-4 rounded hover:bg-green-700"
