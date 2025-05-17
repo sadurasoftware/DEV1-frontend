@@ -7,11 +7,15 @@ import { useEditComment } from '@/hooks/useEditComment'
 import axios from 'axios'
 import { commentValidation } from '@/validation/commentValidation'
 import { z } from 'zod'
-
+import ReactPlayer from 'react-player'
+import { useRef } from 'react'
+import { AttachmentModal } from '@/components/AttachmentModal'
 
 export const EditComment = () => {
   const { ticketId, commentId } = useParams()
   const [success, setSuccess] = useState('')
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const {
     commentLoading,
     commentData,
@@ -46,7 +50,8 @@ export const EditComment = () => {
         commentText: commentData.comment.commentText,
       })
 
-      setExistingAttachments(commentData.comment.attachments.map((a: any) => a.url))
+      const urls = commentData.comment.attachments?.map((att: { url: string }) => att.url) || []
+      setExistingAttachments(urls)
     }
   }, [commentData])
 
@@ -62,6 +67,16 @@ export const EditComment = () => {
     setZodErrorMsg('')
   }
 
+  const handleImageClick = () => {
+    if (commentData?.comment?.attachments?.length) {
+      const urls = commentData.comment.attachments.map((att: { url: any; }) => att.url)
+      setExistingAttachments(urls)
+      setIsModalOpen(true)
+      setSuccess('')
+      setErrorMsg('')
+    }
+  }
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
     if (files && files.length > 0) {
@@ -72,7 +87,7 @@ export const EditComment = () => {
       setNewPreviews(previews)
     }
     setErrorMsg('')
-    
+
   }
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -95,12 +110,16 @@ export const EditComment = () => {
             setZodErrorMsg('')
             setNewPreviews([])
             setSuccess(updateCommentData?.message || 'Comment updated successfully...')
+            if (fileInputRef.current) {
+              fileInputRef.current.value = '';
+            }
+            setNewFiles([])
           },
           onError: (error: any) => {
             if (axios.isAxiosError(error)) {
               setSuccess('');
               setZodErrorMsg('')
-              setErrorMsg( error.response?.data?.message || error.response?.data?.errors || 'An unexpected error occurred')
+              setErrorMsg(error.response?.data?.message || error.response?.data?.errors || 'An unexpected error occurred')
             } else {
               setErrorMsg('Something went wrong. Please try again.')
             }
@@ -128,6 +147,10 @@ export const EditComment = () => {
   if (isCommentError) {
     return <p className="text-red-500 text-center mt-10">{commentError?.message}</p>
   }
+
+    const closeModal = () => {
+    setIsModalOpen(false)
+  };
 
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow mt-10">
@@ -167,16 +190,23 @@ export const EditComment = () => {
 
         <div className="mb-4">
           <Label>Existing Attachments</Label>
-          {existingAttachments.length > 0 ? (
+          {existingAttachments?.length > 0 ? (
             <div className="flex gap-2 flex-wrap">
-              {existingAttachments.map((url, i) => (
-                <img
-                  key={i}
-                  src={url}
-                  alt={`attachment-${i}`}
-                  className="w-32 h-32 object-cover mb-2 rounded"
-                />
-              ))}
+             
+                  <>
+                      <button
+                      type="button"
+                        onClick={handleImageClick}
+                        className="text-blue-500"
+                      >
+                        Click here to view attachments
+                      </button>
+                      {isModalOpen && <AttachmentModal urls={existingAttachments} onClose={closeModal} />}
+                    </>
+                
+
+
+              
             </div>
           ) : (
             <p className="text-sm text-gray-500">No attachments available.</p>
@@ -193,14 +223,36 @@ export const EditComment = () => {
             name="attachments"
             onChange={handleFileChange}
             multiple
+            ref={fileInputRef}
             className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
 
           {newPreviews.length > 0 && (
             <div className="mt-2 flex gap-2 flex-wrap">
-              {newPreviews.map((src, idx) => (
-                <img key={idx} src={src} alt={`preview-${idx}`} className="w-24 h-24 object-cover rounded" />
-              ))}
+              {newPreviews.map((src, idx) => {
+                const isVideo = /\.(mp4|webm|ogg|mp4)$/i.test(src);
+                return(
+                  <div key={idx}>
+                    {isVideo ? (
+                      <ReactPlayer
+                        url={src}
+                        controls
+                        width="100%"
+                        height="auto"
+                      />
+                    ) : (
+                      <img
+                        key={idx}
+                        src={src}
+                        alt={`preview-${idx}`}
+                        className="w-24 h-24 object-cover rounded"
+                      />
+                    )}
+                  </div>
+                )
+              }
+                
+              )}
             </div>
           )}
         </div>

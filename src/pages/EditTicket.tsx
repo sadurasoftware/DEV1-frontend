@@ -9,6 +9,8 @@ import { Button } from '@/components/ui/button'
 import axios from 'axios'
 import { createTicketValidation } from '@/validation/createTicketValidation'
 import { z } from 'zod'
+import { useRef } from 'react'
+import { AttachmentModal } from '@/components/AttachmentModal'
 
 export const EditTicket = () => {
     const { id } = useParams<{ id?: string }>()
@@ -17,7 +19,8 @@ export const EditTicket = () => {
     const [errMsg, setErrMsg] = useState('')
     const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({})
     const [newPreviews, setNewPreviews] = useState<string[]>([])
-
+    const fileInputRef = useRef<HTMLInputElement | null>(null)
+    const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
     const [ticket, setTicket] = useState<any>({
         title: '',
         description: '',
@@ -36,7 +39,8 @@ export const EditTicket = () => {
                 priority: ticketData.ticket.priority,
                 category: ticketData.ticket.category.name,
             });
-            setExistingAttachments(ticketData.ticket.attachments.map((a: any) => a.url))
+            const urls = ticketData.ticket.attachments.map((a: any) => a.url)
+            setExistingAttachments(urls)
         }
     }, [ticketData])
     const {
@@ -46,7 +50,7 @@ export const EditTicket = () => {
 
 
 
-    const { mutate, updateTicketPending, data } = useUpdateTicket();
+    const { mutate, updateTicketPending } = useUpdateTicket();
 
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -61,17 +65,26 @@ export const EditTicket = () => {
         setSuccessMsg('')
     };
 
+    const handleImageClick = () => {
+        if (ticketData?.ticket?.attachments?.length) {
+            const urls = ticketData.ticket.attachments.map((att: { url: any; }) => att.url)
+            setExistingAttachments(urls)
+            setIsModalOpen(true)
+            setSuccessMsg('')
+            setErrMsg('')
+        }
+    }
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files
         if (files && files.length > 0) {
             const selectedFiles = Array.from(files)
             setNewFiles(selectedFiles)
-      
+
             const previews = selectedFiles.map((file) => URL.createObjectURL(file))
             setNewPreviews(previews)
-          }
-      
+        }
+
         setErrMsg('')
         setSuccessMsg('')
         setFormErrors({})
@@ -99,11 +112,16 @@ export const EditTicket = () => {
             mutate(
                 { id, formData },
                 {
-                    onSuccess: () => {
+                    onSuccess: (data: any) => {
                         setErrMsg('')
                         setFormErrors({})
                         setNewPreviews([])
                         setSuccessMsg(data?.message)
+                        if (fileInputRef.current) {
+                            fileInputRef.current.value = ''
+                            setNewFiles([])
+                            setNewPreviews([])
+                        }
                     },
                     onError: (error: any) => {
                         if (axios.isAxiosError(error)) {
@@ -129,6 +147,10 @@ export const EditTicket = () => {
                 console.error('Unknown error:', err)
             }
         }
+    } 
+    
+    const closeModal = () => {
+        setIsModalOpen(false)
     };
 
     return (
@@ -220,16 +242,18 @@ export const EditTicket = () => {
 
                         <div className="mb-4">
                             <Label>Existing Attachments</Label>
-                            {existingAttachments.length > 0 ? (
+                            {existingAttachments?.length > 0 ? (
                                 <div className="flex gap-2 flex-wrap">
-                                    {existingAttachments.map((url, i) => (
-                                        <img
-                                            key={i}
-                                            src={url}
-                                            alt={`attachment-${i}`}
-                                            className="w-32 h-32 object-cover mb-2 rounded"
-                                        />
-                                    ))}
+
+                                    <button
+                                        type="button"
+                                        onClick={handleImageClick}
+                                        className="text-blue-500"
+                                    >
+                                        Click here to view attachments
+                                    </button>
+                                    {isModalOpen && <AttachmentModal urls={existingAttachments} onClose={closeModal} />}
+
                                 </div>
                             ) : (
                                 <p>No attachments available.</p>
@@ -244,6 +268,7 @@ export const EditTicket = () => {
                                 name="attachments"
                                 onChange={handleFileChange}
                                 multiple
+                                ref={fileInputRef}
                                 className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                             />
                         </div>
