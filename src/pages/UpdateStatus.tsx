@@ -6,13 +6,16 @@ import { Label } from '@/components/ui/label'
 import { useEffect, useState } from 'react';
 import { useUpdateTicketStatus } from '@/hooks/useUpdateTicketStatus';
 import axios from 'axios';
+import { AttachmentModal } from '@/components/AttachmentModal'
 
 export const UpdateStatus = () => {
     const { id } = useParams<{ id?: string }>();
     const { ticketData, isTicketError, ticketError } = useFetchTicketById(id || '');
-
-    const { mutate, isPending, isError, isSuccess, error } = useUpdateTicketStatus();
-
+    const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
+    const { mutate, isPending } = useUpdateTicketStatus();
+    const [successMsg, setSuccessMsg] = useState<string>('');
+    const [errMsg, setErrMsg] = useState<string>('');
+    const [attachmentsUrl, setAttachmentsUrl] = useState<string[]>([])
     const {
         categoriesLoading,
         categoriesData,
@@ -26,16 +29,39 @@ export const UpdateStatus = () => {
             ...prevData,
             [name]: value,
         }));
-    };
+    }; 
 
     const [ticket, setTicket] = useState<any>({
         status: ticketData?.ticket?.status || 'Open',
     });
 
+
+    const handleImageClick = () => {
+        if (ticketData?.ticket?.attachments?.length) {
+          const urls = ticketData.ticket.attachments.map((att: { url: any; }) => att.url)
+          setAttachmentsUrl(urls)
+          setIsModalOpen(true)
+        }
+      }
+
     const handleUpdateStatus = () => {
-        console.log('Ticket:', ticket)
         if (id && ticket) {
-            mutate({ id, status: ticket.status })
+            mutate({ id, status: ticket.status }, 
+                {
+                    onSuccess:(res)=>{
+                        setErrMsg('')
+                        setSuccessMsg(res?.message)
+                    },
+                    onError:(err:any)=>{
+                        if(axios.isAxiosError(err))
+                        {
+                            setSuccessMsg('')
+                            setErrMsg(err?.response?.data?.message || err?.response?.data?.errors)
+                        }
+
+                    }
+                }
+            )
         }
 
     }
@@ -49,6 +75,9 @@ export const UpdateStatus = () => {
         }
     }, [ticketData]);
 
+    const closeModal = () => {
+        setIsModalOpen(false)
+      };
 
 
     return (
@@ -129,18 +158,24 @@ export const UpdateStatus = () => {
                             <Label htmlFor="attachments" className="text-xs font-medium">
                                 Attachments
                             </Label>
-                            {ticketData?.ticket?.attachments && ticketData.ticket.attachments.length > 0 ? (
-                                ticketData.ticket.attachments.map((attachment: any) => (
-                                    <div key={attachment.id}>
-                                        <img
-                                            src={attachment.url}
-                                            alt={`Attachment ${attachment.id}`}
-                                            width={500}
-                                            height={500}
-                                            className="mb-4"
-                                        />
-                                    </div>
-                                ))
+                            { ticketData?.ticket?.attachments?.length > 0  ? (
+                                <div className="flex gap-2 flex-wrap">
+             
+                                <>
+                                    <button
+                                    type="button"
+                                      onClick={handleImageClick}
+                                      className="text-blue-500"
+                                    >
+                                      Click here to view attachments
+                                    </button>
+                                    {isModalOpen && <AttachmentModal urls={attachmentsUrl} onClose={closeModal} />}
+                                  </>
+                              
+              
+              
+                            
+                          </div>
                             ) : (
                                 <p>No attachments available.</p>
                             )}
@@ -172,17 +207,14 @@ export const UpdateStatus = () => {
                             </p>
                         )}
 
-
-                        {isSuccess && <h3>Ticket status updated successfully..!</h3>}
-
-                        {isError && (
-                            <h3 className="text-red font-bold">
-                                {axios.isAxiosError(error)
-                                    ? error.response?.data?.message || "Something went wrong"
-                                    : "Something went wrong"}
-                            </h3>
+                        {successMsg && (
+                            <p className='text-success-green text-center mt-4'>{successMsg}</p>
                         )}
-
+                      
+                        {errMsg && (
+                            <p className='text-error-red text-center mt-4'>{errMsg}</p>
+                            
+                        )}
 
 
                         <div className='mt-5 text-center'>

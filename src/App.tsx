@@ -33,6 +33,7 @@ import { UpdateStatus } from './pages/UpdateStatus'
 import { MyTickets } from './pages/MyTickets'
 import { MyProfile } from './pages/MyProfile'
 import { EditComment } from './pages/EditComment'
+import CreateUser from './pages/CreateUser'
 
 // import Theme from './pages/Theme';
 // import  useThemeStore from './store/themeStore';
@@ -85,7 +86,7 @@ const App: React.FC = () => {
                 path="/edit-admin-profile/:userId"
                 element={<EditAdminProfile />}
               />
-              <Route path="/register" element={<RegisterForm />} />
+              <Route path="/create-user" element={<CreateUser />} />
               <Route path="/users/:pageno" element={<Users />} />
               <Route path="/admins/:pageno" element={<Admins />} />
               <Route path="/settings" element={<Settings />} />

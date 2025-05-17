@@ -11,16 +11,16 @@ import { Link } from 'react-router-dom'
 import {  z } from 'zod'
 import { useFetchDepartments } from '../hooks/useFetchDepartments'
 import { useFetchRoles } from '../hooks/useFetchRoles'
-import { useRegisterMutation } from '../hooks/useRegister'
 import useThemeStore from '../store/themeStore'
-import { User } from '../types/registerTypes'
-import { registerValidation } from '../validation/registerValidation'
+import { CreateUserType } from '../types/registerTypes'
+import { createUserValidation } from '../validation/createUserValidation'
+import { useCreateUserMutation } from '@/hooks/useCreateUser'
 
 
-const RegisterForm: React.FC = () => {
+const CreateUser: React.FC = () => {
   const { theme } = useThemeStore()
   const { user } = useLoginInfoStore()
-  const [formData, setFormData] = useState<User>({
+  const [formData, setFormData] = useState<CreateUserType>({
     // id: 0,
     firstname: '',
     lastname: '',
@@ -29,7 +29,7 @@ const RegisterForm: React.FC = () => {
     confirmPassword: '',
     terms: false,
     role: 'user',
-    department: '',
+    departmentId: 0,
   })
 
   const [copy, setCopy] = useState<string>('')
@@ -47,7 +47,7 @@ const RegisterForm: React.FC = () => {
     }
     if (/[a-z]/.test(password)) {
       score += 10
-    }
+    }                                     
     if (/[A-Z]/.test(password)) {
       score += 20
     }
@@ -64,7 +64,7 @@ const RegisterForm: React.FC = () => {
 
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({})
   const [apiError, setApiError] = useState<string | null>(null)
-  const { mutate, isError, isSuccess } = useRegisterMutation()
+  const { mutate, isError, isSuccess } = useCreateUserMutation()
   const { rolesLoading, rolesData } = useFetchRoles()
   const { roles } = rolesData || {}
   const { departmentsLoading, departmentsData } = useFetchDepartments()
@@ -145,10 +145,10 @@ const RegisterForm: React.FC = () => {
       password: formData.password,
       terms: formData.terms,
       role: formData.role,
-      department: formData.department,
+      departmentId: formData.departmentId,
     }
     try {
-      registerValidation.parse(formData)
+      createUserValidation.parse(formData)
       mutate(newFormData, {
         onSuccess: () => {
           setFormData({
@@ -160,7 +160,7 @@ const RegisterForm: React.FC = () => {
             confirmPassword: '',
             terms: false,
             role: 'user',
-            department: '',
+            departmentId: 0,
           })
         },
         onError: err => {
@@ -230,7 +230,7 @@ const RegisterForm: React.FC = () => {
       <div className="min-h-screen flex items-center justify-center ">
         <div className="max-w-md w-full p-8 rounded-lg border  m-auto mt-3 mb-3 bg-white dark:bg-black">
           <h2 className="text-2xl font-semibold  mb-6 dark:text-cust-green">
-            Let’s get started
+            Create User
           </h2>
           <form onSubmit={handleSubmit}>
             <div className="space-y-4">
@@ -410,16 +410,16 @@ const RegisterForm: React.FC = () => {
                   Department
                 </Label>
                 <select
-                  id="department"
-                  name="department"
-                  value={formData.department}
+                  id="departmentId"
+                  name="departmentId"
+                  value={formData.departmentId}
                   onChange={handleChange}
                   className={`w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500`}
                 >
                   <option value="">Select department</option>
                   {!departmentsLoading ? (
                     departments?.map((department, index) => (
-                      <option key={index} value={department.name}>
+                      <option key={index} value={department.id}>
                         {department.name}
                       </option>
                     ))
@@ -494,4 +494,4 @@ const RegisterForm: React.FC = () => {
   )
 }
 
-export default RegisterForm
+export default CreateUser

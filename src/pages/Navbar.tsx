@@ -70,7 +70,7 @@ export const Navbar: React.FC = () => {
                   {user?.roleId === 1 && (
                     <>
                       <DropdownMenuItem>
-                        <Link to="/register">Add User</Link>
+                        <Link to="/create-user">Create User</Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem>
                         <Link to="/dashboard">Super Admin Dashboard</Link>

@@ -1,22 +1,26 @@
-import { Link, useParams } from 'react-router-dom';
-import { useFetchTicketById } from '@/hooks/useFetchTicketById';
-import { useFetchCategories } from '@/hooks/useFetchCategories';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { useState, useEffect } from 'react';
-import { useUpdateTicket } from '@/hooks/useUpdateTicket';
-import { Button } from '@/components/ui/button';
-// import { AxiosError } from 'axios';
-import { createTicketValidation } from '@/validation/createTicketValidation';
-import { z } from 'zod';
+import { Link, useParams } from 'react-router-dom'
+import { useFetchTicketById } from '@/hooks/useFetchTicketById'
+import { useFetchCategories } from '@/hooks/useFetchCategories'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { useState, useEffect } from 'react'
+import { useUpdateTicket } from '@/hooks/useUpdateTicket'
+import { Button } from '@/components/ui/button'
+import axios from 'axios'
+import { createTicketValidation } from '@/validation/createTicketValidation'
+import { z } from 'zod'
+import { useRef } from 'react'
+import { AttachmentModal } from '@/components/AttachmentModal'
 
 export const EditTicket = () => {
-    const { id } = useParams<{ id?: string }>();
-    const { ticketData } = useFetchTicketById(id || '');
+    const { id } = useParams<{ id?: string }>()
+    const { ticketData } = useFetchTicketById(id || '')
     const [successMsg, setSuccessMsg] = useState('')
-    // const [errMsg, setErrMsg] = useState('')
+    const [errMsg, setErrMsg] = useState('')
     const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({})
-
+    const [newPreviews, setNewPreviews] = useState<string[]>([])
+    const fileInputRef = useRef<HTMLInputElement | null>(null)
+    const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
     const [ticket, setTicket] = useState<any>({
         title: '',
         description: '',
@@ -24,8 +28,8 @@ export const EditTicket = () => {
         category: '',
     });
 
-    const [existingAttachments, setExistingAttachments] = useState<string[]>([]);
-    const [newFiles, setNewFiles] = useState<File[]>([]);
+    const [existingAttachments, setExistingAttachments] = useState<string[]>([])
+    const [newFiles, setNewFiles] = useState<File[]>([])
 
     useEffect(() => {
         if (ticketData?.ticket) {
@@ -35,64 +39,101 @@ export const EditTicket = () => {
                 priority: ticketData.ticket.priority,
                 category: ticketData.ticket.category.name,
             });
-            setExistingAttachments(ticketData.ticket.attachments.map((a: any) => a.url));
+            const urls = ticketData.ticket.attachments.map((a: any) => a.url)
+            setExistingAttachments(urls)
         }
-    }, [ticketData]);
-
+    }, [ticketData])
     const {
         categoriesLoading,
         categoriesData,
-    } = useFetchCategories();
+    } = useFetchCategories()
 
 
 
-    const { mutate, updateTicketPending, updateTicketSuccess, isTicketUpdateError, updateTicketError, data } = useUpdateTicket();
-    useEffect(() => {
-        if (updateTicketSuccess) {
-            setSuccessMsg(data?.message)
-            setFormErrors({})
-        }
+    const { mutate, updateTicketPending } = useUpdateTicket();
 
-
-    }, [updateTicketSuccess])
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
     ) => {
-        const { name, value } = e.target;
+        const { name, value } = e.target
         setTicket((prevData: any) => ({
             ...prevData,
             [name]: value,
         }));
+        setFormErrors({})
+        setErrMsg('')
+        setSuccessMsg('')
     };
 
-
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const files = e.target.files;
-        if (files && files.length > 0) {
-            setNewFiles(Array.from(files));
+    const handleImageClick = () => {
+        if (ticketData?.ticket?.attachments?.length) {
+            const urls = ticketData.ticket.attachments.map((att: { url: any; }) => att.url)
+            setExistingAttachments(urls)
+            setIsModalOpen(true)
+            setSuccessMsg('')
+            setErrMsg('')
         }
     }
 
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files
+        if (files && files.length > 0) {
+            const selectedFiles = Array.from(files)
+            setNewFiles(selectedFiles)
+
+            const previews = selectedFiles.map((file) => URL.createObjectURL(file))
+            setNewPreviews(previews)
+        }
+
+        setErrMsg('')
+        setSuccessMsg('')
+        setFormErrors({})
+    }
+
     const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
+        e.preventDefault()
         try {
-            createTicketValidation.parse(ticket);
-            if (!id) return console.error('Missing ticket ID');
+            createTicketValidation.parse(ticket)
+            if (!id) return console.error('Missing ticket ID')
 
-            const formData = new FormData();
-            formData.append('title', ticket.title);
-            formData.append('description', ticket.description);
-            formData.append('priority', ticket.priority);
-            formData.append('category', ticket.category);
+            const formData = new FormData()
+            formData.append('title', ticket.title)
+            formData.append('description', ticket.description)
+            formData.append('priority', ticket.priority)
+            formData.append('category', ticket.category)
 
-            newFiles.forEach(file => formData.append('attachments', file));
+            newFiles.forEach(file => formData.append('attachments', file))
 
             console.log('Submitting ticket:', {
                 ...ticket,
                 attachments: newFiles.map(file => file.name),
-            });
+            })
 
-            mutate({ id, formData });
+            mutate(
+                { id, formData },
+                {
+                    onSuccess: (data: any) => {
+                        setErrMsg('')
+                        setFormErrors({})
+                        setNewPreviews([])
+                        setSuccessMsg(data?.message)
+                        if (fileInputRef.current) {
+                            fileInputRef.current.value = ''
+                            setNewFiles([])
+                            setNewPreviews([])
+                        }
+                    },
+                    onError: (error: any) => {
+                        if (axios.isAxiosError(error)) {
+                            setSuccessMsg('')
+                            setFormErrors({})
+                            setErrMsg(error.response?.data?.message || error.response?.data?.errors)
+                        } else {
+                            console.error('An unexpected error occurred.', error)
+                        }
+                    }
+                }
+            )
         }
         catch (err: any) {
             if (err instanceof z.ZodError) {
@@ -100,12 +141,16 @@ export const EditTicket = () => {
                 err.errors.forEach(error => {
                     errors[error.path[0]] = error.message
                 });
-                setFormErrors(errors);
+                setFormErrors(errors)
             }
-           else {
-                console.error('Unknown error:', err);
+            else {
+                console.error('Unknown error:', err)
             }
         }
+    } 
+    
+    const closeModal = () => {
+        setIsModalOpen(false)
     };
 
     return (
@@ -197,16 +242,18 @@ export const EditTicket = () => {
 
                         <div className="mb-4">
                             <Label>Existing Attachments</Label>
-                            {existingAttachments.length > 0 ? (
+                            {existingAttachments?.length > 0 ? (
                                 <div className="flex gap-2 flex-wrap">
-                                    {existingAttachments.map((url, i) => (
-                                        <img
-                                            key={i}
-                                            src={url}
-                                            alt={`attachment-${i}`}
-                                            className="w-32 h-32 object-cover mb-2 rounded"
-                                        />
-                                    ))}
+
+                                    <button
+                                        type="button"
+                                        onClick={handleImageClick}
+                                        className="text-blue-500"
+                                    >
+                                        Click here to view attachments
+                                    </button>
+                                    {isModalOpen && <AttachmentModal urls={existingAttachments} onClose={closeModal} />}
+
                                 </div>
                             ) : (
                                 <p>No attachments available.</p>
@@ -221,32 +268,31 @@ export const EditTicket = () => {
                                 name="attachments"
                                 onChange={handleFileChange}
                                 multiple
+                                ref={fileInputRef}
                                 className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                             />
                         </div>
 
                         {newFiles.length > 0 && (
-                            <div className="mb-4">
-                                <Label>New Files Preview</Label>
-                                {newFiles.map((file, i) => (
-                                    <img
-                                        key={i}
-                                        src={URL.createObjectURL(file)}
-                                        alt={`new-attachment-${i}`}
-                                        className="w-32 h-32 object-cover mb-2"
-                                    />
-                                ))}
+                            <div className="mb-4 mt-2 flex gap-2 flex-wrap">
+
+                                {newPreviews.length > 0 && (
+                                    <div className="mt-2 flex gap-2 flex-wrap">
+                                        {newPreviews.map((src, idx) => (
+                                            <img key={idx} src={src} alt={`preview-${idx}`} className="w-24 h-24 object-cover rounded" />
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         )}
 
-                        {updateTicketSuccess && <h3>{successMsg}</h3>}
-                        {/* {errMsg && <h3>{errMsg}</h3>} */}
-
-                        {isTicketUpdateError && updateTicketError && (
-                            <p className='text-error-red text-center mt-4'>
-                                {updateTicketError.message}
-                            </p>
+                        {successMsg && (
+                            <p className="text-green-500 text-sm mt-2">{successMsg}</p>
                         )}
+
+                        {errMsg && (
+                            <p className="text-red-500 text-sm mt-2">{errMsg}</p>)
+                        }
 
                         <div className="flex gap-4 mt-6">
                             <Button

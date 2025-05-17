@@ -8,15 +8,13 @@ export const useDeleteComment = () => {
         isError: isCommentError,
         error: commentError,
         isPending: deleteCommentPending,
-        isSuccess:deleteSuccess
+        isSuccess:deleteSuccess,
+        data: commentDeleteData
       } = useMutation({
         mutationFn: (id: string) => deleteComment(id),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['comments'] })
-          },
-        onError: (error: any) => {
-          console.error('Error deleting comment:', error)
-        },
+          }
       })
     
       return {
@@ -24,6 +22,7 @@ export const useDeleteComment = () => {
         isCommentError,
         commentError,
         deleteCommentPending,
-        deleteSuccess
+        deleteSuccess,
+        commentDeleteData
       }
 }

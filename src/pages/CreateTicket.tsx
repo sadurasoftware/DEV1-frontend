@@ -6,23 +6,27 @@ import React, { useState } from 'react'
 import { useCreateTicketMutation } from '../hooks/useCreateTicket'
 import { Ticket } from '../types/ticketTypes'
 import { Link } from 'react-router-dom'
-import { AxiosError } from 'axios'
+import axios, { AxiosError } from 'axios'
 import { createTicketValidation } from '@/validation/createTicketValidation'
 import { z } from 'zod'
+import { useRef } from 'react';
+
 
 const CreateTicket: React.FC = () => {
   const [ticketData, setTicketData] = useState<Ticket>({
     title: '',
     description: '',
-    attachments: [], 
+    attachments: [],
     priority: '',
     category: ''
   })
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({})
   const { categoriesLoading, categoriesData, isCategoriesError, categoriesError } = useFetchCategories()
+  const [successMsg, setSuccessMsg] = useState('')
+  const [errorMsg, setErrorMsg] = useState('')
 
-  
-  const { mutate, isPending, isError, error, isSuccess } = useCreateTicketMutation()
+  const { mutate, isPending } = useCreateTicketMutation()
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -35,6 +39,8 @@ const CreateTicket: React.FC = () => {
       [name]: value,
     }))
     setFormErrors({})
+    setSuccessMsg('')
+    setErrorMsg('')
   }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -52,23 +58,40 @@ const CreateTicket: React.FC = () => {
     e.preventDefault()
 
     setFormErrors({})
-    
-   
+
+
 
     try {
       createTicketValidation.parse(ticketData)
-    const formData = new FormData()
-    formData.append('title', ticketData.title)
-    formData.append('description', ticketData.description)
-    formData.append('priority', ticketData.priority)
-    formData.append('category', ticketData.category)
+      const formData = new FormData()
+      formData.append('title', ticketData.title)
+      formData.append('description', ticketData.description)
+      formData.append('priority', ticketData.priority)
+      formData.append('category', ticketData.category)
 
-    if (ticketData.attachments && ticketData.attachments.length > 0) {
-      ticketData.attachments.forEach(file => {
-        formData.append('attachments', file)
+      if (ticketData.attachments && ticketData.attachments.length > 0) {
+        ticketData.attachments.forEach(file => {
+          formData.append('attachments', file)
+        })
+      }
+      mutate(formData, {
+        onSuccess: (response) => {
+          setFormErrors({})
+          setErrorMsg('')
+          setSuccessMsg(response?.message || 'ticket created successfully')
+        },
+        onError: (error: any) => {
+          if (axios.isAxiosError(error)) {
+            setFormErrors({})
+            setSuccessMsg('')
+            setErrorMsg(error.response?.data?.message || error.response?.data?.errors || 'Something went wrong')
+          }
+
+        }
       })
-    }
-      mutate(formData)
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
       setTicketData({
         title: '',
         description: '',
@@ -78,15 +101,17 @@ const CreateTicket: React.FC = () => {
       })
     } catch (err) {
       if (err instanceof z.ZodError) {
-              const errors: { [key: string]: string } = {}
-              err.errors.forEach(error => {
-                errors[error.path[0]] = error.message
-              })
-              setFormErrors(errors)
-            }
+        const errors: { [key: string]: string } = {}
+        err.errors.forEach(error => {
+          errors[error.path[0]] = error.message
+        })
+        setSuccessMsg('')
+        setErrorMsg('')
+        setFormErrors(errors)
+      }
     }
   }
- 
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-white dark:bg-black">
@@ -106,7 +131,7 @@ const CreateTicket: React.FC = () => {
                 name="title"
                 value={ticketData.title}
                 onChange={handleChange}
-                
+
               />
               {formErrors.title && (
                 <p className="text-error-red text-sm">{formErrors.title}</p>
@@ -122,7 +147,7 @@ const CreateTicket: React.FC = () => {
                 name="description"
                 value={ticketData.description}
                 onChange={handleChange}
-                
+
                 rows={4}
                 className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
@@ -194,6 +219,7 @@ const CreateTicket: React.FC = () => {
                 onChange={handleFileChange}
                 className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 multiple
+                ref={fileInputRef}
               />
             </div>
 
@@ -203,7 +229,7 @@ const CreateTicket: React.FC = () => {
               <Button
                 type="submit"
                 className="w-full py-3 bg-cust-blue text-white dark:text-black font-semibold rounded-md hover:bg-cust-blue transition dark:bg-cust-green dark:hover:bg-cust-green uppercase"
-               
+
               >
                 {isPending ? 'Creating Ticket...' : 'Create Ticket'}
               </Button>
@@ -223,25 +249,29 @@ const CreateTicket: React.FC = () => {
           <p className="text-error-red text-center mt-4">{formErrors.submit}</p>
         )}
 
-        {isError && error && (
+        {/* {isError && error && (
           <h3 className='text-error-red font-bold'>
             {(error instanceof AxiosError ? error.response?.data.message : 'An unexpected error occurred') || 'An unexpected error occurred'}
           </h3>
-        )}
+        )} */}
 
 
         {isCategoriesError && categoriesError && (
           <p className='text-error-red text-center mt-4'>
-            {(categoriesError instanceof AxiosError? categoriesError.response?.data.message : 'Categorry not set')}
+            {(categoriesError instanceof AxiosError ? categoriesError.response?.data.message : 'Categorry not set')}
           </p>
         )}
 
+        {successMsg && <p className='text-green text-center mt-4 font-bold'>{successMsg}</p>}
 
-        {isSuccess && (
+        {errorMsg && <p className='text-red text-center mt-4 font-bold'>{errorMsg}</p>}
+
+
+        {/* {isSuccess && (
           <p className="text-green-500 text-center mt-4">
             Ticket created successfully!
           </p>
-        )}
+        )} */}
       </div>
     </div>
   )
