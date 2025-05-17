@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useGetSupportTeam } from "@/hooks/useGetSupportTeam";
@@ -6,15 +6,22 @@ import { useAssignTicket } from '@/hooks/useAssignTicket';
 import { Link, useParams } from 'react-router-dom';
 import { useFetchTicketById } from '@/hooks/useFetchTicketById';
 import { useFetchCategories } from '@/hooks/useFetchCategories';
+import { AttachmentModal } from '@/components/AttachmentModal';
+import { isAxiosError } from 'axios';
 
 export const AssignTicket = () => {
     const { id } = useParams<{ id?: string }>();
 
     const { usersLoading, usersData, isUsersError, usersError } = useGetSupportTeam();
     const { ticketData } = useFetchTicketById(id || '');
-    const { mutate, isPending, isError, isSuccess, error, data } = useAssignTicket();
+    const { mutate, isPending } = useAssignTicket();
 
-    const [success, setSuccess] = useState<string>('');
+    const [success, setSuccess] = useState<string>('')
+    const [errMsg, setErrMsg] = useState<string>('')   
+    
+    const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
+    const [attachmentsUrl, setAttachmentsUrl] = useState<string[]>([])
+
     const [selectedUser, setSelectedUser] = useState<any>({
         id: 0,
         firstname: '',
@@ -39,23 +46,37 @@ export const AssignTicket = () => {
 
     const handleAssignTicket = () => {
         if (id && selectedUser.id) {
-            mutate({ id, assignedTo: selectedUser.id });
+            mutate({ id, assignedTo: selectedUser.id }, {
+                onSuccess: (response:any) =>{
+                    setErrMsg('')
+                    setSuccess(response?.message)
+                },
+                onError:(error:any)=>{
+                    if(isAxiosError(error))
+                    {
+                        setErrMsg(error.response?.data?.message || error.response?.data?.errors)
+                    }
+                    else
+                    {
+                        setErrMsg('Something went wrong!')
+                    }
+                }
+            })
         }
     };
 
-    useEffect(() => {
-        if (isSuccess && data?.message) {
-            setSuccess(data.message);
+
+    const handleImageClick = () => {
+        if (ticketData?.ticket?.attachments?.length) {
+          const urls = ticketData.ticket.attachments.map((att: { url: any; }) => att.url)
+          setAttachmentsUrl(urls)
+          setIsModalOpen(true)
         }
-    }, [isSuccess, data]);
+      }
 
-    // if (isTicketLoading) {
-    //     return <div>Loading ticket data...</div>;
-    // }
-
-    // if (isTicketError || !ticketData?.ticket) {
-    //     return <div>Error loading ticket data: {usersError?.message || 'An unexpected error occurred'}</div>;
-    // }
+      const closeModal = () => {
+        setIsModalOpen(false)
+      };
 
     return (
         <div className="min-h-screen bg-gray-100 py-8 px-6">
@@ -134,17 +155,23 @@ export const AssignTicket = () => {
                             Attachments
                         </Label>
                         {ticketData?.ticket?.attachments && ticketData.ticket.attachments.length > 0 ? (
-                            ticketData.ticket.attachments.map((attachment: any) => (
-                                <div key={attachment.id}>
-                                    <img
-                                        src={attachment.url}
-                                        alt={`Attachment ${attachment.id}`}
-                                        width={500}
-                                        height={500}
-                                        className="mb-4"
-                                    />
-                                </div>
-                            ))
+                            <div className="flex gap-2 flex-wrap">
+             
+                            <>
+                                <button
+                                type="button"
+                                  onClick={handleImageClick}
+                                  className="text-blue-500"
+                                >
+                                  Click here to view attachments
+                                </button>
+                                {isModalOpen && <AttachmentModal urls={attachmentsUrl} onClose={closeModal} />}
+                              </>
+                          
+          
+          
+                        
+                      </div>
                         ) : (
                             <p>No attachments available.</p>
                         )}
@@ -209,15 +236,15 @@ export const AssignTicket = () => {
                     Back
                 </Link>
 
-                {isSuccess && success && (
+                {success && (
                     <div className="mt-4 p-4 bg-green-100 border border-green-400 text-green-800 rounded-md">
                         <p>{success}</p>
                     </div>
                 )}
 
-                {isError && error && (
+                {errMsg && (
                     <div className="mt-4 p-4 bg-red-100 border border-red-400 text-red-800 rounded-md">
-                        <p>Error assigning ticket: {error.message || 'An unexpected error occurred'}</p>
+                        <p>Error assigning ticket: {errMsg || 'An unexpected error occurred'}</p>
                     </div>
                 )}
             </div>

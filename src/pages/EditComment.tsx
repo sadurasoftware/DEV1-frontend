@@ -4,14 +4,18 @@ import { Link, useParams } from 'react-router-dom'
 import { useFetchCommentById } from '@/hooks/usefetchCommentById'
 import { useState, useEffect } from 'react'
 import { useEditComment } from '@/hooks/useEditComment'
-import { AxiosError } from 'axios'
+import axios from 'axios'
 import { commentValidation } from '@/validation/commentValidation'
 import { z } from 'zod'
-
+import ReactPlayer from 'react-player'
+import { useRef } from 'react'
+import { AttachmentModal } from '@/components/AttachmentModal'
 
 export const EditComment = () => {
   const { ticketId, commentId } = useParams()
   const [success, setSuccess] = useState('')
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const {
     commentLoading,
     commentData,
@@ -21,9 +25,6 @@ export const EditComment = () => {
 
   const {
     mutate,
-    updateCommentSuccess,
-    isCommentUpdateError,
-    updateCommentError,
     updateCommentData
   } = useEditComment()
 
@@ -35,15 +36,7 @@ export const EditComment = () => {
 
   const [errorMsg, setErrorMsg] = useState('')
 
-  
-
-  useEffect(()=>{
-    if(updateCommentSuccess)
-      {
-        setSuccess(updateCommentData?.message)
-        setErrorMsg('')
-      }
-  }, [updateCommentSuccess])
+  const [zodErrorMsg, setZodErrorMsg] = useState('')
 
   const [existingAttachments, setExistingAttachments] = useState<string[]>([])
   const [newFiles, setNewFiles] = useState<File[]>([])
@@ -57,7 +50,8 @@ export const EditComment = () => {
         commentText: commentData.comment.commentText,
       })
 
-      setExistingAttachments(commentData.comment.attachments.map((a: any) => a.url))
+      const urls = commentData.comment.attachments?.map((att: { url: string }) => att.url) || []
+      setExistingAttachments(urls)
     }
   }, [commentData])
 
@@ -69,6 +63,18 @@ export const EditComment = () => {
       ...prev,
       [name]: value,
     }))
+    setErrorMsg('')
+    setZodErrorMsg('')
+  }
+
+  const handleImageClick = () => {
+    if (commentData?.comment?.attachments?.length) {
+      const urls = commentData.comment.attachments.map((att: { url: any; }) => att.url)
+      setExistingAttachments(urls)
+      setIsModalOpen(true)
+      setSuccess('')
+      setErrorMsg('')
+    }
   }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -80,32 +86,58 @@ export const EditComment = () => {
       const previews = selectedFiles.map((file) => URL.createObjectURL(file))
       setNewPreviews(previews)
     }
+    setErrorMsg('')
+
   }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    try
-    {if (!commentId || !ticketId) {
-      console.error("Missing ticket or comment ID")
-      return
-    }
-    commentValidation.parse({ commentText: comment.commentText })
-    const formData = new FormData()
-    formData.append('commentText', comment.commentText)
-    newFiles.forEach((file) => formData.append('attachments', file))
+    try {
+      if (!commentId || !ticketId) {
+        console.error("Missing ticket or comment ID")
+        return
+      }
+      commentValidation.parse({ commentText: comment.commentText })
+      const formData = new FormData()
+      formData.append('commentText', comment.commentText)
+      newFiles.forEach((file) => formData.append('attachments', file))
 
-    mutate({
-      ticketId,
-      commentId,
-      formData,
-    })}
-    catch (err) {
-          if (err instanceof z.ZodError) {
-            setSuccess('')
-            setErrorMsg(err.errors[0]?.message || 'Invalid input')
-            
+      mutate(
+        { ticketId, commentId, formData },
+        {
+          onSuccess: () => {
+            setErrorMsg('')
+            setZodErrorMsg('')
+            setNewPreviews([])
+            setSuccess(updateCommentData?.message || 'Comment updated successfully...')
+            if (fileInputRef.current) {
+              fileInputRef.current.value = '';
+            }
+            setNewFiles([])
+          },
+          onError: (error: any) => {
+            if (axios.isAxiosError(error)) {
+              setSuccess('');
+              setZodErrorMsg('')
+              setErrorMsg(error.response?.data?.message || error.response?.data?.errors || 'An unexpected error occurred')
+            } else {
+              setErrorMsg('Something went wrong. Please try again.')
+            }
           }
         }
+      );
+    }
+    catch (err) {
+      console.log("Caught error:", err);
+      if (err instanceof z.ZodError) {
+        setSuccess('');
+        setErrorMsg('')
+        setZodErrorMsg(err.errors[0]?.message || 'Invalid input');
+      } else {
+        setZodErrorMsg('An unknown error occurred');
+      }
+    }
+
   }
 
   if (commentLoading) {
@@ -115,6 +147,10 @@ export const EditComment = () => {
   if (isCommentError) {
     return <p className="text-red-500 text-center mt-10">{commentError?.message}</p>
   }
+
+    const closeModal = () => {
+    setIsModalOpen(false)
+  };
 
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow mt-10">
@@ -147,23 +183,30 @@ export const EditComment = () => {
             rows={4}
             className="w-full mt-1 p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
-          {errorMsg && errorMsg && (
-          <p className='text-error-red text-left mt-4'>{errorMsg}</p>
-        )}
+          {zodErrorMsg && (
+            <p className='text-error-red text-left mt-4'>{zodErrorMsg}</p>
+          )}
         </div>
 
         <div className="mb-4">
           <Label>Existing Attachments</Label>
-          {existingAttachments.length > 0 ? (
+          {existingAttachments?.length > 0 ? (
             <div className="flex gap-2 flex-wrap">
-              {existingAttachments.map((url, i) => (
-                <img
-                  key={i}
-                  src={url}
-                  alt={`attachment-${i}`}
-                  className="w-32 h-32 object-cover mb-2 rounded"
-                />
-              ))}
+             
+                  <>
+                      <button
+                      type="button"
+                        onClick={handleImageClick}
+                        className="text-blue-500"
+                      >
+                        Click here to view attachments
+                      </button>
+                      {isModalOpen && <AttachmentModal urls={existingAttachments} onClose={closeModal} />}
+                    </>
+                
+
+
+              
             </div>
           ) : (
             <p className="text-sm text-gray-500">No attachments available.</p>
@@ -180,22 +223,44 @@ export const EditComment = () => {
             name="attachments"
             onChange={handleFileChange}
             multiple
+            ref={fileInputRef}
             className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
 
           {newPreviews.length > 0 && (
             <div className="mt-2 flex gap-2 flex-wrap">
-              {newPreviews.map((src, idx) => (
-                <img key={idx} src={src} alt={`preview-${idx}`} className="w-24 h-24 object-cover rounded" />
-              ))}
+              {newPreviews.map((src, idx) => {
+                const isVideo = /\.(mp4|webm|ogg|mp4)$/i.test(src);
+                return(
+                  <div key={idx}>
+                    {isVideo ? (
+                      <ReactPlayer
+                        url={src}
+                        controls
+                        width="100%"
+                        height="auto"
+                      />
+                    ) : (
+                      <img
+                        key={idx}
+                        src={src}
+                        alt={`preview-${idx}`}
+                        className="w-24 h-24 object-cover rounded"
+                      />
+                    )}
+                  </div>
+                )
+              }
+                
+              )}
             </div>
           )}
         </div>
 
-          
 
 
-        {isCommentUpdateError && updateCommentError && (
+
+        {/* {isCommentUpdateError && updateCommentError && (
           <p className='text-error-red text-center mt-4'>
             {(updateCommentError instanceof AxiosError ? updateCommentError?.response?.data.message : 'An unexpected error occurred') || 'An unexpected error occurred'}
           </p>
@@ -209,7 +274,17 @@ export const EditComment = () => {
 
         {updateCommentSuccess && (
           <h2 className="text-center text-green-600 font-semibold">{success}</h2>
+        )} */}
+
+        {success && (
+          <h2 className="text-center text-green-600 font-semibold">{success}</h2>)
+        }
+
+        {errorMsg && (
+          <p className='text-error-red text-left mt-4'>{errorMsg}</p>
         )}
+
+
 
         <div className="pt-4 text-left">
           <button
