@@ -1,27 +1,41 @@
-import { useFetchAllTickets } from "@/hooks/useFetchAllTickets";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { useState, useEffect } from "react";
-import { useDebounce } from "@/hooks/useDebounce";
-import { viewBackStore } from "@/store/viewBackStore";
-import { useFetchTicketsCount } from "@/hooks/useFetchTicketsCount";
-import { AxiosError } from "axios";
-import { useLoginInfoStore } from "@/store/useLoginInfoStore";
+import { useFetchAllTickets } from "@/hooks/useFetchAllTickets"
+import { Link, useNavigate, useParams } from "react-router-dom"
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { useState, useEffect } from "react"
+import { useDebounce } from "@/hooks/useDebounce"
+import { viewBackStore } from "@/store/viewBackStore"
+import { useFetchTicketsCount } from "@/hooks/useFetchTicketsCount"
+import { AxiosError } from "axios"
+import { useLoginInfoStore } from "@/store/useLoginInfoStore"
+import { useExportTicket } from "@/hooks/useExportTicket"
 
 export const TicketsListPage = () => {
     const { pageno } = useParams();
-    const {user} = useLoginInfoStore();
+    const { user } = useLoginInfoStore();
     const [filterData, setFilterData] = useState({
         status: '',
         priority: '',
         search: '',
         page: Number(pageno) || 1
     });
+
+    const [successMsg, setSuccessMsg] = useState('')
+    const [errorMsg, setErrorMsg] = useState('')
+
+    const [exportData, setExportData] = useState({
+        startDate: '',
+        endDate: '',
+        format: ''
+
+    })
+
+    const { mutate, isPending } = useExportTicket()
+
     useEffect(() => {
         setFilterData(prev => ({ ...prev, page: Number(pageno) || 1 }));
-      }, [pageno]);
-      
+    }, [pageno]);
+
     const debounceValue = useDebounce(filterData.search, 1000);
     const { ticketsLoading, tickets, isTicketsError, ticketsError } = useFetchAllTickets(
         filterData.status,
@@ -30,9 +44,9 @@ export const TicketsListPage = () => {
         filterData.page
     );
 
-    const{ ticketsCountData, isTicketsCountError, ticketsCountError} =  useFetchTicketsCount()
+    const { ticketsCountData, isTicketsCountError, ticketsCountError } = useFetchTicketsCount()
 
-    
+
     const navigate = useNavigate();
     const { setBackRoutes } = viewBackStore()
 
@@ -43,15 +57,15 @@ export const TicketsListPage = () => {
         }));
     }, [filterData.status, filterData.priority, filterData.search]);
 
-   
+
 
     if (isTicketsError) {
         return (
             <div className="flex justify-center items-center min-h-screen bg-gray-100">
                 <h4 className="text-xl font-semibold text-red-500">
-                     {(ticketsError instanceof AxiosError ? ticketsError.response?.data.message : 'An unexpected error occurred') || 'An unexpected error occurred'}
-                    
-                    </h4>
+                    {(ticketsError instanceof AxiosError ? ticketsError.response?.data.message : 'An unexpected error occurred') || 'An unexpected error occurred'}
+
+                </h4>
             </div>
         );
     }
@@ -64,6 +78,18 @@ export const TicketsListPage = () => {
             ...prevData,
             [name]: value,
         }));
+    };
+
+    const handleExportChange = (
+        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+    ) => {
+        const { name, value } = e.target;
+        setExportData((prevData: any) => ({
+            ...prevData,
+            [name]: value,
+        }));
+        setSuccessMsg('')
+        setErrorMsg('')   
     };
 
     const handleAssignTicket = (id: string) => {
@@ -83,17 +109,34 @@ export const TicketsListPage = () => {
 
     const handleNextPage = () => {
         if (filterData.page < totalPages) {
-          navigate(`/tickets/${filterData.page + 1}`);
+            navigate(`/tickets/${filterData.page + 1}`);
         }
-      };
-      
-      const handlePreviousPage = () => {
+    };
+
+    const handlePreviousPage = () => {
         if (filterData.page > 1) {
-          navigate(`/tickets/${filterData.page - 1}`);
+            navigate(`/tickets/${filterData.page - 1}`);
         }
-      };
-      
-      
+    };
+
+    const handleExport = () => {
+        try {
+            mutate(exportData, {
+                onSuccess: (data) => {
+                    setErrorMsg('')
+                    setSuccessMsg(data?.message)
+                },
+                onError: (error: any) => {
+                    setSuccessMsg('')
+                    setErrorMsg(error?.response?.data?.message || error?.response?.data?.errors)
+                }
+            })
+        }
+        catch (error: any) {
+            setErrorMsg(error.message)
+        }
+    }
+
 
     // const openCount = tickets?.tickets.filter(ticket => ticket.status === 'Open').length;
     // const pendingCount = tickets?.tickets.filter(ticket => ticket.status === 'Pending').length;
@@ -104,9 +147,9 @@ export const TicketsListPage = () => {
     return (
         <div className="min-h-screen bg-gray-50 py-2 px-4 sm:px-6 lg:px-8">
             <Link to='/dashboard' className="text-left font-bold text-blue-500">Back</Link>
-            
+
             <div className="max-w-7xl mx-auto mt-4">
-               
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                     <div className="bg-white shadow rounded-lg p-4 border-l-4 border-blue-500">
                         <h3 className="text-sm font-medium text-gray-500">Open Tickets</h3>
@@ -124,8 +167,62 @@ export const TicketsListPage = () => {
                         <h3 className="text-sm font-medium text-gray-500">Resolved Tickets</h3>
                         <p className="text-2xl font-bold text-green-600">{ticketsCountData?.resolvedTickets}</p>
                     </div>
-                    
+
                 </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4  mb-6">
+                    <div>
+                        <Label htmlFor="startDate" className="text-xs font-xxl text-gray-600 mx-5">From: </Label>
+                        <input
+                            type="date"
+                            name="startDate"
+                            value={exportData.startDate}
+                            id="startDate"
+                            className="p-3 border rounded-md"
+                            onChange={handleExportChange}
+                        />
+                    </div>
+
+                    <div>
+                        <Label htmlFor="startDate" className="text-xs font-medium text-gray-600 mx-5">To:</Label>
+                        <input
+                            type="date"
+                            name="endDate"
+                            value={exportData.endDate}
+                            id="endDate"
+                            className="p-3 border rounded-md"
+                            onChange={handleExportChange}
+                        />
+                    </div>
+
+                    <div>
+                        <Label className="text-xs font-medium text-gray-600 mx-5">Format:</Label>
+                        <select name="format" 
+                            id="format" 
+                            className="p-3 border rounded-md" 
+                            value={exportData.format}
+                            onChange={handleExportChange}
+                        >   
+                            <option value="">Select Format</option>
+                            <option value="csv">.csv</option>
+                            <option value="pdf">.pdf</option>
+                            <option value="excel">.excel</option>
+                        </select>
+                    </div>
+                    <div>
+                        <button 
+                            className="p-3 bg-indigo-500 text-white font-medium rounded-md mt-2"
+                            type='submit'
+                            onClick={() => handleExport()}
+                        > {
+                                isPending ? "Exporting...." : "Export"
+                            }
+
+                        </button>
+                    </div>
+                    {successMsg && <p className="text-green-500 text-center">{successMsg}</p>}
+                    {errorMsg && <p className="text-red-500 text-center">{errorMsg}</p>}
+                </div>
+
 
                 <h2 className="text-3xl font-semibold text-center text-indigo-600 mb-8">Tickets List</h2>
 
@@ -176,8 +273,8 @@ export const TicketsListPage = () => {
                         />
                     </div>
                 </div>
-    
-                { !ticketsLoading && tickets && tickets.tickets.length > 0 ? (
+
+                {!ticketsLoading && tickets && tickets.tickets.length > 0 ? (
                     <>
                         <div className="overflow-x-auto bg-white shadow-lg rounded-lg">
                             <table className="min-w-full table-auto">
@@ -188,10 +285,10 @@ export const TicketsListPage = () => {
                                         <th className="px-4 py-3 text-sm font-semibold text-gray-600">Priority</th>
                                         <th className="px-4 py-3 text-sm font-semibold text-gray-600">Status</th>
                                         {
-                                            user?.department === 'Support team department' && 
+                                            user?.department === 'Support team department' &&
                                             <th className="px-4 py-3 text-sm font-semibold text-gray-600">Update Status</th>
                                         }
-                                        
+
                                         <th className="px-4 py-3 text-sm font-semibold text-gray-600">Assigned To</th>
                                         <th className="px-4 py-3 text-sm font-semibold text-gray-600">View</th>
                                     </tr>
@@ -203,15 +300,15 @@ export const TicketsListPage = () => {
                                             <td className="px-4 py-3 text-sm">{ticket.description}</td>
                                             <td className="px-4 py-3 text-sm">{ticket.priority}</td>
                                             <td className="px-4 py-3 text-sm">{ticket.status}</td>
-                                            {user?.department === 'Support team department' && 
-                                             <td className="px-4 py-3 text-sm"><button
-                                             onClick={() => handleUpdateStatus(ticket.id)}
-                                             className="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition duration-200"
-                                         >
-                                             Update Status
-                                         </button></td>
+                                            {user?.department === 'Support team department' &&
+                                                <td className="px-4 py-3 text-sm"><button
+                                                    onClick={() => handleUpdateStatus(ticket.id)}
+                                                    className="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition duration-200"
+                                                >
+                                                    Update Status
+                                                </button></td>
                                             }
-                                           
+
                                             <td className="px-4 py-3 text-sm">
                                                 {ticket.assignedUser ? (
                                                     <span>{ticket.assignedUser.firstname}</span>
@@ -260,6 +357,7 @@ export const TicketsListPage = () => {
                 )}
             </div>
             {isTicketsCountError && <p>{ticketsCountError?.message}</p>}
+
         </div>
     );
 };
