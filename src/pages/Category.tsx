@@ -83,6 +83,11 @@ const Category: React.FC = () => {
   }
 
   const handleDeleteCategory = (id: number) => {
+    const confirmDelete = window.confirm('Are you sure you want to delete this category?')
+    if(!confirmDelete)
+    {
+      return
+    }
     deleteCategory(id, {
       onSuccess: () => {
         refetch()
@@ -137,7 +142,7 @@ const Category: React.FC = () => {
 
       <div className="mt-6">
         <h3 className="text-xl font-semibold text-center mb-4">
-          Existing Modules
+          Existing Categories
         </h3>
 
         {categoriesLoading ? (
