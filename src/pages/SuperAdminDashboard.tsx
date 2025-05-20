@@ -4,7 +4,6 @@ import { useLoginInfoStore } from '../store/useLoginInfoStore'
 
 export const SuperAdminDashboard = () => {
   const { token, user } = useLoginInfoStore()
-  console.log('User in Dashboard:', user)
   const navigate = useNavigate()
 
   useEffect(() => {

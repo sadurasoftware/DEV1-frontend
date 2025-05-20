@@ -257,25 +257,6 @@ export const EditComment = () => {
           )}
         </div>
 
-
-
-
-        {/* {isCommentUpdateError && updateCommentError && (
-          <p className='text-error-red text-center mt-4'>
-            {(updateCommentError instanceof AxiosError ? updateCommentError?.response?.data.message : 'An unexpected error occurred') || 'An unexpected error occurred'}
-          </p>
-        )}
-
-        {isCommentError && commentError && (
-          <p className='text-error-red text-center mt-4'>
-            {(commentError instanceof AxiosError ? commentError.message : 'An unexpected error occurred') || 'An unexpected error occurred'}
-          </p>
-        )}
-
-        {updateCommentSuccess && (
-          <h2 className="text-center text-green-600 font-semibold">{success}</h2>
-        )} */}
-
         {success && (
           <h2 className="text-center text-green-600 font-semibold">{success}</h2>)
         }

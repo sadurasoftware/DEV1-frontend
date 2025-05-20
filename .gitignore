@@ -1,4 +1,4 @@
-
+.env
 
 # Logs
 logs
@@ -26,4 +26,3 @@ dist-ssr
 *.sw?
 notes.txt
 
-.env
