@@ -135,3 +135,18 @@ export const ticketHistory = async(ticketId:string) => {
   )
   return response.data
 }
+
+export const exportTicket = async(exportTicket:any) =>{
+  const token = useLoginInfoStore.getState().token
+  const response = await api.get(`/api/tickets/export?startDate=${exportTicket.startDate}&endDate=${exportTicket.endDate}&format=${exportTicket.format}`, 
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          responseType: 'blob'
+        },
+      },
+      
+    
+  )
+  return response.data
+}

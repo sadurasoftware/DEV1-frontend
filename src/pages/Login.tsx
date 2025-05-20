@@ -48,8 +48,6 @@ export const Login = () => {
 
       setLoginInfo(data?.token, data?.user)
       setError('')
-      console.log('Inside login page..')
-      console.log(`RoleId:${data?.user?.roleId}`)
       if (data?.user) {
         navigate('/dashboard')
       } else {

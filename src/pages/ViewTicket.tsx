@@ -34,7 +34,7 @@ export const ViewTicket = () => {
   const navigate = useNavigate()
   const { backRoutes } = viewBackStore();
   const { ticketData } = useFetchTicketById(id || '')
-  const { createCommentMutation, isError, error, data } = useCreateComment()
+  const { createCommentMutation } = useCreateComment()
   const [successMsg, setSuccessMsg] = useState('')
   const [errMsg, setErrMsg] = useState('')
 
@@ -85,7 +85,7 @@ export const ViewTicket = () => {
       }
       await createCommentMutation({ ticketId: id, data: formData },
         {
-          onSuccess: () => {
+          onSuccess: (data) => {
             setErrMsg('')
             setCommentData({
               ticketId: '',
@@ -370,13 +370,7 @@ export const ViewTicket = () => {
             {errMsg && <h3 className='text-red font-bold'>{errMsg}</h3>}
           </div>
         }
-        {isError && (
-          <h3 className="text-red font-bold">
-            {Array.isArray(error?.response?.data?.errors)
-              ? error.response.data.errors[0]
-              : error?.response?.data?.message || 'An unexpected error occurred'}
-          </h3>
-        )}
+      
 
         <button
           onClick={handleSubmit}

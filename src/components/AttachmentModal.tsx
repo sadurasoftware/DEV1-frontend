@@ -15,7 +15,7 @@ export const AttachmentModal: React.FC<AttachmentType> = ({ urls, onClose }) => 
         </button>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {urls?.map((url, index) => {
-            const isVideo = /\.(mp4|webm|ogg)$/i.test(url);
+            const isVideo = /\.(mp4|webm|ogg|mkv)$/i.test(url);
             return (
               <div key={index}>
                 {isVideo ? (
