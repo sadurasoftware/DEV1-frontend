@@ -91,6 +91,8 @@ const Departments: React.FC = () => {
   }
 
   const handleDeleteDepartment = (id: number) => {
+    const confirmDelete = window.confirm('Are you sure you want to delete this department?')
+    if(!confirmDelete) return
     deleteDepartment(id, {
       onSuccess: () => {
         refetch()

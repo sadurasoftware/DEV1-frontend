@@ -91,6 +91,10 @@ const Permissionpage: React.FC = () => {
   }
 
   const handleDeletePermission = (id: number) => {
+    const confirmDelete = window.confirm(
+      'Are you sure you want to delete this permission?'
+    )
+    if (!confirmDelete) return
     deletePermission(id, {
       onSuccess: () => {
         refetch()

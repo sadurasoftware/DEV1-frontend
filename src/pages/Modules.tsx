@@ -85,6 +85,8 @@ const Modules: React.FC = () => {
   }
 
   const handleDeleteModule = (id: number) => {
+    const confirmDel = window.confirm('Are you sure you want to delete this module?')
+    if (!confirmDel) return
     deleteModule(id, {
       onSuccess: () => {
         refetch()
