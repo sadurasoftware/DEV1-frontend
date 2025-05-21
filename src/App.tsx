@@ -34,6 +34,7 @@ import { MyTickets } from './pages/MyTickets'
 import { MyProfile } from './pages/MyProfile'
 import { EditComment } from './pages/EditComment'
 import CreateUser from './pages/CreateUser'
+import { Countries } from './pages/Countries'
 
 // import Theme from './pages/Theme';
 // import  useThemeStore from './store/themeStore';
@@ -106,6 +107,7 @@ const App: React.FC = () => {
               <Route path="/update-status/:id" element={<UpdateStatus/>}/>
               <Route path="/my-tickets/:userId" element={<MyTickets/>}/>
               <Route path="/comments/:ticketId/:commentId" element={<EditComment/>}/>
+              <Route path="/countries" element={<Countries/>} />
             </Route>
           </Route>
         </Routes>

@@ -85,6 +85,8 @@ const RolePage: React.FC = () => {
   }
 
   const handleDeleteRole = (id: number) => {
+    const confirmDel = window.confirm('Are you sure you want to delete this role?')
+    if (!confirmDel) return
     deleteRole(id, {
       onSuccess: () => {
         refetch()
