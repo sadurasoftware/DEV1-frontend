@@ -2,19 +2,19 @@ import api from '@/lib/api'
 import { useLoginInfoStore } from '@/store/useLoginInfoStore'
 
 export const getCountries = async () => {
-    // const token = useLoginInfoStore().token
+    const token = useLoginInfoStore.getState().token
     const response = await api.get('/api/country/get', {
     headers: {
-    //   Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${token}`,
     },
   })
   return response.data
 }
 
-export const createCountry = async (country: any) => {
-    const token = useLoginInfoStore().token
+export const createCountry = async (name:any) => {
+    const token = useLoginInfoStore.getState().token
     const response = await api.post('/api/country/create', 
-        {name: country.name}, 
+       name,
     {
         headers: {
         Authorization: `Bearer ${token}`,
@@ -23,10 +23,10 @@ export const createCountry = async (country: any) => {
   return response.data
 }
 
-export const updateCountry = async (country: any) => {
-    const token = useLoginInfoStore().token
-    const response = await api.put(`/api/country/update/${country.id}`, 
-        country, 
+export const updateCountry = async ({id, name}:{id:number, name:string}) => {
+    const token = useLoginInfoStore.getState().token
+    const response = await api.put(`/api/country/update/${id}`, 
+        {name}, 
     {
         headers: {
         Authorization: `Bearer ${token}`,
@@ -36,7 +36,7 @@ export const updateCountry = async (country: any) => {
 }
 
 export const deleteCountry = async(id:any) => {
-    const token = useLoginInfoStore().token
+    const token = useLoginInfoStore.getState().token
     const response = await api.delete(`/api/country/delete/${id}`,
         {
             headers:{

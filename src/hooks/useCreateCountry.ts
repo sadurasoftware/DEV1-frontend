@@ -3,7 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 
 export const useCreateCountry = () => {
     const { isPending, mutate:createCountryMutation } = useMutation({
-        mutationFn: (country:any) => createCountry(country),
+        mutationFn: createCountry,
 })
 return {
         isPending,

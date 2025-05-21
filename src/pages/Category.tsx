@@ -50,9 +50,9 @@ const Category: React.FC = () => {
         updateCategory(
           { id: categoryId, name: categoryName },
           {
-            onSuccess: () => {
+            onSuccess: (response:any) => {
               refetch()
-              setSuccess('')
+              setSuccess(response?.message)
               setIsEditing(false)
               setCategoryId(null)
               setCategoryName('')
