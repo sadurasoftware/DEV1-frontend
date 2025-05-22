@@ -2,15 +2,15 @@ import { getStates } from "@/apis/statesApi"
 import { useQuery } from "@tanstack/react-query"
 
 export const useGetStates = () => {
-   const {isLoading, data, isError, error} = useQuery({
+   const {isLoading:statesLoading, data:statesData, isError:isStatesError, error:statesError} = useQuery({
       queryKey: ['states'],
       queryFn: () => getStates(),
    })
 
    return{
-    isLoading,
-    data,
-    isError,
-    error
+    statesLoading,
+    statesData,
+    isStatesError,
+    statesError
    }
 }

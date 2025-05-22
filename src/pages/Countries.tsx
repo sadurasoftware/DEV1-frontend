@@ -1,12 +1,12 @@
 import { useState } from "react"
-import { useGetCountries } from "@/hooks/useGetCountries"
-import { useCreateCountry } from "@/hooks/useCreateCountry"
+import { useGetCountries } from "@/hooks/countryHooks/useGetCountries"
+import { useCreateCountry } from "@/hooks/countryHooks/useCreateCountry"
 import axios from "axios"
 import { useQueryClient } from "@tanstack/react-query"
-import { useUpdateCountry } from "@/hooks/useUpdateCountry"
+import { useUpdateCountry } from "@/hooks/countryHooks/useUpdateCountry"
 import { countryValidation } from "@/validation/countryValidation"
 import { z } from "zod"
-import { useDeleteCountry } from "@/hooks/useDeleteCountry"
+import { useDeleteCountry } from "@/hooks/countryHooks/useDeleteCountry"
 import { Link } from "react-router-dom"
 
 export const Countries = () => {
@@ -65,10 +65,11 @@ export const Countries = () => {
             onSuccess: (res: any) => {
               setErrorMsg('')
               setSuccessMsg(res?.message)
+              setIsModalOpen(false)
               setIsEditing(false)
               setCountryName('')
               setCountryId(0)
-              setIsModalOpen(false)
+              
               queryClient.invalidateQueries({ queryKey: ['countries'] })
               queryClient.invalidateQueries({
                 queryKey: ['countries']
@@ -223,7 +224,7 @@ export const Countries = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white w-full max-w-md rounded-lg shadow-lg p-6">
             <div className="flex justify-between items-center border-b pb-2 mb-4">
-              <h2 className="text-xl font-semibold">Add Country</h2>
+              <h2 className="text-xl font-semibold">{isEditing ? 'Edit Country' : 'Add Country' }</h2>
               <button
                 onClick={closeModal}
                 className="text-gray-500 hover:text-red-500 text-lg font-bold"
