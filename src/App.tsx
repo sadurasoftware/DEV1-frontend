@@ -35,6 +35,7 @@ import { MyProfile } from './pages/MyProfile'
 import { EditComment } from './pages/EditComment'
 import CreateUser from './pages/CreateUser'
 import { Countries } from './pages/Countries'
+import { States } from './pages/States'
 
 // import Theme from './pages/Theme';
 // import  useThemeStore from './store/themeStore';
@@ -108,6 +109,7 @@ const App: React.FC = () => {
               <Route path="/my-tickets/:userId" element={<MyTickets/>}/>
               <Route path="/comments/:ticketId/:commentId" element={<EditComment/>}/>
               <Route path="/countries" element={<Countries/>} />
+              <Route path="/states" element={<States/>} />
             </Route>
           </Route>
         </Routes>
