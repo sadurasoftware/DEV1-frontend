@@ -24,21 +24,21 @@ export const States = () => {
   const [isEditing, setIsEditing] = useState(false)
 
   const { statesLoading, statesData, isStatesError, statesError } = useGetStates()
-  const {data, isLoading, isError, error} = useGetCountries()
-  const {createStatePending, createStateMutation} = useCreateState()
+  const { data, isLoading, isError, error } = useGetCountries()
+  const { createStatePending, createStateMutation } = useCreateState()
   const { stateData } = useGetStateById(stateId)
-  const { deleteStateMutate} = useDeleteState()
+  const { deleteStateMutate } = useDeleteState()
 
-  const { updateStatePending, mutateUpdateState} = useUpdateState()
+  const { updateStatePending, mutateUpdateState } = useUpdateState()
 
-useEffect(() => {
-  if (stateData) {
-    setIsModalOpen(true)
-    setStateId(stateData.id)
-    setStateName(stateData.name)
-    setCountryId(stateData.countryId)
-  }
-}, [stateData])
+  useEffect(() => {
+    if (stateData) {
+      setIsModalOpen(true)
+      setStateId(stateData.id)
+      setStateName(stateData.name)
+      setCountryId(stateData.countryId)
+    }
+  }, [stateData])
 
 
 
@@ -48,6 +48,12 @@ useEffect(() => {
 
   const closeModal = () => {
     setIsModalOpen(false)
+    setErrorMsg('')
+    setSuccessMsg('')
+    setStateName('')
+    setStateId(0)
+    setCountryId(0)
+    setIsEditing(false)
   }
 
   const AddModal = () => {
@@ -61,34 +67,34 @@ useEffect(() => {
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-  const { name, value } = e.target
+    const { name, value } = e.target
 
-  if (name === 'stateName') {
-    setStateName(value)
+    if (name === 'stateName') {
+      setStateName(value)
+    }
+
+    if (name === 'countries') {
+      setCountryId(Number(value))
+    }
+
+    setSuccessMsg('')
+    setErrorMsg('')
   }
 
-  if (name === 'countries') {
-    setCountryId(Number(value))
+  const handleStateSelect = (state: any) => {
+    setSuccessMsg('')
+    setErrorMsg('')
+    setIsEditing(true)
+    setIsModalOpen(true)
+    setStateId(state.id)
+    setStateName(state.name)
+    setCountryId(state.country.id)
   }
-
-  setSuccessMsg('')
-  setErrorMsg('')
-}
-
-const handleStateSelect = (state: any) => {
-  setSuccessMsg('')
-  setErrorMsg('')
-  setIsEditing(true)
-  setIsModalOpen(true)
-  setStateId(state.id)
-  setStateName(state.name)
-  setCountryId(state.country.id)
-}
 
 
 
   const handleCreateState = () => {
-     try {
+    try {
 
       stateValidation.parse({ stateName, countryId })
 
@@ -96,7 +102,7 @@ const handleStateSelect = (state: any) => {
         mutateUpdateState({
           id: stateId,
           name: stateName,
-          countryId:countryId
+          countryId: countryId
 
         },
           {
@@ -155,19 +161,18 @@ const handleStateSelect = (state: any) => {
   }
 
 
-  const handleDeleteState = (id:number)=>{
+  const handleDeleteState = (id: number) => {
     const confirmDelete = window.confirm('Are you sure you want to delete this country?')
-    if(!confirmDelete) return
-    
-    deleteStateMutate(id,{
-      onSuccess:(res:any)=>{
-        queryClient.invalidateQueries({queryKey: ['states']})
+    if (!confirmDelete) return
+
+    deleteStateMutate(id, {
+      onSuccess: (res: any) => {
+        queryClient.invalidateQueries({ queryKey: ['states'] })
         setSuccessMsg(res.message)
         setErrorMsg('')
       },
-      onError:(error:any)=>{
-        if(axios.isAxiosError(error))
-        {
+      onError: (error: any) => {
+        if (axios.isAxiosError(error)) {
           setErrorMsg(error.response?.data.message || error.response?.data.errors || 'Something went wrong.')
           setSuccessMsg('')
         }
@@ -190,65 +195,65 @@ const handleStateSelect = (state: any) => {
           </button>
         </div>
         <div className="mt-4 ">
-                {successMsg && (
-                  <p className="mt-4 p-4 bg-green-100 border border-green-400 text-green-800 rounded-md text-center my-4">{successMsg}</p>)
-                }
+          {successMsg && (
+            <p className="mt-4 p-4 bg-green-100 border border-green-400 text-green-800 rounded-md text-center my-4">{successMsg}</p>)
+          }
 
-                {errorMsg && (
-                  <p className="mt-4 p-4 bg-red-100 border border-red-400 text-red-800 rounded-md text-center my-4">{errorMsg}</p>
-                )}
-              </div>
+          {errorMsg && (
+            <p className="mt-4 p-4 bg-red-100 border border-red-400 text-red-800 rounded-md text-center my-4">{errorMsg}</p>
+          )}
+        </div>
         <div className="overflow-x-auto">
-        <table className="min-w-full border border-gray-200 divide-y divide-gray-200">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="text-left px-3 py-2 text-sm font-semibold text-gray-700">
-                State Name
-              </th>
-              <th className="text-left px-3 py-2 text-sm font-semibold text-gray-700">
-                Country Name
-              </th>
-              <th className="text-left px-3 py-2 text-sm font-semibold text-gray-700">
-                Edit
-              </th>
-              <th className="text-left px-3 py-2 text-sm font-semibold text-gray-700">
-                Delete
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {!statesLoading && statesData?.states?.map((state: any) => (
-              <tr key={state.id}>
-                <td className="px-3 py-2 text-gray-800">{state.name}</td>
-                <td className="px-3 py-2 text-gray-800">{state.country.name}</td>
-                <td className="px-3 py-2">
-                  <button
-                    className="bg-yellow-400 hover:bg-yellow-500 text-white px-2 py-2 rounded-md font-semibold"
-                    onClick={() => handleStateSelect(state)}
-                  >
-                    Edit
-                  </button>
-                </td>
-                <td className="px-3 py-2">
-                  <button 
-                  onClick={() => handleDeleteState(state.id)}
-                  className="bg-red-500 hover:bg-red-600 text-white px-2 py-2 rounded-md font-semibold"
-                  >
-                    Delete
-                  </button>
-                </td>
+          <table className="min-w-full border border-gray-200 divide-y divide-gray-200">
+            <thead className="bg-gray-100">
+              <tr>
+                <th className="text-left px-3 py-2 text-sm font-semibold text-gray-700">
+                  State Name
+                </th>
+                <th className="text-left px-3 py-2 text-sm font-semibold text-gray-700">
+                  Country Name
+                </th>
+                <th className="text-left px-3 py-2 text-sm font-semibold text-gray-700">
+                  Edit
+                </th>
+                <th className="text-left px-3 py-2 text-sm font-semibold text-gray-700">
+                  Delete
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {!statesLoading && statesData?.states?.map((state: any) => (
+                <tr key={state.id}>
+                  <td className="px-3 py-2 text-gray-800">{state.name}</td>
+                  <td className="px-3 py-2 text-gray-800">{state.country.name}</td>
+                  <td className="px-3 py-2">
+                    <button
+                      className="bg-yellow-400 hover:bg-yellow-500 text-white px-2 py-2 rounded-md font-semibold"
+                      onClick={() => handleStateSelect(state)}
+                    >
+                      Edit
+                    </button>
+                  </td>
+                  <td className="px-3 py-2">
+                    <button
+                      onClick={() => handleDeleteState(state.id)}
+                      className="bg-red-500 hover:bg-red-600 text-white px-2 py-2 rounded-md font-semibold"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
-            <div className="text-center mt-4">
-        <Link to="/settings" className="text-blue-500 hover:text-blue-700">
-          Back to Settings
-        </Link>
-      </div>
-     
+        <div className="text-center mt-4">
+          <Link to="/settings" className="text-blue-500 hover:text-blue-700">
+            Back to Settings
+          </Link>
+        </div>
+
       </div>
 
       {isModalOpen &&
@@ -281,12 +286,12 @@ const handleStateSelect = (state: any) => {
               </div>
 
               <div>
-                <label htmlFor="moduleName" className="block">
+                <label htmlFor="countryId" className="block">
                   Country
                 </label>
-                <select name="countries" 
-                  onChange={handleChange} 
-                  id="countries" 
+                <select name="countries"
+                  onChange={handleChange}
+                  id="countries"
                   className="w-full p-3 border border-gray-300 rounded-md"
                   value={countryId}
                 >
@@ -299,7 +304,13 @@ const handleStateSelect = (state: any) => {
                 </select>
               </div>
 
-              
+              {successMsg && (
+                <p className="mt-4 p-4 bg-green-100 border border-green-400 text-green-800 rounded-md text-center my-4">{successMsg}</p>)
+              }
+
+              {errorMsg && (
+                <p className="mt-4 p-4 bg-red-100 border border-red-400 text-red-800 rounded-md text-center my-4">{errorMsg}</p>
+              )}
 
             </div>
             <div>

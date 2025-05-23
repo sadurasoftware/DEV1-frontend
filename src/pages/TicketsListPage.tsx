@@ -30,6 +30,23 @@ export const TicketsListPage = () => {
 
     })
 
+    useEffect(() => {
+    const today = new Date();
+    const priorDate = new Date();
+    priorDate.setMonth(today.getMonth() - 1);
+
+    const formatDate = (date: Date) => {
+        return date.toISOString().split('T')[0];
+    };
+
+    setExportData(prev => ({
+        ...prev,
+        startDate: formatDate(priorDate),
+        endDate: formatDate(today),
+    }));
+}, []);
+
+
     const { mutate, isPending } = useExportTicket()
 
     useEffect(() => {

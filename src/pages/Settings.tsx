@@ -65,6 +65,12 @@ export const Settings = () => {
           >
             States
           </Button>
+          <Button
+            onClick={() => navigate('/locations')}
+            className="w-full mt-6 py-3 bg-cust-blue text-white dark:text-black font-semibold rounded-md hover:bg-cust-blue transition dark:bg-cust-green dark:hover:bg-cust-green uppercase"
+          >
+            Locations
+          </Button>
         </div>
       </div>
     </div>

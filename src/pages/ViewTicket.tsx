@@ -370,15 +370,19 @@ export const ViewTicket = () => {
             {errMsg && <h3 className='text-red font-bold'>{errMsg}</h3>}
           </div>
         }
-      
-
-        <button
+     { (
+          user?.department === 'Support team department' ||
+          user?.id === ticketData?.ticket?.user?.id ||
+          user?.id === ticketData?.ticket?.assignedUser?.id
+        ) && <button
           onClick={handleSubmit}
           className="bg-green-600 text-white px-4 py-2 mt-4 rounded hover:bg-green-700"
           disabled={isSubmitting}
         >
           {isSubmitting ? 'Submitting...' : 'Submit'}
-        </button>
+        </button>}
+
+        
 
 
         <Link
