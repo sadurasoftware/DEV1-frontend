@@ -5,15 +5,13 @@ export const useUpdateCountry = () => {
     const {
         isPending:updateCountryPending, 
         data:updateCountryData, 
-        error:updateCountryError, 
         mutate:mutateUpdateCountry
         } = useMutation({
-            mutationFn: (country:any)=>updateCountry(country),
+            mutationFn: updateCountry,
         })
     return {
         updateCountryPending,
         updateCountryData,
-        updateCountryError,
         mutateUpdateCountry
 
 }
