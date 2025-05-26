@@ -13,3 +13,11 @@ export const stateValidation = z.object({
     .min(1, 'Choose Country')
    
 })
+
+export const locationValidation = z.object({
+    locationName: z.string()
+    .min(1, 'Location name cannot be empty'),
+    stateId: z.number()
+    .min(1, 'Choose staste')
+   
+})
