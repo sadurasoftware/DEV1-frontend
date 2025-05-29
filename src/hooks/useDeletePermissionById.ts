@@ -11,12 +11,6 @@ export const useDeletePermissionById = () => {
     isPending: deletePermissionPending,
   } = useMutation<permissionsResponse, ErrorResponse, number>({
     mutationFn: (id: number) => deletePermissionById(id),
-    onSuccess: () => {
-      console.log('Permission deleted successfully')
-    },
-    onError: (error: ErrorResponse) => {
-      console.error('Error deleting permission:', error)
-    },
   })
 
   return {

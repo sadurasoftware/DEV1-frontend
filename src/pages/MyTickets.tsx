@@ -2,7 +2,6 @@ import { useGetTicketsByUser } from "@/hooks/useGetTicketsByUser";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useDeleteTicket } from '@/hooks/useDeleteTicket'; 
 import { viewBackStore } from "@/store/viewBackStore";
-import { useLoginInfoStore } from "@/store/useLoginInfoStore";
 import { AxiosError } from "axios";
 
 export const MyTickets = () => {
@@ -11,9 +10,6 @@ export const MyTickets = () => {
     const navigate = useNavigate();
     const {setBackRoutes} = viewBackStore()
     const { ticketDelete, isDeleteTicketError, deleteticketError } = useDeleteTicket();
-
-    const {user} = useLoginInfoStore();
-    console.log(`User in Store:`, user)
 
     const handleViewTicket = (id: string) => {
         setBackRoutes(`/my-tickets/${userId}`); 
