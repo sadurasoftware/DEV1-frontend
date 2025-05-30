@@ -11,12 +11,6 @@ export const useDeleteCategoryById = () => {
     isPending: deleteCategoryPending,
   } = useMutation<categoriesResponse, ErrorResponse, number>({
     mutationFn: (id: number) => deleteCategoryById(id),
-    onSuccess: () => {
-      console.log('Module deleted successfully')
-    },
-    onError: (error: ErrorResponse) => {
-      console.error('Error deleting role:', error)
-    },
   })
 
   return {

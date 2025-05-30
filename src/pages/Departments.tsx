@@ -5,19 +5,23 @@ import { departmentType } from '@/types/departmentTypes'
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useCreateDepartment } from '../hooks/useCreateDepartment'
+import { settingsValidation } from '@/validation/settingsInputValidation'
+import axios from 'axios'
+import { z } from 'zod'
+import { useQueryClient } from '@tanstack/react-query'
 
 const Departments: React.FC = () => {
   const [departmentName, setDepartmentName] = useState<string>('')
   const [departmentId, setDepartmentId] = useState<number | null>(null)
   const [isEditing, setIsEditing] = useState<boolean>(false)
   const [success, setSuccess] = useState<string>('')
+  const [errMsg, setErrMsg] = useState('')
+
+  const queryClient = useQueryClient()
 
   const {
     mutate,
     isPending,
-    isError,
-    error: createError,
-    data,
   } = useCreateDepartment()
   const {
     departmentsLoading,
@@ -31,15 +35,18 @@ const Departments: React.FC = () => {
   const {
     mutate: updateDepartment,
     updateDepartmentPending,
-    isDepartmentUpdateError,
-    updateDepartmentError,
-    updateDepartmentSuccess,
   } = useUpdateDepartmentById()
   const { deleteDepartment, deleteDepartmentPending } =
     useDeleteDepartmentById()
 
+  if (isDepartmentsError) {
+    setErrMsg(departmentsError?.message || 'Error fetching departments')
+  }
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setDepartmentName(e.target.value)
+    setSuccess('')
+    setErrMsg('')
   }
 
   const handleDepartmentSelect = (id: number) => {
@@ -53,20 +60,28 @@ const Departments: React.FC = () => {
 
   const departmentSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (departmentName.trim()) {
+    try {
+      settingsValidation.parse({ name: departmentName })
       if (departmentId) {
         updateDepartment(
           { id: departmentId, name: departmentName },
           {
-            onSuccess: () => {
+            onSuccess: (data: any) => {
               refetch()
-              setSuccess('')
+              setSuccess(data?.message || 'Department updated successfully!')
+              queryClient.invalidateQueries({ queryKey: ['departments'] })
               setIsEditing(false)
               setDepartmentId(null)
               setDepartmentName('')
             },
-            onError: error => {
-              console.log('Error updating department:', error)
+            onError: (error: any) => {
+              if (axios.isAxiosError(error)) {
+                setSuccess('')
+                setErrMsg(error.response?.data.message)
+              } else {
+                setSuccess('')
+                setErrMsg(error.message || 'Something went wrong. Please try again.')
+              }
             },
           }
         )
@@ -74,28 +89,46 @@ const Departments: React.FC = () => {
         mutate(
           { name: departmentName },
           {
-            onSuccess: () => {
+            onSuccess: (data: any) => {
               refetch()
               setSuccess(data?.message || 'Department created successfully!')
+              queryClient.invalidateQueries({ queryKey: ['departments'] })
+              setIsEditing(false)
               setDepartmentName('')
             },
-            onError: error => {
-              console.log('Error creating department:', error)
+            onError: (error: any) => {
+              if (axios.isAxiosError(error)) {
+                setSuccess('')
+                setErrMsg(error.response?.data.message)
+              } else {
+                setSuccess('')
+                setErrMsg(error.message || 'Something went wrong. Please try again.')
+              }
             },
           }
         )
       }
-    } else {
-      console.log('Department name cannot be empty.')
+    } catch (error: any) {
+      if (error instanceof z.ZodError) {
+        setErrMsg('Department ' + error.errors[0]?.message || 'Invalid input')
+        setSuccess('')
+      }
     }
   }
 
   const handleDeleteDepartment = (id: number) => {
     const confirmDelete = window.confirm('Are you sure you want to delete this department?')
-    if(!confirmDelete) return
+    if (!confirmDelete) return
     deleteDepartment(id, {
-      onSuccess: () => {
-        refetch()
+      onSuccess: (data:any) => {
+        setSuccess(data?.message)
+        setErrMsg('')
+        setDepartmentId(null)
+        
+      },
+      onError: (error: any) => {
+        setSuccess('')
+        setErrMsg(error.response.data.message || error.response.data.errors || 'Something went wrong. Please try again.')
       },
     })
   }
@@ -118,15 +151,8 @@ const Departments: React.FC = () => {
             value={departmentName}
             onChange={handleInputChange}
             className="w-full p-3 border border-gray-300 rounded-md"
-            required
           />
         </div>
-
-        {isDepartmentUpdateError && updateDepartmentError && (
-          <div className="text-red-600 text-center mt-2">
-            {updateDepartmentError.message}
-          </div>
-        )}
 
         <div className="text-center mt-4">
           <button
@@ -144,6 +170,14 @@ const Departments: React.FC = () => {
           </button>
         </div>
       </form>
+
+          {success && (
+        <div className="text-green-600 text-center mt-2">{success}</div>
+      )}
+
+          {errMsg && (
+        <div className="text-red-600 text-center mt-2">{errMsg}</div>
+      )}
 
       <div className="mt-6">
         <h3 className="text-xl font-semibold text-center mb-4">
@@ -194,21 +228,7 @@ const Departments: React.FC = () => {
         </Link>
       </div>
 
-      {isError && createError && (
-        <div className="text-red-600 text-center mt-2">
-          {createError.message}
-        </div>
-      )}
 
-      {updateDepartmentSuccess && (
-        <div className="text-green-600 text-center mt-2">
-          Departemnts updated successfully!
-        </div>
-      )}
-
-      {success && (
-        <div className="text-green-600 text-center mt-2">{success}</div>
-      )}
     </div>
   )
 }

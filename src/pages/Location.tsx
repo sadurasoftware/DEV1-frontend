@@ -1,5 +1,5 @@
 import { useGetLocations } from "@/hooks/LocationHooks/useGetLocations"
-import { useState } from "react"
+import {  useState } from "react"
 import { Link } from "react-router-dom"
 import { useCreateLocation } from "@/hooks/LocationHooks/useCreateLocation"
 import { useGetStates } from "@/hooks/stateHooks/useGetStates"
@@ -9,6 +9,8 @@ import { useUpdateLocation } from "@/hooks/LocationHooks/useUpdateLocation"
 import { useDeleteLocation } from "@/hooks/LocationHooks/useDeleteLocation"
 import { locationValidation } from "@/validation/countryValidation"
 import { z } from "zod"
+import { useGetCountries } from "@/hooks/countryHooks/useGetCountries"
+// import { useGetLocationById } from "@/hooks/LocationHooks/useGetLocationById"
 
 export const Location = () => {
 
@@ -21,7 +23,7 @@ export const Location = () => {
             locationId: 0,
             locationName: '',
             stateId: 0,
-            // countryId: 0
+            countryId: 0
         }
     )
     const [successMsg, setSuccessMsg] = useState('')
@@ -34,14 +36,24 @@ export const Location = () => {
     const { locationsLoading, locationsData, isLocationsError, locationsError } = useGetLocations()
     const { statesLoading, statesData, isStatesError, statesError } = useGetStates()
     const { createLocationPending, createLocationMutation } = useCreateLocation()
-    // const { locationDatum, locationLoading, IsLocationError, locationError } = useGetLocationById()
+    // const { locationDatum, locationLoading, IsLocationError, locationError } = useGetLocationById(locationData.locationId)
     const { updateLocationPending, mutateUpdateLocation } = useUpdateLocation()
     const { deleteLocationMutate } = useDeleteLocation()
+    const { isLoading, data, isError, error } = useGetCountries()
+
+    // useEffect(() => {
+    //     if (locationDatum) {
+    //         setLocationData({
+    //              locationId: locationDatum.locationId,
+    //              locationName: locationDatum.locationName, 
+    //              stateId: locationDatum.stateId, countryId: locationDatum.countryId })
+    //     }
+    // }, [locationDatum]);
 
 
     // Hadle error on fetch hook
-    if (isLocationsError && isStatesError) {
-        setErrorMsg(locationsError?.message || statesError?.message || 'Something went wrongs')
+    if (isLocationsError && isStatesError && isError) {
+        setErrorMsg(locationsError?.message || statesError?.message || error?.message || 'Something went wrongs')
     }
 
     // Add modal 
@@ -51,8 +63,8 @@ export const Location = () => {
         setLocationData({
             locationId: 0,
             locationName: '',
-            stateId: 0
-
+            stateId: 0,
+            countryId: 0
         })
         setIsEditing(false)
         setIsModalOpen(true)
@@ -64,7 +76,8 @@ export const Location = () => {
         setLocationData({
             locationId: 0,
             locationName: '',
-            stateId: 0
+            stateId: 0,
+            countryId: 0
         })
     }
 
@@ -77,11 +90,14 @@ export const Location = () => {
             [name]: name === 'countryId' || name === 'stateId' || name === 'locationId' ? Number(value) : value,
         }));
 
-        setSuccessMsg('');
-        setErrorMsg('');
-    };
+        if (name === 'stateId') {
+            setSuccessMsg('');
+            setErrorMsg('');
+        }
+    }
 
     const handleLocationSelect = (location: any) => {
+        console.log('Location selected:', location)
         setSuccessMsg('')
         setErrorMsg('')
         setIsEditing(true)
@@ -89,7 +105,8 @@ export const Location = () => {
         setLocationData({
             locationId: location.id,
             locationName: location.name,
-            stateId: location.stateId
+            stateId: location.stateId,
+            countryId: location.countryId
         })
     }
 
@@ -112,7 +129,8 @@ export const Location = () => {
                             setLocationData({
                                 locationId: 0,
                                 locationName: '',
-                                stateId: 0
+                                stateId: 0,
+                                countryId: 0
                             })
                             setIsModalOpen(false)
                             queryClient.invalidateQueries({ queryKey: ['locations'] })
@@ -134,7 +152,8 @@ export const Location = () => {
                             setLocationData({
                                 locationId: 0,
                                 locationName: '',
-                                stateId: 0
+                                stateId: 0,
+                                countryId: 0
                             })
 
                             queryClient.invalidateQueries({ queryKey: ['locations'] })
@@ -157,10 +176,9 @@ export const Location = () => {
             if (error instanceof z.ZodError) {
                 setErrorMsg(error.errors[0]?.message || 'Invalid input')
             }
-            else
-            {
+            else {
                 setErrorMsg('Something went wrong.')
-            
+
             }
         }
 
@@ -237,7 +255,7 @@ export const Location = () => {
                                 <tr key={loc.id}>
                                     <td className="px-3 py-2 text-gray-800">{loc.name}</td>
                                     <td className="px-3 py-2 text-gray-800">{loc.state.name}</td>
-                                    <td className="px-3 py-2 text-gray-800">{loc.state.name}</td>
+                                    <td className="px-3 py-2 text-gray-800">{loc.state.country.name}</td>
                                     <td className="px-3 py-2">
                                         <button
                                             className="bg-yellow-400 hover:bg-yellow-500 text-white px-2 py-2 rounded-md font-semibold"
@@ -270,7 +288,7 @@ export const Location = () => {
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
                         <div className="bg-white w-full max-w-4xl rounded-lg shadow-lg p-10">
                             <div className="flex justify-between items-center border-b pb-2 mb-4">
-                                <h2 className="text-xl font-semibold">{isEditing ? 'Edit State' : 'Create State'}</h2>
+                                <h2 className="text-xl font-semibold">{isEditing ? 'Edit Location' : 'Create Location'}</h2>
                                 <button
                                     onClick={closeModal}
                                     className="text-gray-500 hover:text-red-500 text-lg font-bold"
@@ -293,9 +311,34 @@ export const Location = () => {
                                         required
                                     />
                                 </div>
-
                                 <div>
-                                    <label htmlFor="moduleName" className="block">
+                                    CountryId:{locationData.countryId}
+                                </div>
+                                <div>
+                                    
+                                    <label htmlFor="countryId" className="block">
+                                        Country
+                                    </label>
+                                    <select name="countryId"
+                                        id="countryId"
+                                        className="w-full p-3 border border-gray-300 rounded-md"
+                                        value={locationData.countryId}
+                                        onChange={handleChange}
+
+                                    >
+                                        <option value="">Choose Country</option>
+                                        {!isLoading && data && data.map((country: any) => (
+                                            <option key={country.id} value={country.id}>
+                                                {country.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div>
+                                    StateId:{locationData.stateId}
+                                </div>
+                                <div>
+                                    <label htmlFor="stateId" className="block">
                                         State
                                     </label>
                                     <select name="stateId"
@@ -305,32 +348,30 @@ export const Location = () => {
                                         value={locationData.stateId}
                                     >
                                         <option value="">Choose State</option>
-                                        {!statesLoading && statesData && statesData.states.map((state: any) => (
-                                            <option key={state.id} value={state.id}>
-                                                {state.name}
-                                            </option>
-                                        ))}
+                                        {!statesLoading && statesData && (() => {
+                                            const filteredStates = statesData.states.filter(
+                                                (state: any) => state.countryId === locationData.countryId
+                                            );
+
+                                            if (filteredStates.length === 0) {
+                                                return (
+                                                    <option value="" disabled>No states available for this country</option>
+                                                );
+                                            }
+
+                                            return filteredStates.map((state: any) => (
+                                                <option key={state.id} value={state.id}>
+                                                    {state.name}
+                                                </option>
+                                            ));
+                                        })()}
+
+
+
                                     </select>
                                 </div>
 
-                                {/* <div>
-                <label htmlFor="moduleName" className="block">
-                  Country
-                </label>
-                <select name="countries"
-                //   onChange={handleChange}
-                  id="countries"
-                  className="w-full p-3 border border-gray-300 rounded-md"
-                  value={countryId}
-                >
-                  <option value="">Choose Country</option>
-                  {!isLoading && data && data.map((country: any) => (
-                    <option key={country.id} value={country.id}>
-                      {country.name}
-                    </option>
-                  ))}
-                </select>
-              </div> */}
+
 
                                 {successMsg && (
                                     <p className="mt-4 p-4 bg-green-100 border border-green-400 text-green-800 rounded-md text-center my-4">{successMsg}</p>)
@@ -348,8 +389,8 @@ export const Location = () => {
                                 >
                                     {createLocationPending || updateLocationPending
                                         ? isEditing ?
-                                            'Updating State...' : 'Creating State'
-                                        : isEditing ? 'Update State' : 'Add State'
+                                            'Updating Location...' : 'Creating Location'
+                                        : isEditing ? 'Update Location' : 'Add Location'
                                     }
                                 </button>
                             </div>

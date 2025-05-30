@@ -11,12 +11,7 @@ export const useDeleteDepartmentById = () => {
     isPending: deleteDepartmentPending,
   } = useMutation<departmentsResponse, ErrorResponse, number>({
     mutationFn: (id: number) => deleteDepartmentById(id),
-    onSuccess: () => {
-      console.log('Department deleted successfully')
-    },
-    onError: (error: ErrorResponse) => {
-      console.error('Error deleting department:', error)
-    },
+  
   })
 
   return {

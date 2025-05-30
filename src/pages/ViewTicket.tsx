@@ -381,9 +381,7 @@ export const ViewTicket = () => {
         >
           {isSubmitting ? 'Submitting...' : 'Submit'}
         </button>}
-
-        
-
+    
 
         <Link
           to={backRoutes}
