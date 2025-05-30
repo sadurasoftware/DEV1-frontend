@@ -8,7 +8,7 @@ import { useCreateDepartment } from '../hooks/useCreateDepartment'
 import { settingsValidation } from '@/validation/settingsInputValidation'
 import axios from 'axios'
 import { z } from 'zod'
-import { QueryClient, useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 
 const Departments: React.FC = () => {
   const [departmentName, setDepartmentName] = useState<string>('')
