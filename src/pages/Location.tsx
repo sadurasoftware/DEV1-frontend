@@ -10,7 +10,6 @@ import { useDeleteLocation } from "@/hooks/LocationHooks/useDeleteLocation"
 import { locationValidation } from "@/validation/countryValidation"
 import { z } from "zod"
 import { useGetCountries } from "@/hooks/countryHooks/useGetCountries"
-// import { useGetLocationById } from "@/hooks/LocationHooks/useGetLocationById"
 
 export const Location = () => {
 
@@ -36,22 +35,12 @@ export const Location = () => {
     const { locationsLoading, locationsData, isLocationsError, locationsError } = useGetLocations()
     const { statesLoading, statesData, isStatesError, statesError } = useGetStates()
     const { createLocationPending, createLocationMutation } = useCreateLocation()
-    // const { locationDatum, locationLoading, IsLocationError, locationError } = useGetLocationById(locationData.locationId)
     const { updateLocationPending, mutateUpdateLocation } = useUpdateLocation()
     const { deleteLocationMutate } = useDeleteLocation()
     const { isLoading, data, isError, error } = useGetCountries()
 
-    // useEffect(() => {
-    //     if (locationDatum) {
-    //         setLocationData({
-    //              locationId: locationDatum.locationId,
-    //              locationName: locationDatum.locationName, 
-    //              stateId: locationDatum.stateId, countryId: locationDatum.countryId })
-    //     }
-    // }, [locationDatum]);
 
-
-    // Hadle error on fetch hook
+    // Handle error on fetch hook
     if (isLocationsError && isStatesError && isError) {
         setErrorMsg(locationsError?.message || statesError?.message || error?.message || 'Something went wrongs')
     }
@@ -118,6 +107,7 @@ export const Location = () => {
                 mutateUpdateLocation({
                     id: locationData.locationId,
                     name: locationData.locationName,
+                    countryId: locationData.countryId,
                     stateId: locationData.stateId
 
                 },
@@ -143,7 +133,7 @@ export const Location = () => {
 
                     })
             } else {
-                createLocationMutation({ name: locationData.locationName, stateId: locationData.stateId },
+                createLocationMutation({ name: locationData.locationName, countryId: locationData.countryId, stateId: locationData.stateId },
                     {
                         onSuccess: (res: any) => {
                             setErrorMsg('')
@@ -311,9 +301,9 @@ export const Location = () => {
                                         required
                                     />
                                 </div>
-                                <div>
+                                {/* <div>
                                     CountryId:{locationData.countryId}
-                                </div>
+                                </div> */}
                                 <div>
                                     
                                     <label htmlFor="countryId" className="block">
@@ -334,9 +324,9 @@ export const Location = () => {
                                         ))}
                                     </select>
                                 </div>
-                                <div>
+                                {/* <div>
                                     StateId:{locationData.stateId}
-                                </div>
+                                </div> */}
                                 <div>
                                     <label htmlFor="stateId" className="block">
                                         State
