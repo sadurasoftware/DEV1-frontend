@@ -5,19 +5,23 @@ import { roleType } from '@/types/roleTypes'
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useCreateRole } from '../hooks/useCreateRole'
+import axios from 'axios'
+import { useQueryClient } from '@tanstack/react-query'
+import { z } from 'zod'
+import { settingsValidation } from '@/validation/settingsInputValidation'
 
 const RolePage: React.FC = () => {
   const [roleName, setRoleName] = useState<string>('')
   const [roleId, setRoleId] = useState<number | null>(null)
   const [isEditing, setIsEditing] = useState<boolean>(false)
   const [success, setSuccess] = useState<string>('')
+  const [errorMsg, setErrorMsg] = useState<string>('')
+
+  const queryClient = useQueryClient()
 
   const {
     mutate,
     isPending,
-    isError,
-    error: createError,
-    data,
   } = useCreateRole()
   const { rolesLoading, rolesData, isRolesError, rolesError, refetch } =
     useFetchRoles()
@@ -26,14 +30,13 @@ const RolePage: React.FC = () => {
   const {
     mutate: updateRole,
     updateRolePending,
-    isRoleUpdateError,
-    updateRoleError,
-    updateRoleSuccess,
   } = useUpdateRoleById()
   const { deleteRole, deleteRolePending } = useDeleteRoleById()
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setRoleName(e.target.value)
+    setErrorMsg('')
+    setSuccess('')
   }
 
   const handleRoleSelect = (id: number) => {
@@ -47,20 +50,30 @@ const RolePage: React.FC = () => {
 
   const roleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (roleName.trim()) {
-      if (roleId) {
+    try {
+      settingsValidation.parse({name: roleName })
+      if (roleId) 
+      {
         updateRole(
           { id: roleId, name: roleName },
           {
-            onSuccess: () => {
+            onSuccess: (data: any) => {
               refetch()
-              setSuccess('')
+              setSuccess(data?.message)
+              queryClient.invalidateQueries({ queryKey: ['roles'] })
               setIsEditing(false)
               setRoleId(null)
               setRoleName('')
             },
-            onError: error => {
-              console.log('Error updating permission:', error)
+            onError: (error: any) => {
+              if (axios.isAxiosError(error)) {
+                setSuccess('')
+                setIsEditing(true)
+                setErrorMsg(error?.response?.data?.message || error?.response?.data?.errors)
+              } else {
+                setSuccess('')
+                setErrorMsg(error?.message || 'Something went wrong')
+              }
             },
           }
         )
@@ -68,19 +81,34 @@ const RolePage: React.FC = () => {
         mutate(
           { name: roleName },
           {
-            onSuccess: () => {
+            onSuccess: (data: any) => {
               refetch()
-              setSuccess(data?.message || 'Role created successfully!')
+              setErrorMsg('')
+              setSuccess(data?.message)
+              queryClient.invalidateQueries({ queryKey: ['roles'] })
+              setIsEditing(false)
               setRoleName('')
+              setRoleId(null)
             },
-            onError: error => {
-              console.log('Error creating role:', error)
+            onError: (error: any) => {
+              if (axios.isAxiosError(error)) {
+                setSuccess('')
+                setErrorMsg(error?.response?.data?.message || error?.response?.data?.errors)
+              } else {
+                setSuccess('')
+                setErrorMsg(error?.message || 'Something went wrong')
+              }
             },
           }
         )
       }
-    } else {
-      console.log('Role name cannot be empty.')
+    } catch (error:any) 
+    {
+      if (error instanceof z.ZodError) {
+        setSuccess('')
+        setErrorMsg('')
+            setErrorMsg('Role '+error.errors[0]?.message || 'Invalid input')
+          }
     }
   }
 
@@ -88,8 +116,13 @@ const RolePage: React.FC = () => {
     const confirmDel = window.confirm('Are you sure you want to delete this role?')
     if (!confirmDel) return
     deleteRole(id, {
-      onSuccess: () => {
-        refetch()
+      onSuccess: (data: any) => {
+        setErrorMsg('')
+        setSuccess(data?.message)
+        queryClient.invalidateQueries({ queryKey: ['roles'] })
+        setIsEditing(false)
+        setRoleId(null)
+        setRoleName('')
       },
     })
   }
@@ -110,15 +143,9 @@ const RolePage: React.FC = () => {
             value={roleName}
             onChange={handleInputChange}
             className="w-full p-3 border border-gray-300 rounded-md"
-            required
+
           />
         </div>
-
-        {isRoleUpdateError && updateRoleError && (
-          <div className="text-red-600 text-center mt-2">
-            {updateRoleError.message}
-          </div>
-        )}
 
         <div className="text-center mt-4">
           <button
@@ -136,6 +163,19 @@ const RolePage: React.FC = () => {
           </button>
         </div>
       </form>
+
+      <div>
+        {success && (
+          <div className="text-green-600 text-center mt-2">
+            {success}
+          </div>
+        )}
+        {errorMsg && (
+          <div className="text-red-600 text-center mt-2">
+            {errorMsg}
+          </div>
+        )}
+      </div>
 
       <div className="mt-6">
         <h3 className="text-xl font-semibold text-center mb-4">
@@ -183,22 +223,6 @@ const RolePage: React.FC = () => {
           Back to Settings
         </Link>
       </div>
-
-      {isError && createError && (
-        <div className="text-red-600 text-center mt-2">
-          {createError.message}
-        </div>
-      )}
-
-      {updateRoleSuccess && (
-        <div className="text-green-600 text-center mt-2">
-          Role updated successfully!
-        </div>
-      )}
-
-      {success && (
-        <div className="text-green-600 text-center mt-2">{success}</div>
-      )}
     </div>
   )
 }

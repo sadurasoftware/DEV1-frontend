@@ -40,7 +40,6 @@ export const deleteCategoryById = async (
   id: number
 ): Promise<categoriesResponse> => {
   const token = useLoginInfoStore.getState().token
-  console.log(`Category Id:${id}\tToken:${token}`)
   const res: AxiosResponse<categoriesResponse> = await api.delete(
     `/api/category/delete/${id}`,
     {

@@ -1,7 +1,6 @@
 import { updateCategory } from '@/apis/categoryAPI'
 import { ErrorResponse } from '@/types/loginType'
 import { useMutation } from '@tanstack/react-query'
-import axios, { AxiosError } from 'axios'
 import { categoriesResponse } from '../types/categoryTypes'
 
 export const useUpdateCategoryById = () => {
@@ -19,17 +18,7 @@ export const useUpdateCategoryById = () => {
     mutationFn: async ({ id, name }) => {
       return await updateCategory(id, name)
     },
-    onSuccess: data => {
-      console.log('Category updated:', data)
-    },
-    onError: (error: ErrorResponse) => {
-      if (axios.isAxiosError(error)) {
-        const axiosError = error as AxiosError
-        console.error(axiosError.message || 'An unexpected error occurred')
-      } else {
-        console.error('An unexpected error occurred.', error)
-      }
-    },
+   
   })
 
   return {

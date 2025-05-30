@@ -11,12 +11,6 @@ export const useDeleteModuleById = () => {
     isPending: deleteModulePending,
   } = useMutation<modulesResponse, ErrorResponse, number>({
     mutationFn: (id: number) => deleteModuleById(id),
-    onSuccess: () => {
-      console.log('Module deleted successfully')
-    },
-    onError: (error: ErrorResponse) => {
-      console.error('Error deleting role:', error)
-    },
   })
 
   return {

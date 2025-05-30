@@ -29,10 +29,6 @@ export const addDepartment = async (
     }
   )
 
-  if (!res || !res.data) {
-    throw new Error('Error fetching API')
-  }
-
   return res.data
 }
 
@@ -40,7 +36,6 @@ export const deleteDepartmentById = async (
   departmentId: number
 ): Promise<departmentsResponse> => {
   const token = useLoginInfoStore.getState().token
-  console.log(`DepartmentId:${departmentId}\tToken:${token}`)
   const res: AxiosResponse<departmentsResponse> = await axios.delete(
     `http://localhost:3000/api/department/delete/${departmentId}`,
     {

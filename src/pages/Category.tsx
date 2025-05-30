@@ -5,14 +5,20 @@ import { categoryType } from '@/types/categoryTypes'
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useCreateCategory } from '../hooks/useCreateCategory'
+import axios from 'axios'
+import { useQueryClient } from '@tanstack/react-query'
+import { settingsValidation } from '@/validation/settingsInputValidation'
+import { z } from 'zod'
 
 const Category: React.FC = () => {
   const [categoryName, setCategoryName] = useState<string>('')
   const [categoryId, setCategoryId] = useState<number | null>(null)
   const [isEditing, setIsEditing] = useState<boolean>(false)
   const [success, setSuccess] = useState<string>('')
+  const [errorMsg, setErrorMsg] = useState<string>('')
+  const queryClient = useQueryClient()
 
-  const { mutate, isPending, isError, error: createError } = useCreateCategory()
+  const { mutate, isPending } = useCreateCategory()
   const {
     categoriesLoading,
     categoriesData,
@@ -26,12 +32,13 @@ const Category: React.FC = () => {
     updateCategoryPending,
     isCategoryUpdateError,
     updateCategoryError,
-    updateCategorySuccess,
   } = useUpdateCategoryById()
   const { deleteCategory, deleteCategoryPending } = useDeleteCategoryById()
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCategoryName(e.target.value)
+    setErrorMsg('')
+    setSuccess('')
   }
 
   const handleCategorySelect = (id: number) => {
@@ -43,54 +50,83 @@ const Category: React.FC = () => {
     }
   }
 
+  // Submitting category
   const categorySubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (categoryName.trim()) {
-      if (categoryId) {
-        updateCategory(
-          { id: categoryId, name: categoryName },
-          {
-            onSuccess: (response:any) => {
-              refetch()
-              setSuccess(response?.message)
-              setIsEditing(false)
-              setCategoryId(null)
-              setCategoryName('')
-            },
-            onError: error => {
-              console.log('Error updating Category:', error)
-            },
-          }
-        )
-      } else {
-        mutate(
-          { name: categoryName },
-          {
-            onSuccess: () => {
-              refetch()
-              setSuccess('Category created successfully!')
-              setCategoryName('')
-            },
-            onError: error => {
-              console.log('Error creating Category:', error)
-            },
-          }
-        )
-      }
+  e.preventDefault()
+  try {
+    settingsValidation.parse({ name:categoryName })
+
+    if (categoryId) {
+      updateCategory(
+        { id: categoryId, name: categoryName },
+        {
+          onSuccess: (response: any) => {
+            setSuccess(response?.message)
+            queryClient.invalidateQueries({ queryKey: ['category'] })
+            setErrorMsg('')
+            setIsEditing(false)
+            setCategoryId(null)
+            setCategoryName('')
+          },
+          onError: (error: any) => {
+            if (axios.isAxiosError(error)) {
+              setSuccess('')
+              setErrorMsg(error.response?.data.message)
+            } else {
+              setSuccess('')
+              setErrorMsg(error.message || 'Something went wrong. Please try again.')
+            }
+          },
+        }
+      )
     } else {
-      console.log('Category name cannot be empty.')
+      mutate(
+        { name: categoryName },
+        {
+          onSuccess: (response: any) => {
+            refetch()
+            setSuccess(response?.message)
+            queryClient.invalidateQueries({ queryKey: ['category'] })
+            setErrorMsg('')
+            setIsEditing(false)
+            setCategoryName('')
+          },
+          onError: (error: any) => {
+            if (axios.isAxiosError(error)) {
+              setSuccess('')
+              setErrorMsg(error.response?.data.message)
+            } else {
+              setSuccess('')
+              setErrorMsg(error.message || 'Something went wrong. Please try again.')
+            }
+          },
+        }
+      )
+    }
+  } catch (error: any) {
+    if (error instanceof z.ZodError) {
+      setErrorMsg('Category '+ error.errors[0]?.message || 'Invalid input')
+      setSuccess('')
     }
   }
+}
+
 
   const handleDeleteCategory = (id: number) => {
     const confirmDelete = window.confirm('Are you sure you want to delete this category?')
-    if(!confirmDelete)
-    {
+    if (!confirmDelete) {
       return
     }
     deleteCategory(id, {
-      onSuccess: () => {
-        refetch()
+      onSuccess: (response: any) => {
+        setSuccess(response?.message)
+        queryClient.invalidateQueries({ queryKey: ['category'] })
+        setErrorMsg('')
+        setCategoryName('')
+      },
+      onError: (error: any) => {
+        setSuccess('')
+        setErrorMsg(error.message || 'Something went wrong. Please try again.')
       },
     })
   }
@@ -113,7 +149,6 @@ const Category: React.FC = () => {
             value={categoryName}
             onChange={handleInputChange}
             className="w-full p-3 border border-gray-300 rounded-md"
-            required
           />
         </div>
 
@@ -139,7 +174,15 @@ const Category: React.FC = () => {
           </button>
         </div>
       </form>
+ {
+        errorMsg && (
+          <div className="text-red-600 text-center mt-2">{errorMsg}</div>
+        )
+      }
 
+      {success && (
+        <div className="text-green-600 text-center mt-2">{success}</div>
+      )}
       <div className="mt-6">
         <h3 className="text-xl font-semibold text-center mb-4">
           Existing Categories
@@ -189,21 +232,7 @@ const Category: React.FC = () => {
         </Link>
       </div>
 
-      {isError && createError && (
-        <div className="text-red-600 text-center mt-2">
-          {createError.message}
-        </div>
-      )}
-
-      {updateCategorySuccess && (
-        <div className="text-green-600 text-center mt-2">
-          Category updated successfully!
-        </div>
-      )}
-
-      {success && (
-        <div className="text-green-600 text-center mt-2">{success}</div>
-      )}
+     
     </div>
   )
 }
