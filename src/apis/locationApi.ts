@@ -1,22 +1,24 @@
 import api from "@/lib/api"
 import { useLoginInfoStore } from "@/store/useLoginInfoStore"
+import { locationType, updateLocationType } from "@/types/LocationType"
 
 export const getLocations = async () => {
     const token = useLoginInfoStore.getState().token
-    const responsre = await api.get('api/location/get', {
+    const response = await api.get('api/location/get', {
         headers: {
             Authorization: `Bearer ${token}`,
         },
     }
     )
-    return responsre.data
+    return response.data
 }
 
-export const createLocation = async ({name, stateId}:{name:string, stateId:number}) => {
+export const createLocation = async (location: locationType) => {
     const token = useLoginInfoStore.getState().token
     const response = await api.post('api/location/create', {
-        name,
-        stateId,
+        name:location.name,
+        countryId:location.countryId,
+        stateId:location.stateId,
     },
     {
         headers: {
@@ -49,12 +51,13 @@ export const getLocationById = async(id:number)=>{
   return response.data.location
 }
 
-export const updateLocation = async ({id, name, stateId}:{id:number, name:string, stateId:number}) => {
+export const updateLocation = async (location:updateLocationType) => {
     const token = useLoginInfoStore.getState().token
-    const response = await api.put(`/api/location/update/${id}`, 
+    const response = await api.put(`/api/location/update/${location.id}`, 
         {
-            name,
-            stateId
+            name:location.name,
+            countryId:location.countryId,
+            stateId:location.stateId
         }, 
     {
         headers: {
