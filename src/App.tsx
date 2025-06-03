@@ -37,6 +37,7 @@ import CreateUser from './pages/CreateUser'
 import { Countries } from './pages/Countries'
 import { States } from './pages/States'
 import { Location } from './pages/Location'
+import { Branch } from './pages/Branch'
 
 // import Theme from './pages/Theme';
 // import  useThemeStore from './store/themeStore';
@@ -112,6 +113,7 @@ const App: React.FC = () => {
               <Route path="/countries" element={<Countries/>} />
               <Route path="/states" element={<States/>} />
               <Route path="/locations" element={<Location/>}/>
+              <Route path="/branches" element={<Branch/>}/>
             </Route>
           </Route>
         </Routes>
