@@ -5,3 +5,4 @@ export const settingsValidation = z.object({
     .min(1, 'name is required')
     .min(3, 'Name is too short, at least 3 characters are required'),
 })
+

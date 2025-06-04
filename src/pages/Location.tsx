@@ -1,5 +1,5 @@
 import { useGetLocations } from "@/hooks/LocationHooks/useGetLocations"
-import {  useState } from "react"
+import { useState } from "react"
 import { Link } from "react-router-dom"
 import { useCreateLocation } from "@/hooks/LocationHooks/useCreateLocation"
 import { useGetStates } from "@/hooks/stateHooks/useGetStates"
@@ -79,10 +79,13 @@ export const Location = () => {
             [name]: name === 'countryId' || name === 'stateId' || name === 'locationId' ? Number(value) : value,
         }));
 
-        if (name === 'stateId') {
-            setSuccessMsg('');
-            setErrorMsg('');
-        }
+        // if (name === 'countryId') {
+        //     setSuccessMsg('');
+        //     setErrorMsg('');
+        // }
+
+        setSuccessMsg('');
+        setErrorMsg('');
     }
 
     const handleLocationSelect = (location: any) => {
@@ -165,8 +168,10 @@ export const Location = () => {
         catch (error: any) {
             if (error instanceof z.ZodError) {
                 setErrorMsg(error.errors[0]?.message || 'Invalid input')
+                setSuccessMsg('')
             }
             else {
+                setSuccessMsg('')
                 setErrorMsg('Something went wrong.')
 
             }
@@ -305,7 +310,7 @@ export const Location = () => {
                                     CountryId:{locationData.countryId}
                                 </div> */}
                                 <div>
-                                    
+
                                     <label htmlFor="countryId" className="block">
                                         Country
                                     </label>
