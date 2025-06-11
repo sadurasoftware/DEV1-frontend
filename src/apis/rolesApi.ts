@@ -38,7 +38,6 @@ export const deleteRoleById = async (
   roleId: number
 ): Promise<rolesResponse> => {
   const token = useLoginInfoStore.getState().token
-  console.log('RoleId:${roleId}\tToken:${token}')
   const res: AxiosResponse<rolesResponse> = await api.delete(
     `/api/role-module-permissions/delete-role/${roleId}`,
     {
